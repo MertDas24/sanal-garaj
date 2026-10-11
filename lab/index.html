@@ -1,0 +1,26 @@
+<!doctype html><html><body style="margin:0;background:#222">
+<canvas id="c" width="1200" height="400"></canvas>
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.js';
+const p = new URLSearchParams(location.search);
+const file = p.get('f'); const hl = (p.get('hl') || '').split(',').filter(Boolean); const rotY = +(p.get('ry') || 0);
+const r = new THREE.WebGLRenderer({ canvas: c, antialias: true, preserveDrawingBuffer: true });
+r.setScissorTest(true);
+const scene = new THREE.Scene(); scene.background = new THREE.Color('#333');
+scene.add(new THREE.HemisphereLight('#fff', '#444', 2)); const d = new THREE.DirectionalLight('#fff', 2); d.position.set(3, 5, 4); scene.add(d);
+const loader = new GLTFLoader(); loader.setMeshoptDecoder(MeshoptDecoder);
+loader.load(file, g => {
+  const o = g.scene; o.rotation.y = rotY; scene.add(o);
+  o.updateMatrixWorld(true);
+  const box = new THREE.Box3().setFromObject(o); const s = box.getSize(new THREE.Vector3()); const ctr = box.getCenter(new THREE.Vector3());
+  const k = 4.4 / Math.max(s.x, s.z); o.scale.setScalar(k); o.position.sub(ctr.multiplyScalar(k)); o.position.y += s.y * k / 2;
+  if (hl.length) o.traverse(m => { if (m.isMesh) { const mats = Array.isArray(m.material) ? m.material : [m.material];
+     m.material = mats.map(mt => hl.includes(mt.name) ? new THREE.MeshStandardMaterial({ color: '#ff00ff' }) : mt); if (m.material.length === 1) m.material = m.material[0]; } });
+  const views = [[5, 2, 5], [0, 1.5, 7], [-6, 1.2, 0]];
+  views.forEach((v, i) => { const cam = new THREE.PerspectiveCamera(35, 1, 0.1, 100); cam.position.set(...v); cam.lookAt(0, 0.6, 0);
+    r.setViewport(i * 400, 0, 400, 400); r.setScissor(i * 400, 0, 400, 400); r.render(scene, cam); });
+  document.title = 'done';
+}, undefined, e => { document.title = 'error ' + e; });
+</script></body></html>

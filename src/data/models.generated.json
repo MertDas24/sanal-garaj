@@ -1,0 +1,646 @@
+[
+  {
+    "id": "dodge-challenger-2015",
+    "file": "models/dodge-challenger-2015.glb",
+    "bytes": 195536,
+    "triangles": 11129,
+    "size": [
+      2.208,
+      1.49,
+      5.03
+    ],
+    "source": {
+      "title": "2015 Dodge Challenger",
+      "author": "Grzybek",
+      "site": "Poly Pizza",
+      "url": "https://poly.pizza/m/1jB8I4t5w4",
+      "license": "CC-BY-3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/"
+    },
+    "features": {
+      "paint": true,
+      "rimColor": true,
+      "rimStyle": true,
+      "rideHeight": true,
+      "spoiler": "addon",
+      "frontLip": "addon"
+    },
+    "materials": {
+      "paint": true,
+      "glass": true,
+      "rim": true,
+      "tire": true,
+      "wheels": 4
+    },
+    "notes": null
+  },
+  {
+    "id": "delorean-dmc12",
+    "file": "models/delorean-dmc12.glb",
+    "bytes": 94020,
+    "triangles": 6248,
+    "size": [
+      1.922,
+      1.249,
+      4.27
+    ],
+    "source": {
+      "title": "DeLorean DMC-12",
+      "author": "David Sirera",
+      "site": "Poly Pizza",
+      "url": "https://poly.pizza/m/1uZKezeldGG",
+      "license": "CC-BY-3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/"
+    },
+    "features": {
+      "paint": true,
+      "rimColor": true,
+      "rimStyle": true,
+      "rideHeight": true,
+      "spoiler": "addon",
+      "frontLip": "addon"
+    },
+    "materials": {
+      "paint": true,
+      "glass": true,
+      "tire": true,
+      "rim": true,
+      "wheels": 4
+    },
+    "notes": null
+  },
+  {
+    "id": "mini-classic",
+    "file": "models/mini-classic.glb",
+    "bytes": 40884,
+    "triangles": 3510,
+    "size": [
+      1.604,
+      1.329,
+      3.05
+    ],
+    "source": {
+      "title": "Low Poly Mini Cooper",
+      "author": "Gilang Romadhan",
+      "site": "Poly Pizza",
+      "url": "https://poly.pizza/m/2whNujq5rNd",
+      "license": "CC-BY-3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/"
+    },
+    "features": {
+      "paint": true,
+      "rimColor": false,
+      "rimStyle": false,
+      "rideHeight": false,
+      "spoiler": false,
+      "frontLip": false
+    },
+    "materials": {
+      "paint": true,
+      "glass": true,
+      "wheels": 0
+    },
+    "notes": "Tekerlekler gövdeyle tek parça; jant rengi, jant modeli ve yükseklik ayarı desteklenmez. Kaynak dosyadaki sergi platformu kaldırıldı."
+  },
+  {
+    "id": "rolls-royce-classic",
+    "file": "models/rolls-royce-classic.glb",
+    "bytes": 111184,
+    "triangles": 8540,
+    "size": [
+      1.824,
+      1.491,
+      5.17
+    ],
+    "source": {
+      "title": "Rolls Royce",
+      "author": "David Sirera",
+      "site": "Poly Pizza",
+      "url": "https://poly.pizza/m/3DtJTlxgO_U",
+      "license": "CC-BY-3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/"
+    },
+    "features": {
+      "paint": true,
+      "rimColor": true,
+      "rimStyle": true,
+      "rideHeight": true,
+      "spoiler": false,
+      "frontLip": false
+    },
+    "materials": {
+      "rim": true,
+      "tire": true,
+      "paint": true,
+      "glass": true,
+      "wheels": 4
+    },
+    "notes": "Kaynak, modelin hangi Rolls-Royce olduğunu belirtmiyor; katalogda “klasik coupe” olarak gösterilir."
+  },
+  {
+    "id": "dodge-charger-1969",
+    "file": "models/dodge-charger-1969.glb",
+    "bytes": 154128,
+    "triangles": 9648,
+    "size": [
+      2.083,
+      1.44,
+      5.28
+    ],
+    "source": {
+      "title": "Dodge Charger",
+      "author": "David Sirera",
+      "site": "Poly Pizza",
+      "url": "https://poly.pizza/m/4b80hRVxqvv",
+      "license": "CC-BY-3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/"
+    },
+    "features": {
+      "paint": true,
+      "rimColor": true,
+      "rimStyle": true,
+      "rideHeight": true,
+      "spoiler": "addon",
+      "frontLip": "addon"
+    },
+    "materials": {
+      "rim": true,
+      "tire": true,
+      "paint": true,
+      "glass": true,
+      "wheels": 4
+    },
+    "notes": null
+  },
+  {
+    "id": "mitsubishi-l200",
+    "file": "models/mitsubishi-l200.glb",
+    "bytes": 61568,
+    "triangles": 2899,
+    "size": [
+      1.938,
+      1.817,
+      5
+    ],
+    "source": {
+      "title": "Mitsubishi L200",
+      "author": "Muhammad Reyhan",
+      "site": "Poly Pizza",
+      "url": "https://poly.pizza/m/4qjS9tFhsJg",
+      "license": "CC-BY-3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/"
+    },
+    "features": {
+      "paint": true,
+      "rimColor": true,
+      "rimStyle": true,
+      "rideHeight": true,
+      "spoiler": false,
+      "frontLip": false
+    },
+    "materials": {
+      "paint": true,
+      "tire": true,
+      "rim": true,
+      "wheels": 4
+    },
+    "notes": null
+  },
+  {
+    "id": "chevrolet-camaro-zl1-2017",
+    "file": "models/chevrolet-camaro-zl1-2017.glb",
+    "bytes": 72644,
+    "triangles": 4500,
+    "size": [
+      3.549,
+      1.361,
+      4.79
+    ],
+    "source": {
+      "title": "Camaro ZL1 2017",
+      "author": "Kris Tong",
+      "site": "Poly Pizza",
+      "url": "https://poly.pizza/m/7bF7UVAoYRG",
+      "license": "CC-BY-3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/"
+    },
+    "features": {
+      "paint": true,
+      "rimColor": false,
+      "rimStyle": false,
+      "rideHeight": false,
+      "spoiler": false,
+      "frontLip": false
+    },
+    "materials": {
+      "paint": true,
+      "wheels": 0
+    },
+    "notes": "Tek parça model; cam, lastik ve jant ayrı düğüm değil. Yalnızca gövde boyası desteklenir."
+  },
+  {
+    "id": "toyota-hilux-1997",
+    "file": "models/toyota-hilux-1997.glb",
+    "bytes": 39360,
+    "triangles": 1908,
+    "size": [
+      2.019,
+      1.802,
+      4.9
+    ],
+    "source": {
+      "title": "Toyota Hilux 97",
+      "author": "Muhammad Reyhan",
+      "site": "Poly Pizza",
+      "url": "https://poly.pizza/m/8-0nFArehjd",
+      "license": "CC-BY-3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/"
+    },
+    "features": {
+      "paint": true,
+      "rimColor": true,
+      "rimStyle": true,
+      "rideHeight": true,
+      "spoiler": false,
+      "frontLip": false
+    },
+    "materials": {
+      "glass": true,
+      "paint": true,
+      "tire": true,
+      "rim": true,
+      "wheels": 4
+    },
+    "notes": null
+  },
+  {
+    "id": "range-rover-classic",
+    "file": "models/range-rover-classic.glb",
+    "bytes": 560636,
+    "triangles": 31418,
+    "size": [
+      1.752,
+      1.999,
+      4.45
+    ],
+    "source": {
+      "title": "Range Rover",
+      "author": "IvOfficial",
+      "site": "Poly Pizza",
+      "url": "https://poly.pizza/m/8zk4o6nALW",
+      "license": "CC-BY-3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/"
+    },
+    "features": {
+      "paint": true,
+      "rimColor": false,
+      "rimStyle": false,
+      "rideHeight": true,
+      "spoiler": false,
+      "frontLip": false
+    },
+    "materials": {
+      "glass": true,
+      "paint": true,
+      "wheels": 4
+    },
+    "notes": null
+  },
+  {
+    "id": "mazda3-hatchback-2019",
+    "file": "models/mazda3-hatchback-2019.glb",
+    "bytes": 352600,
+    "triangles": 33706,
+    "size": [
+      2.087,
+      1.488,
+      4.46
+    ],
+    "source": {
+      "title": "Sports Hatchback",
+      "author": "ReppenThe303",
+      "site": "Poly Pizza",
+      "url": "https://poly.pizza/m/DobtD8JyoW",
+      "license": "CC-BY-3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/"
+    },
+    "features": {
+      "paint": true,
+      "rimColor": true,
+      "rimStyle": true,
+      "rideHeight": true,
+      "spoiler": false,
+      "frontLip": "addon"
+    },
+    "materials": {
+      "paint": true,
+      "glass": true,
+      "rim": true,
+      "tire": true,
+      "wheels": 8
+    },
+    "notes": "Kaynak başlığı “Sports Hatchback”; dosyadaki düğüm ve malzeme adları (Mazda3Hatchback, Mat_M3Body) modelin Mazda3 Hatchback olduğunu gösterir."
+  },
+  {
+    "id": "tesla-cybertruck",
+    "file": "models/tesla-cybertruck.glb",
+    "bytes": 271324,
+    "triangles": 19268,
+    "size": [
+      3.356,
+      2.105,
+      5.68
+    ],
+    "source": {
+      "title": "Cybertruck",
+      "author": "Mobolaji",
+      "site": "Poly Pizza",
+      "url": "https://poly.pizza/m/Jpar3f32mt",
+      "license": "CC-BY-3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/"
+    },
+    "features": {
+      "paint": true,
+      "rimColor": true,
+      "rimStyle": true,
+      "rideHeight": true,
+      "spoiler": false,
+      "frontLip": false
+    },
+    "materials": {
+      "paint": true,
+      "glass": true,
+      "rim": true,
+      "tire": true,
+      "wheels": 4
+    },
+    "notes": null
+  },
+  {
+    "id": "mazda-rx7-fc",
+    "file": "models/mazda-rx7-fc.glb",
+    "bytes": 276144,
+    "triangles": 19720,
+    "size": [
+      1.781,
+      1.265,
+      4.29
+    ],
+    "source": {
+      "title": "Mazda RX-7",
+      "author": "IvOfficial",
+      "site": "Poly Pizza",
+      "url": "https://poly.pizza/m/SnIoWlh7S2",
+      "license": "CC-BY-3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/"
+    },
+    "features": {
+      "paint": true,
+      "rimColor": true,
+      "rimStyle": true,
+      "rideHeight": true,
+      "spoiler": "addon",
+      "frontLip": "addon"
+    },
+    "materials": {
+      "paint": true,
+      "glass": true,
+      "rim": true,
+      "wheels": 4
+    },
+    "notes": null
+  },
+  {
+    "id": "toyota-ae86",
+    "file": "models/toyota-ae86.glb",
+    "bytes": 240276,
+    "triangles": 11989,
+    "size": [
+      1.829,
+      1.31,
+      4.2
+    ],
+    "source": {
+      "title": "Toyota AE86",
+      "author": "IvOfficial",
+      "site": "Poly Pizza",
+      "url": "https://poly.pizza/m/ZEFWmOPSgh",
+      "license": "CC-BY-3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/"
+    },
+    "features": {
+      "paint": true,
+      "rimColor": false,
+      "rimStyle": false,
+      "rideHeight": true,
+      "spoiler": "addon",
+      "frontLip": "addon"
+    },
+    "materials": {
+      "paint": true,
+      "wheels": 4
+    },
+    "notes": "Gövde rengi doku paletindeydi; derleme sırasında üst gövde rengi ayrı boya malzemesine ayrıldı. Alt gövdedeki siyah iki ton boyama korunur."
+  },
+  {
+    "id": "ford-model-t",
+    "file": "models/ford-model-t.glb",
+    "bytes": 18592,
+    "triangles": 2748,
+    "size": [
+      1.41,
+      2.296,
+      3.4
+    ],
+    "source": {
+      "title": "Ford Model T",
+      "author": "Bruno Oliveira",
+      "site": "Poly Pizza",
+      "url": "https://poly.pizza/m/aJVM4rmsGIb",
+      "license": "CC-BY-3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/"
+    },
+    "features": {
+      "paint": true,
+      "rimColor": false,
+      "rimStyle": false,
+      "rideHeight": false,
+      "spoiler": false,
+      "frontLip": false
+    },
+    "materials": {
+      "paint": true,
+      "wheels": 0
+    },
+    "notes": "Tek parça model; yalnızca gövde boyası desteklenir."
+  },
+  {
+    "id": "nissan-skyline-gtr-r34",
+    "file": "models/nissan-skyline-gtr-r34.glb",
+    "bytes": 216080,
+    "triangles": 14772,
+    "size": [
+      1.796,
+      1.365,
+      4.6
+    ],
+    "source": {
+      "title": "Nissan GTR",
+      "author": "David Sirera",
+      "site": "Poly Pizza",
+      "url": "https://poly.pizza/m/a_HKCtYAv2W",
+      "license": "CC-BY-3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/"
+    },
+    "features": {
+      "paint": true,
+      "rimColor": true,
+      "rimStyle": true,
+      "rideHeight": true,
+      "spoiler": false,
+      "frontLip": "addon"
+    },
+    "materials": {
+      "tire": true,
+      "rim": true,
+      "paint": true,
+      "glass": true,
+      "wheels": 4
+    },
+    "notes": "Kaynak başlığı “Nissan GTR”; görünüm R34 Skyline GT-R ile uyumludur. Model kendi arka kanadıyla gelir."
+  },
+  {
+    "id": "nissan-180sx",
+    "file": "models/nissan-180sx.glb",
+    "bytes": 101672,
+    "triangles": 4965,
+    "size": [
+      1.988,
+      1.299,
+      4.52
+    ],
+    "source": {
+      "title": "1994 Nissan 180MX",
+      "author": "Grzybek",
+      "site": "Poly Pizza",
+      "url": "https://poly.pizza/m/c7vlPQ8dlt",
+      "license": "CC-BY-3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/"
+    },
+    "features": {
+      "paint": true,
+      "rimColor": true,
+      "rimStyle": true,
+      "rideHeight": true,
+      "spoiler": "addon",
+      "frontLip": "addon"
+    },
+    "materials": {
+      "tire": true,
+      "rim": true,
+      "paint": true,
+      "glass": true,
+      "wheels": 4
+    },
+    "notes": "Kaynak başlığı “1994 Nissan 180MX”; görünüm Nissan 180SX ile uyumludur."
+  },
+  {
+    "id": "jeep-wrangler-unlimited",
+    "file": "models/jeep-wrangler-unlimited.glb",
+    "bytes": 53928,
+    "triangles": 13498,
+    "size": [
+      2.181,
+      1.696,
+      4.75
+    ],
+    "source": {
+      "title": "Mom's Wrangler",
+      "author": "Anonim (Poly by Google arşivi)",
+      "site": "Poly Pizza",
+      "url": "https://poly.pizza/m/dWwNyqBmMvU",
+      "license": "CC-BY-3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/"
+    },
+    "features": {
+      "paint": true,
+      "rimColor": false,
+      "rimStyle": false,
+      "rideHeight": false,
+      "spoiler": false,
+      "frontLip": false
+    },
+    "materials": {
+      "paint": true,
+      "wheels": 0
+    },
+    "notes": "Tek parça model; yalnızca gövde boyası desteklenir. Yazar Poly Pizza'da “Anonymous” olarak listelenir."
+  },
+  {
+    "id": "nissan-terrano",
+    "file": "models/nissan-terrano.glb",
+    "bytes": 53032,
+    "triangles": 2950,
+    "size": [
+      1.792,
+      1.506,
+      4.37
+    ],
+    "source": {
+      "title": "Terrano",
+      "author": "Muhammad Reyhan",
+      "site": "Poly Pizza",
+      "url": "https://poly.pizza/m/fWGNi96ckzn",
+      "license": "CC-BY-3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/"
+    },
+    "features": {
+      "paint": true,
+      "rimColor": false,
+      "rimStyle": false,
+      "rideHeight": true,
+      "spoiler": false,
+      "frontLip": false
+    },
+    "materials": {
+      "paint": true,
+      "tire": true,
+      "wheels": 4
+    },
+    "notes": "Jantlar tamponlarla aynı malzemeyi paylaşır; jant rengi desteklenmez."
+  },
+  {
+    "id": "chevrolet-camaro-2010",
+    "file": "models/chevrolet-camaro-2010.glb",
+    "bytes": 82348,
+    "triangles": 4548,
+    "size": [
+      2.368,
+      1.494,
+      4.84
+    ],
+    "source": {
+      "title": "Chevrolet Camaro",
+      "author": "PuKkBuMXDD",
+      "site": "Poly Pizza",
+      "url": "https://poly.pizza/m/kVcKsd2dEk",
+      "license": "CC-BY-3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/"
+    },
+    "features": {
+      "paint": true,
+      "rimColor": false,
+      "rimStyle": false,
+      "rideHeight": true,
+      "spoiler": "builtin",
+      "frontLip": "addon"
+    },
+    "materials": {
+      "paint": true,
+      "glass": true,
+      "tire": true,
+      "wheels": 4
+    },
+    "notes": "Arka spoiler modelin kendi parçasıdır; düzenleyicide açılıp kapatılabilir."
+  }
+]
