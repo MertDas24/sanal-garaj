@@ -124,3 +124,13 @@ Marka/tasarım hakları dosya lisansından ayrıdır; arayüzde marka uyarısı 
   2. Performans incelemesi — `src/three/*`; kabul: mobilde 30+ FPS, sayfadan çıkınca GPU belleği serbest.
   3. Test genişletme — `tests/e2e/`; kabul: her katalog aracı için yükleme duman testi.
   4. Dokümantasyon kontrolü — `README.md`; kabul: kurulum adımları temiz bir makinede birebir çalışıyor.
+
+### Yayın doğrulaması (2026-10-12)
+- Depo oluşturuldu: https://github.com/MertDas24/sanal-garaj (herkese açık; GitHub Pages ücretsiz planda bunu gerektirir).
+- GitHub Pages “GitHub Actions” kaynağıyla etkinleştirildi. İlk iş akışında lint, birim testleri, derleme ve
+  uçtan uca testler (CI’da Chromium) geçti; site yayınlandı.
+- Canlı site https://mertdas24.github.io/sanal-garaj/ gerçek tarayıcıyla (masaüstü + mobil görünüm) açıldı:
+  25 katalog kartı, 19 “3D model hazır”, paylaşım bağlantısıyla düzenleyici (AE86, mavi metalik) doğru yüklendi,
+  sayfa hatası veya 4xx/5xx yanıt yok.
+- Not: GitHub, kullanılan bazı Actions sürümlerinin Node.js 20 tabanlı olduğu için uyarı veriyor; şu an çalışıyor,
+  ileride eylem sürümleri güncellenmeli.
