@@ -497,3 +497,15 @@ Katkı: Codex.
 
 ### Sonraki adımlar
 - Yayın sonucunu aşağıdaki yeni tarihli kayda ekleyin. Sonrasında Claude için veri/model kararları: diğer araç kitlerinin tek tek doğrulanması, üretici kayıtlarının genişletilmesi ve fiziksel mobil cihaz ölçümleri. Mekanik montaj veya güç kazancı bu sürümün kapsamı değildir.
+## 2026-10-12 23:57 — Bulut E2E bekleme bütçeleri
+Katkı: Codex.
+- `f1c314b` main'e gönderildi. İş akışı https://github.com/MertDas24/sanal-garaj/actions/runs/38302633451 güvenlik/lint/41 birim/derleme adımlarını geçti; E2E **37/39** geçti ve Pages yayını yapılmadı. Önceki canlı sürüm korundu.
+- İndirilen hata kanıtında logo durumu **“Logo cihazınızda işlendi.”** olarak mevcut: sonuç 20 saniyelik gözlem penceresinin sonrasında görünmüştü. JSON tasarım testi üç model açılışı yaptığı için toplam 60 saniyelik test bütçesinin sonunda üçüncü model henüz yükleniyordu (%0), model hata mesajı yoktu. Kanıtlar: `lab-out/ci-38302633451/` (depoya girmez).
+- Yalnızca bu iki testin toplam bütçesi 180 saniye; logo sonucunun gözlem penceresi 60 saniye yapıldı. Hiçbir doğrulama kaldırılmadı, hata sonucu başarı sayılmadı; uygulama kodu aynı kaldı. Yazılımsal GPU'nun shader hazırlığı gerçek cihaz performansı olarak sunulmuyor.
+- Lint/tip kontrolü/41 birim/derleme yeniden geçti. İki ilgili E2E testi birlikte **2/2 geçti** (1,1 dakika). Yeni main gönderimi ile bulut 39 senaryo ve yayın yeniden doğrulanacak.
+
+### Devam eden iş
+- Codex: yeni iş akışı/Pages sonucunu izleme ve canlı doğrulama.
+
+### Sonraki adımlar
+- Başarılı yayın ve canlı kontrol sonucunu yeni tarihli kayda ekleyin. Üç araç kitinin kapsamı, diğer motor verileri ve fiziksel cihaz ölçümleri için önceki kayıttaki Claude karar alanları geçerlidir.

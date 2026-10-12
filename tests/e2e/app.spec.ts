@@ -366,6 +366,8 @@ test.describe('Tasarım atölyesi', () => {
   });
 
   test('tasarım JSON dosyası ve kayıt ortamı aynı görünümü geri açar', async ({ page }) => {
+    // Üç model açılışı var; yazılımsal GPU'da her açılışın shader hazırlığı toplam 60 saniyeyi aşabilir.
+    test.setTimeout(180_000);
     await page.goto('/#/arac/toyota-ae86?p=1d4fb8&w=double&cf=-2&ug=true&env=sunset');
     await waitForModel(page);
     const [download] = await Promise.all([

@@ -12,6 +12,7 @@ test('içeriğe geç bağlantısı hash rotasını bozmadan odağı taşır', as
   await expect(page.getByRole('heading', { name: 'Aracını seç', exact: false })).toBeVisible();
 });
 test('kit, metin, logo ve şerit ayarları paylaşım/kayıtta korunur', async ({ page }) => {
+  test.setTimeout(180000);
   await ready(page);
   await page.getByRole('switch', { name: 'Yan etek', exact: true }).check();
   await page.getByRole('switch', { name: 'Arka difüzör', exact: true }).check();
@@ -22,7 +23,8 @@ test('kit, metin, logo ve şerit ayarları paylaşım/kayıtta korunur', async (
   await page.getByLabel('Yazı bölgesi', { exact: true }).selectOption('right');
   const png = await sharp({ create: { width: 32, height: 32, channels: 4, background: '#ff0000' } }).png().toBuffer();
   await page.getByLabel('Yerel logo yükle (PNG/JPEG/WebP)').setInputFiles({ name: 'logo.png', mimeType: 'image/png', buffer: png });
-  await expect(page.getByText('Logo cihazınızda işlendi.')).toBeVisible();
+  // İlk saydam yazı/logo materyalinin shader'ı yazılımsal GPU'da ana iş parçacığını uzun süre meşgul edebilir.
+  await expect(page.getByText('Logo cihazınızda işlendi.')).toBeVisible({ timeout: 60000 });
   await page.getByRole('button', { name: 'Kaydet', exact: true }).click();
   await page.reload(); await expect(page.locator('.workbench')).toBeVisible();
   await expect(page.getByRole('switch', { name: 'Yan etek', exact: true })).toBeChecked();
