@@ -322,3 +322,10 @@ Maliyet: 0 TL.
 - Kalan adaylardan (Corvette C8, BMW M4, Tesla Model 3/Roadster vb.) açıklaması temiz olanları ekleyerek SUV ve
   hatchback sayısını artırmak.
 - Fotogerçekçi mod için kamera açısı önayarları (ön 3/4, yan, arka 3/4).
+
+### Yayın doğrulaması (4. oturum)
+- İlk gönderimde CI’daki fotogerçekçi mod testi, ekran kartı olmayan bulut makinesinde (yazılımsal WebGL) zaman
+  aşımına uğradı ve yayın otomatik olarak durdu. Test CI için gevşetildi (başlar/kapanır kontrolü; ilerleme
+  kontrolü yerelde). Sonraki çalıştırmada tüm adımlar ve Pages yayını başarılı.
+- Canlı sitede masaüstü ve mobil: 26 kart, 26’sı “3D model hazır”, hata yok. Aston Martin DB11 için fotogerçekçi
+  görüntü canlı sitede ~110 saniyede (tümleşik Intel GPU) tamamlandı.
