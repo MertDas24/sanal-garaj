@@ -4,9 +4,12 @@ import { MODELS, findModel } from './models';
 import fs from 'node:fs';
 
 describe('katalog ve model kayıtları', () => {
-  it('25 araç, benzersiz kimlikler', () => {
-    expect(CATALOG).toHaveLength(25);
-    expect(new Set(CATALOG.map((v) => v.id)).size).toBe(25);
+  it('en az 25 araç, benzersiz kimlikler', () => {
+    expect(CATALOG.length).toBeGreaterThanOrEqual(25);
+    expect(new Set(CATALOG.map((v) => v.id)).size).toBe(CATALOG.length);
+  });
+  it('her model dosyası katalogda bir araca bağlı (kullanılmayan model yok)', () => {
+    for (const m of MODELS) expect(CATALOG.some((v) => v.modelId === m.id), m.id).toBe(true);
   });
   it('her modelId gerçek bir model dosyasına karşılık gelir ve bir model iki araçta kullanılmaz', () => {
     const used = CATALOG.filter((v) => v.modelId).map((v) => v.modelId!);
@@ -26,7 +29,7 @@ describe('katalog ve model kayıtları', () => {
       expect(m.features.paint).toBe(true);
     }
   });
-  it('model dosyaları makul boyutta (< 1 MB)', () => {
-    for (const m of MODELS) expect(m.bytes).toBeLessThan(1024 * 1024);
+  it('model dosyaları makul boyutta (< 6 MB)', () => {
+    for (const m of MODELS) expect(m.bytes, m.id).toBeLessThan(6 * 1024 * 1024);
   });
 });

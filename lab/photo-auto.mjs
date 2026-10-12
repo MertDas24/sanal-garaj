@@ -1,0 +1,18 @@
+import { chromium } from '@playwright/test';
+const [img, out] = process.argv.slice(2);
+const b = await chromium.launch({ channel: 'chrome' });
+const pg = await b.newPage({ viewport: { width: 1400, height: 900 } });
+const ext = [];
+pg.on('request', (r) => { if (!r.url().startsWith('http://localhost')) ext.push(r.url()); });
+pg.on('console', (m) => { if (m.type() === 'error') console.log('console:', m.text().slice(0, 200)); });
+await pg.goto('http://localhost:5199/#/foto');
+await pg.locator('input[type=file]').first().setInputFiles(img);
+await pg.getByRole('button', { name: /otomatik seç/ }).click();
+await pg.waitForSelector('text=Gövde rengi toleransı', { timeout: 60000 }).catch(() => console.log('auto failed'));
+await pg.waitForTimeout(500);
+await pg.getByLabel('Seçimi vurgula').uncheck(); await pg.getByRole('radio', { name: 'Mavi', exact: true }).click();
+await pg.waitForTimeout(400);
+await pg.locator('.photo__stage').screenshot({ path: out });
+console.log('selected:', await pg.locator('text=/Seçili alan/').textContent());
+console.log('external requests:', ext.length, ext.slice(0, 3));
+await b.close();

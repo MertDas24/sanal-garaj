@@ -143,6 +143,7 @@ function Editor({ vehicleId, title, year, note, modelId, query }: {
               ref={viewer}
               url={modelUrl(model)}
               features={model.features}
+              triangles={model.triangles}
               design={design ?? base ?? defaultDesign('#cccccc', false)}
               compare={comparing && base ? { before: base, split } : null}
               onReady={onReady}
@@ -189,7 +190,7 @@ function Editor({ vehicleId, title, year, note, modelId, query }: {
         <p className="attribution small">
           3D model: <a href={model.source.url} target="_blank" rel="noopener noreferrer">“{model.source.title}”</a> — {model.source.author} ({model.source.site}),{' '}
           <a href={model.source.licenseUrl} target="_blank" rel="noopener noreferrer license">{LICENSE_LABELS[model.source.license]}</a>.
-          Düşük poligonlu modeldir; derleme sırasında ölçeklendi, yönlendirildi ve sıkıştırıldı.
+          {model.triangles < 30_000 ? 'Düşük poligonlu modeldir; derleme' : 'Derleme'} sırasında ölçeklendi, yönlendirildi ve sıkıştırıldı.
         </p>
       </div>
 

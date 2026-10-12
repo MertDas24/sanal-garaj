@@ -1,7 +1,13 @@
 import * as THREE from 'three';
 import type { ModelFeatures } from '../data/models';
 import type { Design, Finish, RimStyle } from '../lib/design';
+import { toCreasedNormals } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { buildFrontLip, buildRim, buildSpoiler } from './addons';
+
+/** Bu açıdan küçük kenarlar yumuşatılır; daha keskin kenarlar (panel hatları) korunur. */
+const CREASE = THREE.MathUtils.degToRad(35);
+/** Bu üçgen sayısının altındaki (düşük poligonlu) modellerde boya yüzeyleri yumuşatılır. */
+const SMOOTH_BELOW_TRIANGLES = 60_000;
 
 // Derleme betiği her modele şu kanonik adları verir (scripts/build-models.mjs):
 //   düğümler:  CG_root > CG_body, CG_wheel_<n>, (CG_part_spoiler)
@@ -34,7 +40,7 @@ const FINISH_PARAMS: Record<Finish, Partial<THREE.MeshPhysicalMaterialParameters
 
 const CARBON = new THREE.Color('#16171a');
 
-export function createCarRuntime(source: THREE.Object3D, features: ModelFeatures): CarRuntime {
+export function createCarRuntime(source: THREE.Object3D, features: ModelFeatures, triangles = 0): CarRuntime {
   const object = new THREE.Group();
   object.name = 'car';
   const scene = source.clone(true);
@@ -56,6 +62,13 @@ export function createCarRuntime(source: THREE.Object3D, features: ModelFeatures
   const paintMat = track(new THREE.MeshPhysicalMaterial({ name: 'CG_paint' }));
   const rimMat = track(new THREE.MeshStandardMaterial({ name: 'CG_rim', metalness: 0.7, roughness: 0.32 }));
   const partMat = track(new THREE.MeshPhysicalMaterial({ name: 'CG_part' }));
+  // Cam: koyu renkli, yarı saydam, ortamı yansıtan
+  const glassMat = track(new THREE.MeshPhysicalMaterial({
+    name: 'CG_glass', color: '#0d1217', roughness: 0.03, metalness: 0, transparent: true, opacity: 0.5,
+    clearcoat: 1, clearcoatRoughness: 0.02, envMapIntensity: 1.6, side: THREE.DoubleSide, depthWrite: false,
+  }));
+  const tireClones = new Map<string, THREE.MeshStandardMaterial>();
+  const rimOriginal = new Map<THREE.Mesh, THREE.Material>();
   const rimMeshes: THREE.Mesh[] = [];
   const wheelObjects: THREE.Object3D[] = [];
   let paintFound = false;
@@ -71,10 +84,29 @@ export function createCarRuntime(source: THREE.Object3D, features: ModelFeatures
       if (!paintFound) {
         originalPaint = `#${mat.color.getHexString()}`;
         paintFound = true;
+        // Yüzey ayrıntısı veren dokular korunur; renk dokusu (map) boya rengini bozacağı için alınmaz
+        if (mat.normalMap) { paintMat.normalMap = mat.normalMap; paintMat.normalScale.copy(mat.normalScale); }
+        if (mat.aoMap) paintMat.aoMap = mat.aoMap;
       }
       mesh.material = paintMat;
+      if (triangles && triangles < SMOOTH_BELOW_TRIANGLES) mesh.geometry = track(toCreasedNormals(mesh.geometry, CREASE));
+    } else if (mat.name === 'CG_glass') {
+      mesh.material = glassMat;
+      mesh.castShadow = false;
+      mesh.renderOrder = 2;
+    } else if (mat.name === 'CG_tire') {
+      let t = tireClones.get(mat.uuid);
+      if (!t) {
+        t = track(mat.clone());
+        t.roughness = Math.max(t.roughness, 0.88);
+        t.metalness = 0;
+        if (!t.map && t.color.getHSL({ h: 0, s: 0, l: 0 }).l > 0.12) t.color.set('#17181a');
+        tireClones.set(mat.uuid, t);
+      }
+      mesh.material = t;
     } else if (mat.name === 'CG_rim') {
       if (!originalRim) originalRim = `#${mat.color.getHexString()}`;
+      rimOriginal.set(mesh, mat);
       rimMeshes.push(mesh);
     }
   });
@@ -169,14 +201,15 @@ export function createCarRuntime(source: THREE.Object3D, features: ModelFeatures
       paintMat.color.set(originalPaint);
       Object.assign(paintMat, FINISH_PARAMS.gloss);
     }
-    rimMat.color.set(f.rimColor && d.rimColor ? d.rimColor : (originalRim ?? '#c0c0c0'));
+    const customRimColor = f.rimColor && d.rimColor ? d.rimColor : null;
+    rimMat.color.set(customRimColor ?? originalRim ?? '#c0c0c0');
 
     const style: RimStyle = f.rimStyle ? d.rimStyle : 'original';
     for (const w of wheels) for (const m of w.rimMeshes) m.visible = style === 'original';
     if (style !== 'original') getRimSet(style);
     rimSets.forEach((set, k) => { set.visible = k === style; });
-    // Orijinal jant malzemesi de seçilen jant rengini alır
-    for (const m of rimMeshes) m.material = rimMat;
+    // Orijinal jant: renk seçilmediyse modelin kendi (dokulu olabilir) malzemesi, seçildiyse jant rengi
+    for (const m of rimMeshes) m.material = customRimColor ? rimMat : rimOriginal.get(m)!;
 
     const h = f.rideHeight ? d.heightMm / 1000 : 0;
     body.position.y = bodyBaseY + h / rootScale;

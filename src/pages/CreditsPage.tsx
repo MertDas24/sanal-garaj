@@ -31,7 +31,10 @@ export function CreditsPage() {
               return (
                 <tr key={m.id}>
                   <td>{v ? `${v.make} ${v.model}` : m.id}</td>
-                  <td><a href={m.source.url} target="_blank" rel="noopener noreferrer">{m.source.title}</a> <span className="muted">({m.source.site})</span></td>
+                  <td>
+                    <a href={m.source.url} target="_blank" rel="noopener noreferrer">{m.source.title}</a> <span className="muted">({m.source.site})</span>
+                    {m.source.mirror && <> · <a href={m.source.mirror} target="_blank" rel="noopener noreferrer" className="small">indirilen kopya</a></>}
+                  </td>
                   <td>{m.source.author}</td>
                   <td><a href={m.source.licenseUrl} target="_blank" rel="noopener noreferrer license">{LICENSE_LABELS[m.source.license]}</a></td>
                   <td className="nowrap">{(m.bytes / 1024).toFixed(0)} KB</td>
@@ -41,6 +44,24 @@ export function CreditsPage() {
           </tbody>
         </table>
       </div>
+
+      <p className="small muted">
+        Sketchfab modelleri, Sketchfab dışa aktarımının GitHub’daki herkese açık kopyalarından indirildi (Sketchfab
+        doğrudan indirme için hesap ister). Her kopyanın içine gömülü kaynak adresi derleme sırasında Sketchfab
+        sayfasıyla karşılaştırıldı; lisans Sketchfab’ın herkese açık API’sinden doğrulandı.
+      </p>
+
+      <h2>Diğer varlıklar</h2>
+      <ul>
+        <li>
+          Ortam ışığı: <a href="https://polyhaven.com/a/autoshop_01" target="_blank" rel="noopener noreferrer">Poly Haven — Autoshop 01</a>,
+          Oliksiy Yakovlyev, CC0.
+        </li>
+        <li>
+          Fotoğrafta otomatik seçim: MediaPipe Image Segmenter ve DeepLab v3 modeli (Google), Apache 2.0. Model ve
+          çalışma dosyaları bu siteden yüklenir; fotoğraflar hiçbir sunucuya gönderilmez.
+        </li>
+      </ul>
 
       <h2>3D modeli olmayan araçlar</h2>
       <p>
@@ -60,7 +81,8 @@ export function CreditsPage() {
 
       <h2>Yazılım</h2>
       <p>
-        Three.js, React Three Fiber, drei (MIT), React (MIT), glTF-Transform ve meshoptimizer (MIT) kullanılmıştır.
+        Three.js, React Three Fiber, drei (MIT), React (MIT), glTF-Transform ve meshoptimizer (MIT), MediaPipe Tasks
+        Vision (Apache 2.0) kullanılmıştır.
       </p>
     </section>
   );

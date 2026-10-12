@@ -7,6 +7,8 @@ export interface ModelSource {
   url: string;
   license: 'CC-BY-3.0' | 'CC-BY-4.0' | 'CC0-1.0';
   licenseUrl: string;
+  /** Dosyanın indirildiği herkese açık kopya (Sketchfab dışa aktarımının GitHub kopyası) */
+  mirror?: string;
 }
 
 export interface ModelFeatures {

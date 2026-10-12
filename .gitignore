@@ -31,3 +31,4 @@ playwright-report/
 .env
 .env.local
 .model-cache/
+public/ml/wasm/

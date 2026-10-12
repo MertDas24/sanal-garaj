@@ -130,17 +130,6 @@ export const MODEL_SOURCES = [
     mods: { spoiler: true, frontLip: true },
   },
   {
-    id: 'toyota-ae86',
-    download: STATIC('a8c624d0-fb82-41c9-b5f4-0bb77d62d56a'),
-    source: { title: 'Toyota AE86', author: 'IvOfficial', site: 'Poly Pizza', url: PP('ZEFWmOPSgh'), ...CCBY3 },
-    rotateY: 0, lengthM: 4.2,
-    paletteSplit: { cells: [[1, 0], [2, 0, 0.4]], nodes: ['Car'], color: '#e8e8e6' },
-    materials: {},
-    wheelNodes: ['Wheel1', 'Wheel2', 'Wheel3', 'Wheel4'],
-    mods: { spoiler: true, frontLip: true },
-    notes: 'Gövde rengi doku paletindeydi; derleme sırasında üst gövde rengi ayrı boya malzemesine ayrıldı. Alt gövdedeki siyah iki ton boyama korunur.',
-  },
-  {
     id: 'ford-model-t',
     download: STATIC('963e2a04-dc98-44ff-a169-8161bb9e9787'),
     source: { title: 'Ford Model T', author: 'Bruno Oliveira', site: 'Poly Pizza', url: PP('aJVM4rmsGIb'), ...CCBY3 },

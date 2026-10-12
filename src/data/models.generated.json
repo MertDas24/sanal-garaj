@@ -4,6 +4,7 @@
     "file": "models/dodge-challenger-2015.glb",
     "bytes": 195536,
     "triangles": 11129,
+    "sourceTriangles": 11129,
     "size": [
       2.208,
       1.49,
@@ -39,6 +40,7 @@
     "file": "models/delorean-dmc12.glb",
     "bytes": 94020,
     "triangles": 6248,
+    "sourceTriangles": 6248,
     "size": [
       1.922,
       1.249,
@@ -74,6 +76,7 @@
     "file": "models/mini-classic.glb",
     "bytes": 40884,
     "triangles": 3510,
+    "sourceTriangles": 3510,
     "size": [
       1.604,
       1.329,
@@ -107,6 +110,7 @@
     "file": "models/rolls-royce-classic.glb",
     "bytes": 111184,
     "triangles": 8540,
+    "sourceTriangles": 8540,
     "size": [
       1.824,
       1.491,
@@ -142,6 +146,7 @@
     "file": "models/dodge-charger-1969.glb",
     "bytes": 154128,
     "triangles": 9648,
+    "sourceTriangles": 9648,
     "size": [
       2.083,
       1.44,
@@ -177,6 +182,7 @@
     "file": "models/mitsubishi-l200.glb",
     "bytes": 61568,
     "triangles": 2899,
+    "sourceTriangles": 2899,
     "size": [
       1.938,
       1.817,
@@ -211,6 +217,7 @@
     "file": "models/chevrolet-camaro-zl1-2017.glb",
     "bytes": 72644,
     "triangles": 4500,
+    "sourceTriangles": 4500,
     "size": [
       3.549,
       1.361,
@@ -243,6 +250,7 @@
     "file": "models/toyota-hilux-1997.glb",
     "bytes": 39360,
     "triangles": 1908,
+    "sourceTriangles": 1908,
     "size": [
       2.019,
       1.802,
@@ -276,8 +284,9 @@
   {
     "id": "range-rover-classic",
     "file": "models/range-rover-classic.glb",
-    "bytes": 560636,
+    "bytes": 558536,
     "triangles": 31418,
+    "sourceTriangles": 31418,
     "size": [
       1.752,
       1.999,
@@ -311,6 +320,7 @@
     "file": "models/mazda3-hatchback-2019.glb",
     "bytes": 352600,
     "triangles": 33706,
+    "sourceTriangles": 33706,
     "size": [
       2.087,
       1.488,
@@ -346,6 +356,7 @@
     "file": "models/tesla-cybertruck.glb",
     "bytes": 271324,
     "triangles": 19268,
+    "sourceTriangles": 19268,
     "size": [
       3.356,
       2.105,
@@ -379,8 +390,9 @@
   {
     "id": "mazda-rx7-fc",
     "file": "models/mazda-rx7-fc.glb",
-    "bytes": 276144,
+    "bytes": 274040,
     "triangles": 19720,
+    "sourceTriangles": 19720,
     "size": [
       1.781,
       1.265,
@@ -411,42 +423,11 @@
     "notes": null
   },
   {
-    "id": "toyota-ae86",
-    "file": "models/toyota-ae86.glb",
-    "bytes": 240276,
-    "triangles": 11989,
-    "size": [
-      1.829,
-      1.31,
-      4.2
-    ],
-    "source": {
-      "title": "Toyota AE86",
-      "author": "IvOfficial",
-      "site": "Poly Pizza",
-      "url": "https://poly.pizza/m/ZEFWmOPSgh",
-      "license": "CC-BY-3.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/"
-    },
-    "features": {
-      "paint": true,
-      "rimColor": false,
-      "rimStyle": false,
-      "rideHeight": true,
-      "spoiler": "addon",
-      "frontLip": "addon"
-    },
-    "materials": {
-      "paint": true,
-      "wheels": 4
-    },
-    "notes": "Gövde rengi doku paletindeydi; derleme sırasında üst gövde rengi ayrı boya malzemesine ayrıldı. Alt gövdedeki siyah iki ton boyama korunur."
-  },
-  {
     "id": "ford-model-t",
     "file": "models/ford-model-t.glb",
     "bytes": 18592,
     "triangles": 2748,
+    "sourceTriangles": 2748,
     "size": [
       1.41,
       2.296,
@@ -479,6 +460,7 @@
     "file": "models/nissan-skyline-gtr-r34.glb",
     "bytes": 216080,
     "triangles": 14772,
+    "sourceTriangles": 14772,
     "size": [
       1.796,
       1.365,
@@ -514,6 +496,7 @@
     "file": "models/nissan-180sx.glb",
     "bytes": 101672,
     "triangles": 4965,
+    "sourceTriangles": 4965,
     "size": [
       1.988,
       1.299,
@@ -549,6 +532,7 @@
     "file": "models/jeep-wrangler-unlimited.glb",
     "bytes": 53928,
     "triangles": 13498,
+    "sourceTriangles": 13498,
     "size": [
       2.181,
       1.696,
@@ -581,6 +565,7 @@
     "file": "models/nissan-terrano.glb",
     "bytes": 53032,
     "triangles": 2950,
+    "sourceTriangles": 2950,
     "size": [
       1.792,
       1.506,
@@ -614,6 +599,7 @@
     "file": "models/chevrolet-camaro-2010.glb",
     "bytes": 82348,
     "triangles": 4548,
+    "sourceTriangles": 4548,
     "size": [
       2.368,
       1.494,
@@ -642,5 +628,475 @@
       "wheels": 4
     },
     "notes": "Arka spoiler modelin kendi parçasıdır; düzenleyicide açılıp kapatılabilir."
+  },
+  {
+    "id": "mercedes-e-class-w212",
+    "file": "models/mercedes-e-class-w212.glb",
+    "bytes": 4464044,
+    "triangles": 182929,
+    "sourceTriangles": 362853,
+    "size": [
+      2.146,
+      1.449,
+      4.87
+    ],
+    "source": {
+      "title": "Mercedes E Class W212",
+      "author": "Peter_D",
+      "site": "Sketchfab",
+      "url": "https://sketchfab.com/3d-models/119c5e10733142b197aa53b86f6aeb04",
+      "license": "CC-BY-4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "mirror": "https://raw.githubusercontent.com/bujue600-arch/carVison/3a38b553a5fd49b4b18186f84ce83952c4277015/car-vision-frontend/public/models/mercedes-e-class/scene.gltf"
+    },
+    "features": {
+      "paint": true,
+      "rimColor": true,
+      "rimStyle": true,
+      "rideHeight": true,
+      "spoiler": false,
+      "frontLip": "addon"
+    },
+    "materials": {
+      "glass": true,
+      "paint": true,
+      "rim": true,
+      "tire": true,
+      "wheels": 8
+    },
+    "notes": null
+  },
+  {
+    "id": "toyota-corolla-e180",
+    "file": "models/toyota-corolla-e180.glb",
+    "bytes": 2858044,
+    "triangles": 84398,
+    "sourceTriangles": 84398,
+    "size": [
+      2.166,
+      1.469,
+      4.62
+    ],
+    "source": {
+      "title": "2014 Toyota Corolla E180 EU (with interior)",
+      "author": "Armored Wave",
+      "site": "Sketchfab",
+      "url": "https://sketchfab.com/3d-models/36f95efb0585464cae43a25a3b3392e8",
+      "license": "CC-BY-4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "mirror": "https://raw.githubusercontent.com/oddalan/three-dee/3ee1ecfc20c392513d780f4ff19ef4904d90f8dd/assets/models/corolla/scene.gltf"
+    },
+    "features": {
+      "paint": true,
+      "rimColor": false,
+      "rimStyle": false,
+      "rideHeight": true,
+      "spoiler": false,
+      "frontLip": false
+    },
+    "materials": {
+      "paint": true,
+      "glass": true,
+      "tire": true,
+      "wheels": 16
+    },
+    "notes": null
+  },
+  {
+    "id": "mercedes-c63-amg-w204",
+    "file": "models/mercedes-c63-amg-w204.glb",
+    "bytes": 794320,
+    "triangles": 33342,
+    "sourceTriangles": 33342,
+    "size": [
+      2.029,
+      1.435,
+      4.73
+    ],
+    "source": {
+      "title": "Mercedes Benz C63 AMG",
+      "author": "LuizZed36",
+      "site": "Sketchfab",
+      "url": "https://sketchfab.com/3d-models/38eb721c70d34046a60ef7a8984024c5",
+      "license": "CC-BY-4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "mirror": "https://raw.githubusercontent.com/mstoyanov7/ModelViewer/3ecd0feb199c07e3b2173b96d89aa98a681cafac/assets/c63/scene.gltf"
+    },
+    "features": {
+      "paint": true,
+      "rimColor": true,
+      "rimStyle": true,
+      "rideHeight": true,
+      "spoiler": "addon",
+      "frontLip": false
+    },
+    "materials": {
+      "paint": true,
+      "glass": true,
+      "tire": true,
+      "rim": true,
+      "wheels": 20
+    },
+    "notes": null
+  },
+  {
+    "id": "mercedes-300ce-w124",
+    "file": "models/mercedes-300ce-w124.glb",
+    "bytes": 377244,
+    "triangles": 27841,
+    "sourceTriangles": 27841,
+    "size": [
+      1.897,
+      1.305,
+      4.65
+    ],
+    "source": {
+      "title": "Mercedes w124 300ce",
+      "author": "timmiethizz",
+      "site": "Sketchfab",
+      "url": "https://sketchfab.com/3d-models/54a881bc475f4aa089974a22e018c1d8",
+      "license": "CC-BY-4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "mirror": "https://raw.githubusercontent.com/krisAndreev/MyMiniCar/bd2763216f78d734ad7fef4f13df08993c6bde0d/src/MyMiniCar.Web/wwwroot/models/mercedes-w124-300ce/scene.gltf"
+    },
+    "features": {
+      "paint": true,
+      "rimColor": false,
+      "rimStyle": false,
+      "rideHeight": false,
+      "spoiler": false,
+      "frontLip": false
+    },
+    "materials": {
+      "paint": true,
+      "wheels": 0
+    },
+    "notes": null
+  },
+  {
+    "id": "toyota-land-cruiser-200",
+    "file": "models/toyota-land-cruiser-200.glb",
+    "bytes": 1981852,
+    "triangles": 160109,
+    "sourceTriangles": 335147,
+    "size": [
+      2.296,
+      1.904,
+      4.95
+    ],
+    "source": {
+      "title": "Toyota_land_cruiser",
+      "author": "Jean Wally’s™",
+      "site": "Sketchfab",
+      "url": "https://sketchfab.com/3d-models/5d9786f638b24c8ead09bb158dc8812d",
+      "license": "CC-BY-4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "mirror": "https://raw.githubusercontent.com/lordkiki/threejs/1481dc94772e04b867f24f3920272c60f913be6a/LandCruiser/scene.gltf"
+    },
+    "features": {
+      "paint": true,
+      "rimColor": false,
+      "rimStyle": false,
+      "rideHeight": true,
+      "spoiler": false,
+      "frontLip": false
+    },
+    "materials": {
+      "glass": true,
+      "paint": true,
+      "tire": true,
+      "wheels": 14
+    },
+    "notes": "Ön ızgara modelde gövdeyle aynı parçada olduğu için gövde rengini alır. Jantlar farklı malzemeler kullandığından jant rengi ve modeli kapalıdır."
+  },
+  {
+    "id": "mercedes-300sl-gullwing",
+    "file": "models/mercedes-300sl-gullwing.glb",
+    "bytes": 1627344,
+    "triangles": 111413,
+    "sourceTriangles": 111413,
+    "size": [
+      1.807,
+      1.253,
+      4.52
+    ],
+    "source": {
+      "title": "Mercedes-Benz 300sl Gullwing | www.vecarz.com",
+      "author": "vecarz",
+      "site": "Sketchfab",
+      "url": "https://sketchfab.com/3d-models/65edd5814c9842bb9c769388d13fa27f",
+      "license": "CC-BY-4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "mirror": "https://raw.githubusercontent.com/pxAnmol/ThreeJs-R3F/22e3ae39ab6333da8896c70be3d15713b6acab42/3%20Advanced%20Techniques/5%20Realistic%20Render/public/mercedes_benz/scene.gltf"
+    },
+    "features": {
+      "paint": true,
+      "rimColor": false,
+      "rimStyle": false,
+      "rideHeight": true,
+      "spoiler": false,
+      "frontLip": false
+    },
+    "materials": {
+      "paint": true,
+      "glass": true,
+      "wheels": 4
+    },
+    "notes": null
+  },
+  {
+    "id": "toyota-crown-super-deluxe",
+    "file": "models/toyota-crown-super-deluxe.glb",
+    "bytes": 1173756,
+    "triangles": 81203,
+    "sourceTriangles": 81203,
+    "size": [
+      2.062,
+      1.491,
+      4.8
+    ],
+    "source": {
+      "title": "Toyota Crown Super Deluxe Mild Hybrid",
+      "author": "Andrasfi Games",
+      "site": "Sketchfab",
+      "url": "https://sketchfab.com/3d-models/6e357d856df44d98a615cac1d0c30b56",
+      "license": "CC-BY-4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "mirror": "https://raw.githubusercontent.com/fitra213/multiple-maker/ff7abc456313a6f3b858153d941a22693eea8537/assets/toyota_crown_super_deluxe_mild_hybrid/scene.gltf"
+    },
+    "features": {
+      "paint": true,
+      "rimColor": false,
+      "rimStyle": false,
+      "rideHeight": true,
+      "spoiler": false,
+      "frontLip": false
+    },
+    "materials": {
+      "paint": true,
+      "glass": true,
+      "wheels": 8
+    },
+    "notes": null
+  },
+  {
+    "id": "porsche-911-930-turbo",
+    "file": "models/porsche-911-930-turbo.glb",
+    "bytes": 2997292,
+    "triangles": 123587,
+    "sourceTriangles": 197547,
+    "size": [
+      2.145,
+      1.288,
+      4.29
+    ],
+    "source": {
+      "title": "FREE 1975 Porsche 911 (930) Turbo",
+      "author": "Lionsharp Studios",
+      "site": "Sketchfab",
+      "url": "https://sketchfab.com/3d-models/8568d9d14a994b9cae59499f0dbed21e",
+      "license": "CC-BY-4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "mirror": "https://raw.githubusercontent.com/PacktPublishing/Learn-Three.js-Fourth-edition/d0073491c5ac19d46a37cc7742855499b01bb17f/source/assets/gltf/porsche/scene.gltf"
+    },
+    "features": {
+      "paint": true,
+      "rimColor": true,
+      "rimStyle": true,
+      "rideHeight": true,
+      "spoiler": false,
+      "frontLip": false
+    },
+    "materials": {
+      "rim": true,
+      "tire": true,
+      "glass": true,
+      "paint": true,
+      "wheels": 9
+    },
+    "notes": "Boyanın üzerindeki ayrı yarı saydam “vernik” katmanı, renk değişimini bozduğu için kaldırıldı."
+  },
+  {
+    "id": "toyota-ae86-trueno-zenki",
+    "file": "models/toyota-ae86-trueno-zenki.glb",
+    "bytes": 3961460,
+    "triangles": 197630,
+    "sourceTriangles": 706212,
+    "size": [
+      1.909,
+      1.267,
+      4.18
+    ],
+    "source": {
+      "title": "Toyota AE86 Sprinter Trueno Zenki",
+      "author": "Martin Trafas",
+      "site": "Sketchfab",
+      "url": "https://sketchfab.com/3d-models/a5737bf3cc9b4179a6e5ebe173ff70d9",
+      "license": "CC-BY-4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "mirror": "https://raw.githubusercontent.com/WatchDogStudios/JDebug/a090fa07a3c2baa286c6a3c33e2aa9382125d120/Data/Base/Meshes/Renders/toyota_ae86_sprinter_trueno_zenki/scene.gltf"
+    },
+    "features": {
+      "paint": true,
+      "rimColor": true,
+      "rimStyle": true,
+      "rideHeight": true,
+      "spoiler": "addon",
+      "frontLip": "addon"
+    },
+    "materials": {
+      "glass": true,
+      "paint": true,
+      "tire": true,
+      "rim": true,
+      "wheels": 16
+    },
+    "notes": null
+  },
+  {
+    "id": "bmw-m3-e30",
+    "file": "models/bmw-m3-e30.glb",
+    "bytes": 2054916,
+    "triangles": 86625,
+    "sourceTriangles": 117261,
+    "size": [
+      1.864,
+      1.348,
+      4.35
+    ],
+    "source": {
+      "title": "[FREE] BMW M3 E30",
+      "author": "Martin Trafas",
+      "site": "Sketchfab",
+      "url": "https://sketchfab.com/3d-models/ac3c7013434e403e8faff87948caf422",
+      "license": "CC-BY-4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "mirror": "https://raw.githubusercontent.com/ArianitBalidemaj/PortWebsite/b54ba96366c280f91e20f6958266b15595d3419b/public/bmw/scene.gltf"
+    },
+    "features": {
+      "paint": true,
+      "rimColor": true,
+      "rimStyle": true,
+      "rideHeight": true,
+      "spoiler": false,
+      "frontLip": "addon"
+    },
+    "materials": {
+      "paint": true,
+      "glass": true,
+      "rim": true,
+      "tire": true,
+      "wheels": 20
+    },
+    "notes": null
+  },
+  {
+    "id": "toyota-prius-2012",
+    "file": "models/toyota-prius-2012.glb",
+    "bytes": 1149264,
+    "triangles": 19068,
+    "sourceTriangles": 19068,
+    "size": [
+      2.01,
+      1.63,
+      4.48
+    ],
+    "source": {
+      "title": "Toyota Prius 2012",
+      "author": "Doz3",
+      "site": "Sketchfab",
+      "url": "https://sketchfab.com/3d-models/04eaf6b288cc466785365b7d985e3b29",
+      "license": "CC-BY-4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "mirror": "https://raw.githubusercontent.com/SenzCode/DriveSaviour/9e5984ec4926c105e730a7976e8bcd6de60b31ca/vehicle_owner/shop/modify/toyota_prius/scene.gltf"
+    },
+    "features": {
+      "paint": true,
+      "rimColor": true,
+      "rimStyle": true,
+      "rideHeight": true,
+      "spoiler": false,
+      "frontLip": false
+    },
+    "materials": {
+      "paint": true,
+      "glass": true,
+      "tire": true,
+      "rim": true,
+      "wheels": 12
+    },
+    "notes": null
+  },
+  {
+    "id": "honda-integra-db8-type-r",
+    "file": "models/honda-integra-db8-type-r.glb",
+    "bytes": 443348,
+    "triangles": 24766,
+    "sourceTriangles": 24766,
+    "size": [
+      2.008,
+      1.351,
+      4.53
+    ],
+    "source": {
+      "title": "Honda Integra (DB8) Type-R",
+      "author": "Myedsu",
+      "site": "Sketchfab",
+      "url": "https://sketchfab.com/3d-models/06f0eba84e9745e9aec41a985ccac915",
+      "license": "CC-BY-4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "mirror": "https://raw.githubusercontent.com/josiahthr/FinalGame/9c3fb66495210c8b9dccc3b5f28ba7633d59af53/honda_integra_db8_type-r/scene.gltf"
+    },
+    "features": {
+      "paint": true,
+      "rimColor": true,
+      "rimStyle": true,
+      "rideHeight": true,
+      "spoiler": false,
+      "frontLip": "addon"
+    },
+    "materials": {
+      "paint": true,
+      "glass": true,
+      "rim": true,
+      "tire": true,
+      "wheels": 4
+    },
+    "notes": null
+  },
+  {
+    "id": "audi-a4-2000",
+    "file": "models/audi-a4-2000.glb",
+    "bytes": 171160,
+    "triangles": 15513,
+    "sourceTriangles": 15513,
+    "size": [
+      1.895,
+      1.399,
+      4.48
+    ],
+    "source": {
+      "title": "2000 Audi A4",
+      "author": "tonielpro520",
+      "site": "Sketchfab",
+      "url": "https://sketchfab.com/3d-models/22f072849b6a409ebac3a0b13dbb099a",
+      "license": "CC-BY-4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "mirror": "https://raw.githubusercontent.com/krisAndreev/MyMiniCar/bd2763216f78d734ad7fef4f13df08993c6bde0d/src/MyMiniCar.Web/wwwroot/models/audi-a4-2000/scene.gltf"
+    },
+    "features": {
+      "paint": true,
+      "rimColor": false,
+      "rimStyle": false,
+      "rideHeight": true,
+      "spoiler": false,
+      "frontLip": false
+    },
+    "materials": {
+      "paint": true,
+      "tire": true,
+      "wheels": 4
+    },
+    "notes": null
   }
 ]

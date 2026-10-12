@@ -1,6 +1,6 @@
 import { Component, Suspense, forwardRef, useEffect, useImperativeHandle, useMemo, useRef, type ReactNode } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { Environment, Lightformer, OrbitControls, useGLTF } from '@react-three/drei';
+import { ContactShadows, Environment, MeshReflectorMaterial, OrbitControls, useGLTF } from '@react-three/drei';
 import type { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
 import * as THREE from 'three';
 import type { ModelFeatures } from '../data/models';
@@ -16,13 +16,24 @@ export interface ViewerHandle {
 export interface ViewerProps {
   url: string;
   features: ModelFeatures;
+  triangles: number;
   design: Design;
   compare: { before: Design; split: number } | null;
   onReady(info: { features: ModelFeatures; originalPaint: string; originalRim: string | null }): void;
   onError(err: Error): void;
 }
 
+// Ortam ışığı: Poly Haven "Autoshop 01" (CC0, Oliksiy Yakovlyev) — sitenin kendisinden yüklenir
+const HDRI = `${import.meta.env.BASE_URL}env/autoshop_01_1k.hdr`;
+
+/** Güçlü cihazlarda yansıtıcı zemin; dokunmatik/küçük ekranlarda daha hafif zemin. */
+function highQuality(): boolean {
+  if (typeof window === 'undefined') return false;
+  return !window.matchMedia('(pointer: coarse)').matches && window.innerWidth >= 900;
+}
+
 export const CarViewer = forwardRef<ViewerHandle, ViewerProps>(function CarViewer(props, ref) {
+  const hq = useMemo(() => highQuality(), []);
   const glRef = useRef<THREE.WebGLRenderer | null>(null);
   const controlsRef = useRef<OrbitControlsImpl | null>(null);
   const invalidateRef = useRef<() => void>(() => {});
@@ -45,7 +56,7 @@ export const CarViewer = forwardRef<ViewerHandle, ViewerProps>(function CarViewe
     <Canvas
       className="viewer-canvas"
       shadows
-      dpr={[1, 2]}
+      dpr={hq ? [1, 2] : [1, 1.5]}
       frameloop="demand"
       gl={{ preserveDrawingBuffer: true, antialias: true }}
       camera={{ fov: 35, near: 0.1, far: 100, position: [5, 2, 5] }}
@@ -59,10 +70,9 @@ export const CarViewer = forwardRef<ViewerHandle, ViewerProps>(function CarViewe
     >
       <color attach="background" args={['#101216']} />
       <fog attach="fog" args={['#101216', 14, 30]} />
-      <hemisphereLight args={['#d9e2ff', '#1a1c20', 0.6]} />
       <directionalLight
         position={[4, 8, 5]}
-        intensity={1.6}
+        intensity={1.2}
         castShadow
         shadow-mapSize={[1024, 1024]}
         shadow-camera-left={-6}
@@ -71,17 +81,29 @@ export const CarViewer = forwardRef<ViewerHandle, ViewerProps>(function CarViewe
         shadow-camera-bottom={-6}
         shadow-bias={-0.0005}
       />
-      <Environment resolution={256} frames={1}>
-        <Lightformer form="rect" intensity={2.2} position={[0, 6, 0]} rotation-x={Math.PI / 2} scale={[10, 4, 1]} />
-        <Lightformer form="rect" intensity={1.2} position={[-6, 2, 0]} rotation-y={Math.PI / 2} scale={[8, 2, 1]} />
-        <Lightformer form="rect" intensity={1.2} position={[6, 2, 0]} rotation-y={-Math.PI / 2} scale={[8, 2, 1]} />
-        <Lightformer form="ring" intensity={0.8} position={[0, 3, 8]} scale={3} />
-      </Environment>
+      <Environment files={HDRI} environmentIntensity={1.1} />
       <mesh rotation-x={-Math.PI / 2} position-y={-0.002} receiveShadow>
-        <circleGeometry args={[12, 64]} />
-        <meshStandardMaterial color="#17191e" roughness={0.9} metalness={0} />
+        <circleGeometry args={[14, 64]} />
+        {hq ? (
+          <MeshReflectorMaterial
+            color="#15171b"
+            roughness={0.85}
+            metalness={0.1}
+            blur={[400, 120]}
+            resolution={512}
+            mixBlur={1}
+            mixStrength={1.6}
+            mirror={0.4}
+            depthScale={0.6}
+            minDepthThreshold={0.6}
+            maxDepthThreshold={1.2}
+          />
+        ) : (
+          <meshStandardMaterial color="#17191e" roughness={0.9} metalness={0} />
+        )}
       </mesh>
-      <gridHelper args={[24, 24, '#24272e', '#1c1f25']} position-y={0} />
+      <gridHelper args={[28, 28, '#272a31', '#1d2026']} position-y={0.001} />
+      <ContactShadows position={[0, 0.003, 0]} scale={12} far={2.5} blur={2.4} opacity={0.75} resolution={512} frames={Infinity} />
       <ModelErrorBoundary onError={props.onError}>
         <Suspense fallback={null}>
           <Car {...props} controlsRef={controlsRef} />
@@ -101,11 +123,11 @@ export const CarViewer = forwardRef<ViewerHandle, ViewerProps>(function CarViewe
 });
 
 function Car({
-  url, features, design, compare, onReady, controlsRef,
+  url, features, triangles, design, compare, onReady, controlsRef,
 }: ViewerProps & { controlsRef: React.RefObject<OrbitControlsImpl | null> }) {
   const gltf = useGLTF(url, false, true);
   const { camera, invalidate } = useThree();
-  const runtime = useMemo<CarRuntime>(() => createCarRuntime(gltf.scene, features), [gltf, features]);
+  const runtime = useMemo<CarRuntime>(() => createCarRuntime(gltf.scene, features, triangles), [gltf, features, triangles]);
 
   useEffect(() => {
     const size = new THREE.Box3().setFromObject(runtime.object).getSize(new THREE.Vector3());

@@ -8,7 +8,7 @@ pg.on('console', (m) => { if (m.type() === 'error' || m.type() === 'warning') lo
 pg.on('pageerror', (e) => logs.push('pageerror: ' + e.message));
 await pg.goto('http://localhost:5199/' + hash);
 await pg.waitForTimeout(1500);
-try { await pg.waitForSelector('.viewer__overlay', { state: 'detached', timeout: 20000 }); } catch {}
+try { await pg.waitForSelector('.viewer canvas', { timeout: 20000 }); await pg.waitForSelector('.viewer__overlay', { state: 'detached', timeout: 40000 }); } catch {}
 for (const c of clicks) { await pg.click(c); await pg.waitForTimeout(400); }
 await pg.waitForTimeout(800);
 await pg.screenshot({ path: out, fullPage: false });

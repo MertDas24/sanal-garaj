@@ -6,13 +6,17 @@
 //           npm run models -- <id>    (tek model)
 import { NodeIO } from '@gltf-transform/core';
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
-import { dedup, prune, weld, quantize, meshopt, getBounds, clearNodeParent } from '@gltf-transform/functions';
+import { dedup, prune, weld, quantize, meshopt, getBounds, clearNodeParent, simplify, textureCompress } from '@gltf-transform/functions';
 import { PropertyType } from '@gltf-transform/core';
-import { MeshoptEncoder, MeshoptDecoder } from 'meshoptimizer';
+import { MeshoptEncoder, MeshoptDecoder, MeshoptSimplifier } from 'meshoptimizer';
+import sharp from 'sharp';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { MODEL_SOURCES } from './model-sources.mjs';
+import { MODEL_SOURCES as BASE_SOURCES } from './model-sources.mjs';
+import { SKETCHFAB_SOURCES } from './model-sources-sketchfab.mjs';
+
+const MODEL_SOURCES = [...BASE_SOURCES, ...SKETCHFAB_SOURCES];
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const CACHE = path.join(ROOT, '.model-cache');
@@ -22,6 +26,7 @@ const ROLE_NAMES = { paint: 'CG_paint', glass: 'CG_glass', tire: 'CG_tire', rim:
 
 await MeshoptEncoder.ready;
 await MeshoptDecoder.ready;
+await MeshoptSimplifier.ready;
 const io = new NodeIO()
   .registerExtensions(ALL_EXTENSIONS)
   .registerDependencies({ 'meshopt.encoder': MeshoptEncoder, 'meshopt.decoder': MeshoptDecoder });
@@ -29,7 +34,12 @@ const io = new NodeIO()
 fs.mkdirSync(CACHE, { recursive: true });
 fs.mkdirSync(OUT, { recursive: true });
 
+/**
+ * Ham dosyayı önbelleğe indirir. GLB tek dosyadır; .gltf ise yanındaki .bin ve doku dosyaları da
+ * aynı göreli yollarla indirilir (yalnızca aynı sunucu ve klasör altından, "../" içeren yollar reddedilir).
+ */
 async function fetchRaw(src) {
+  if (src.download.endsWith('.gltf')) return fetchGltf(src);
   const file = path.join(CACHE, `${src.id}.glb`);
   if (!fs.existsSync(file)) {
     const res = await fetch(src.download);
@@ -38,6 +48,36 @@ async function fetchRaw(src) {
     if (buf.subarray(0, 4).toString('ascii') !== 'glTF') throw new Error(`${src.id}: GLB değil`);
     fs.writeFileSync(file, buf);
   }
+  return file;
+}
+
+async function fetchGltf(src) {
+  const dir = path.join(CACHE, src.id);
+  const file = path.join(dir, 'scene.gltf');
+  if (fs.existsSync(path.join(dir, '.complete'))) return file;
+  fs.mkdirSync(dir, { recursive: true });
+  const get = async (url) => {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`${src.id}: indirme başarısız (${res.status}) ${url}`);
+    return Buffer.from(await res.arrayBuffer());
+  };
+  const json = JSON.parse((await get(src.download)).toString('utf8'));
+  const base = src.download.slice(0, src.download.lastIndexOf('/') + 1);
+  const uris = [...(json.buffers ?? []), ...(json.images ?? [])].map((x) => x.uri).filter((u) => u && !u.startsWith('data:'));
+  for (const uri of uris) {
+    const rel = decodeURIComponent(uri);
+    if (rel.includes('..') || /^[a-z]+:/i.test(rel)) throw new Error(`${src.id}: güvensiz göreli yol ${uri}`);
+    const out = path.join(dir, rel);
+    fs.mkdirSync(path.dirname(out), { recursive: true });
+    fs.writeFileSync(out, await get(base + uri));
+  }
+  fs.writeFileSync(file, JSON.stringify(json));
+  // Gömülü kaynak bilgisini doğrula: dosyadaki Sketchfab adresi kayıttaki adresle aynı olmalı
+  const extras = json.asset?.extras ?? {};
+  if (src.source.url && extras.source && !extras.source.includes(src.source.url.match(/[0-9a-f]{32}/)?.[0] ?? '#')) {
+    throw new Error(`${src.id}: dosyadaki kaynak (${extras.source}) kayıtla uyuşmuyor`);
+  }
+  fs.writeFileSync(path.join(dir, '.complete'), '');
   return file;
 }
 
@@ -120,29 +160,38 @@ async function buildOne(src) {
 
   for (const name of src.removeNodes ?? []) byName(name).dispose();
   if (src.paletteSplit) paletteSplit(doc, src);
+  // Dört tekerleği tek düğümde tutan modellerde tekerlekleri çeyreklere ayır
+  const quadrantWheels = (src.wheelQuadrants ?? []).flatMap((name) => {
+    const meshNodes = [];
+    byName(name).traverse((n) => { if (n.getMesh()) meshNodes.push(n); });
+    return meshNodes.flatMap((n) => splitByQuadrant(doc, scene, n));
+  });
+  const wheelNodeList = [...(src.wheelNodes ?? []).map(byName), ...quadrantWheels, ...wheelsByMaterial(root, src.wheelMaterials ?? [])];
 
   // Kanonik malzeme adları.
   // Jant ve lastik rolleri yalnızca tekerlek düğümlerindeki kullanıma uygulanır: aynı malzeme gövdede de
   // kullanılıyorsa (ör. pencere çerçevesi, ızgara) tekerlek kullanımı için klonlanır.
-  const wheelPrims = new Set(
-    (src.wheelNodes ?? []).flatMap((name) => {
-      const out = [];
-      byName(name).traverse((n) => out.push(...(n.getMesh()?.listPrimitives() ?? [])));
-      return out;
-    }),
-  );
+  const primsUnder = (nodes) => {
+    const out = new Set();
+    for (const n of nodes) n.traverse((c) => (c.getMesh()?.listPrimitives() ?? []).forEach((p) => out.add(p)));
+    return out;
+  };
+  const wheelPrims = primsUnder(wheelNodeList);
+  // Bir rol girdisi "malzeme" ya da "malzeme@düğüm" biçimindedir; ikincisinde rol yalnızca o düğümün
+  // altındaki kullanıma uygulanır (aynı malzeme iç mekânda veya farlarda da kullanılıyorsa).
   const roles = {};
   for (const [role, names] of Object.entries(src.materials ?? {})) {
     const wheelOnly = (role === 'rim' || role === 'tire') && wheelPrims.size > 0;
-    for (const name of names) {
+    for (const entry of names) {
+      const [name, nodeName] = entry.split('@');
       const mats = root.listMaterials().filter((m) => m.getName() === name);
       if (!mats.length) throw new Error(`${src.id}: malzeme "${name}" bulunamadı`);
+      const allowed = nodeName ? primsUnder([byName(nodeName)]) : wheelOnly ? wheelPrims : null;
       for (const m of mats) {
-        if (!wheelOnly) { m.setName(ROLE_NAMES[role]); continue; }
         const users = m.listParents().filter((p) => p.propertyType === PropertyType.PRIMITIVE);
-        if (users.every((p) => wheelPrims.has(p))) { m.setName(ROLE_NAMES[role]); continue; }
+        if (!allowed || users.every((p) => allowed.has(p))) { m.setName(ROLE_NAMES[role]); continue; }
         const clone = m.clone().setName(ROLE_NAMES[role]);
-        for (const p of users) if (wheelPrims.has(p)) p.setMaterial(clone);
+        for (const p of users) if (allowed.has(p)) p.setMaterial(clone);
       }
     }
   }
@@ -152,7 +201,7 @@ async function buildOne(src) {
   }
 
   // Düğüm yapısı: CG_root -> [CG_body, CG_wheel_*]
-  const wheels = (src.wheelNodes ?? []).map(byName);
+  const wheels = wheelNodeList;
   for (const w of wheels) clearNodeParent(w);
   const parts = {};
   for (const [kind, names] of Object.entries(src.partNodes ?? {})) {
@@ -181,10 +230,16 @@ async function buildOne(src) {
   if (widthRatio > 0.8) throw new Error(`${src.id}: genişlik/uzunluk oranı ${widthRatio.toFixed(2)} — yön (rotateY) hatalı olabilir`);
 
   // Optimizasyon (malzemeler birleştirilmez: rol adları korunmalı)
+  const before = countTriangles(doc);
   await doc.transform(
     prune(),
     dedup({ propertyTypes: [PropertyType.ACCESSOR, PropertyType.MESH, PropertyType.TEXTURE] }),
     weld(),
+    ...(src.simplify ? [simplify({ simplifier: MeshoptSimplifier, ratio: src.simplify, error: 0.0008, lockBorder: true })] : []),
+    ...(root.listTextures().length
+      ? [textureCompress({ encoder: sharp, targetFormat: 'webp', resize: [src.textureSize ?? 1024, src.textureSize ?? 1024], quality: 82 })]
+      : []),
+    prune(),
     quantize(),
     meshopt({ encoder: MeshoptEncoder, level: 'medium' }),
   );
@@ -198,8 +253,9 @@ async function buildOne(src) {
     file: `models/${src.id}.glb`,
     bytes,
     triangles: countTriangles(doc),
+    sourceTriangles: before,
     size,
-    source: src.source,
+    source: { ...src.source, ...(src.download.includes('raw.githubusercontent.com') ? { mirror: src.download } : {}) },
     features: {
       paint: !!roles.paint,
       rimColor: !!roles.rim && wheels.length >= 4,
@@ -251,9 +307,89 @@ function writeCredits(models) {
     '|---|---|---|---|---|---|',
     ...rows,
     '',
+    'Sketchfab modelleri, Sketchfab dışa aktarımının GitHub’daki herkese açık kopyalarından indirilmiştir; her kopyanın içindeki',
+    'gömülü kaynak adresi derleme sırasında yukarıdaki Sketchfab adresiyle karşılaştırılır ve lisans Sketchfab API’sinden doğrulanır.',
+    '',
+    '## Diğer varlıklar',
+    '',
+    '| Dosya | Kaynak | Yazar | Lisans |',
+    '|---|---|---|---|',
+    '| `env/autoshop_01_1k.hdr` | [Poly Haven — Autoshop 01](https://polyhaven.com/a/autoshop_01) | Oliksiy Yakovlyev | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |',
+    '| `ml/deeplab_v3.tflite` | [MediaPipe Image Segmenter — DeepLab v3](https://ai.google.dev/edge/mediapipe/solutions/vision/image_segmenter) | Google | [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0) |',
+    '| `ml/wasm/*` (derlemede kopyalanır) | [@mediapipe/tasks-vision](https://www.npmjs.com/package/@mediapipe/tasks-vision) | Google | [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0) |',
+    '',
     'Marka ve model adları ilgili şirketlerin tescilli markalarıdır ve yalnızca aracı tanımlamak için kullanılır.',
     'Açık lisans, model dosyasının telif hakkını kapsar; marka ve tasarım hakları ayrıdır.',
     '',
   ].join('\n');
   fs.writeFileSync(path.join(ROOT, 'CREDITS.md'), text);
+}
+
+/**
+ * Dört tekerleği tek düğümde tutan bir ağı, üçgen merkezlerinin (dünya uzayında) aracın merkezine göre
+ * hangi çeyrekte olduğuna bakarak 4 ayrı düğüme böler. Yeni düğümler sahne köküne, aynı dünya dönüşümüyle eklenir.
+ */
+function splitByQuadrant(doc, scene, node) {
+  const mesh = node.getMesh();
+  if (!mesh) throw new Error(`çeyrek bölme: "${node.getName()}" düğümünde ağ yok`);
+  const sceneBox = getBounds(scene);
+  const cx = (sceneBox.min[0] + sceneBox.max[0]) / 2, cz = (sceneBox.min[2] + sceneBox.max[2]) / 2;
+  const wm = node.getWorldMatrix();
+  const buffer = doc.getRoot().listBuffers()[0];
+  const quads = [0, 1, 2, 3].map(() => doc.createMesh(`${mesh.getName()}_q`));
+  const p = [];
+  for (const prim of mesh.listPrimitives()) {
+    const pos = prim.getAttribute('POSITION');
+    const idx = prim.getIndices();
+    const count = idx ? idx.getCount() : pos.getCount();
+    const lists = [[], [], [], []];
+    for (let i = 0; i < count; i += 3) {
+      let x = 0, z = 0;
+      const tri = [];
+      for (let k = 0; k < 3; k++) {
+        const vi = idx ? idx.getScalar(i + k) : i + k;
+        tri.push(vi);
+        pos.getElement(vi, p);
+        x += (wm[0] * p[0] + wm[4] * p[1] + wm[8] * p[2] + wm[12]) / 3;
+        z += (wm[2] * p[0] + wm[6] * p[1] + wm[10] * p[2] + wm[14]) / 3;
+      }
+      lists[(x > cx ? 1 : 0) + (z > cz ? 2 : 0)].push(...tri);
+    }
+    lists.forEach((list, q) => {
+      if (!list.length) return;
+      const np = doc.createPrimitive().setMaterial(prim.getMaterial()).setMode(prim.getMode())
+        .setIndices(doc.createAccessor().setType('SCALAR').setArray(new Uint32Array(list)).setBuffer(buffer));
+      for (const sem of prim.listSemantics()) np.setAttribute(sem, prim.getAttribute(sem));
+      quads[q].addPrimitive(np);
+    });
+  }
+  const out = [];
+  quads.forEach((m, q) => {
+    if (!m.listPrimitives().length) { m.dispose(); return; }
+    const n = doc.createNode(`${node.getName()}__q${q}`).setMesh(m).setMatrix(wm);
+    scene.addChild(n);
+    out.push(n);
+  });
+  node.dispose();
+  return out;
+}
+
+/**
+ * Verilen malzemeleri kullanan ağ düğümlerini bulur, merkezlerine göre tekerleklere gruplar ve en alçaktaki
+ * 4 tekerleğin düğümlerini döndürür (stepne gibi fazladan tekerlekler gövdede kalır).
+ */
+function wheelsByMaterial(root, names) {
+  if (!names.length) return [];
+  const nodes = root.listNodes().filter((n) => n.getMesh()?.listPrimitives().some((p) => names.includes(p.getMaterial()?.getName())));
+  const clusters = [];
+  for (const n of nodes) {
+    const b = getBounds(n);
+    const c = b.min.map((v, i) => (v + b.max[i]) / 2);
+    const r = Math.max(b.max[1] - b.min[1], b.max[2] - b.min[2]) / 2;
+    const hit = clusters.find((k) => Math.hypot(k.c[0] - c[0], k.c[1] - c[1], k.c[2] - c[2]) < Math.max(k.r, r) * 0.9);
+    if (hit) hit.nodes.push(n); else clusters.push({ c, r, nodes: [n] });
+  }
+  if (clusters.length < 4) throw new Error(`tekerlek malzemelerinden yalnızca ${clusters.length} tekerlek bulundu`);
+  clusters.sort((a, b) => a.c[1] - b.c[1]);
+  return clusters.slice(0, 4).flatMap((k) => k.nodes);
 }

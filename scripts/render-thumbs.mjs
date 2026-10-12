@@ -16,7 +16,8 @@ for (const { vehicle, model } of pairs) {
   if (only.length && !only.includes(model)) continue;
   await page.goto('about:blank');
   await page.goto(`${BASE}#/arac/${vehicle}`);
-  await page.waitForSelector('.viewer__overlay', { state: 'detached', timeout: 30000 });
+  await page.waitForSelector('.viewer canvas', { timeout: 60000 });
+  await page.waitForSelector('.viewer__overlay', { state: 'detached', timeout: 60000 });
   await page.addStyleTag({ content: '.viewer__tools{display:none!important}' });
   await page.waitForTimeout(600);
   const viewer = page.locator('.viewer');

@@ -134,3 +134,86 @@ Marka/tasarım hakları dosya lisansından ayrıdır; arayüzde marka uyarısı 
   sayfa hatası veya 4xx/5xx yanıt yok.
 - Not: GitHub, kullanılan bazı Actions sürümlerinin Node.js 20 tabanlı olduğu için uyarı veriyor; şu an çalışıyor,
   ileride eylem sürümleri güncellenmeli.
+
+
+---
+
+## 2026-10-12 — 2. oturum: gerçekçilik, yeni araçlar, otomatik seçim, Codex devri
+
+**Katkı:** Claude (ana geliştirici). Codex bu oturumda kullanılmadı; Claude’un limiti dolduğunda devralması için
+`AGENTS.md` hazırlandı.
+
+### Kullanıcı kararları (bu oturumun başında)
+1. Modeli olmayan 6 araç şimdilik olduğu gibi kalacak; mümkünse başka araçlar eklenecek.
+2. **Hiçbir şeye ücret ödenmeyecek** (portfolyo projesi).
+3. Fotoğraf için otomatik algılama yazılabiliyorsa yazılacak, ücretli servis kullanılmayacak.
+4. Codex, Claude’un limiti dolunca devreye girecek. Modeller ücretsiz yollarla daha gerçekçi hale getirilecek.
+
+### Tamamlanan işler
+- **12 yeni araç** (katalog 25 → 37, gerçek modelli araç 19 → 31) ve **AE86’nın yüksek detaylı modele geçirilmesi**.
+  Yeni modeller Sketchfab yazarlarının CC BY 4.0 modelleri (aşağıdaki tablo).
+- **Görüntü kalitesi:** Poly Haven CC0 HDRI ortam ışığı, masaüstünde yansıtıcı zemin, temas gölgesi, renkli yarı
+  saydam cam, gerçekçi lastik malzemesi, orijinal (dokulu) jantların korunması; düşük poligonlu modellerde boya
+  yüzeylerine keskin kenarları koruyan yumuşak normaller (35°). Mobilde daha hafif zemin ve piksel oranı.
+- **Fotoğrafta otomatik seçim (ücretsiz, sunucusuz):** MediaPipe Image Segmenter + DeepLab v3 tarayıcıda çalışır;
+  araç maskesi içinde baskın boya rengini ton açısına göre seçer, çoğunluk filtresiyle boşlukları kapatır.
+  Model (2,7 MB) ve WASM (≈13 MB) bu siteden yüklenir; fotoğraf hiçbir yere gönderilmez (uçtan uca testle
+  doğrulandı). CC0 test fotoğraflarında (AMC Rebel, Peugeot iOn) gövde büyük ölçüde doğru seçildi.
+- **Model hattı:** .gltf + dış dosya indirme (yol güvenliği kontrolüyle), gömülü kaynak adresi doğrulaması,
+  meshoptimizer ile sadeleştirme, WebP doku sıkıştırma (sharp), düğüme sınırlı malzeme rolleri
+  (`malzeme@düğüm`), malzemeye göre tekerlek bulma (stepne otomatik hariç), tek düğümdeki 4 tekerleği
+  çeyreklere bölme.
+- `AGENTS.md`: Codex için kurallar, komutlar, model ekleme ve görsel doğrulama adımları.
+- Testler: 15 birim + 17 uçtan uca test geçiyor (yeni: otomatik seçimin dış istek atmadığı testi).
+
+### Kararlar ve gerekçeleri
+- **Sketchfab’a hesapsız erişim:** Sketchfab indirme için hesap ister. Bunun yerine, Sketchfab dışa aktarımlarının
+  GitHub’daki herkese açık kopyaları kullanıldı (CC BY yeniden dağıtıma izin verir). Güvence için: (1) dosyanın
+  içindeki gömülü kaynak adresi Sketchfab kaydıyla eşleşmeli, (2) lisans Sketchfab API’sinden “CC Attribution”
+  olarak doğrulanmalı, (3) oyun kaynağı ibaresi (NFS, Forza, GTA, Assetto…) ve aktarma şüphesi olan hesaplar
+  (Mona x Supercars, DisneyCars, Lexyc16, Black Snow) elendi.
+- **Bölütleme için DeepLab v3 (MediaPipe):** Apache 2.0, küçük, tamamen istemci tarafı; SegFormer gibi
+  alternatiflerin ağırlık lisansları ticari olmayan kullanımla sınırlı olabildiği için tercih edilmedi.
+- **AE86:** aynı araç için yüksek detaylı model bulunduğundan düşük poligonlu model kaldırıldı (bir araç = bir model).
+- **Golf Mk1 ve diğer 5 araç** kullanıcı isteğiyle beklemede.
+
+### Yeni 3D model kaynakları (Sketchfab, CC BY 4.0, ücretsiz)
+| Araç | Kaynak başlık | Yazar |
+|---|---|---|
+| Mercedes-Benz E-Serisi (W212) | Mercedes E Class W212 | Peter_D |
+| Toyota Corolla (E180) | 2014 Toyota Corolla E180 EU (with interior) | Armored Wave |
+| Mercedes-Benz C 63 AMG (W204) | Mercedes Benz C63 AMG | LuizZed36 |
+| Toyota Crown Sedan Super Deluxe | Toyota Crown Super Deluxe Mild Hybrid | Andrasfi Games |
+| Honda Integra Type R (DB8) | Honda Integra (DB8) Type-R | Myedsu |
+| Audi A4 (2000) | 2000 Audi A4 | tonielpro520 |
+| Toyota Prius (XW30) | Toyota Prius 2012 | Doz3 |
+| Mercedes-Benz 300 CE (C124) | Mercedes w124 300ce | timmiethizz |
+| BMW M3 (E30) | [FREE] BMW M3 E30 | Martin Trafas |
+| Toyota Land Cruiser (J200) | Toyota_land_cruiser | Jean Wally’s™ |
+| Porsche 911 Turbo (930) | FREE 1975 Porsche 911 (930) Turbo | Lionsharp Studios |
+| Mercedes-Benz 300 SL Gullwing | Mercedes-Benz 300sl Gullwing | vecarz |
+| Toyota Sprinter Trueno (AE86) | Toyota AE86 Sprinter Trueno Zenki | Martin Trafas |
+Diğer: Poly Haven “Autoshop 01” HDRI (Oliksiy Yakovlyev, CC0); MediaPipe DeepLab v3 (Google, Apache 2.0).
+Maliyet: 0 TL.
+
+### Elenen adaylar (neden)
+- Toyota Supra (Willy Decarpentrie): dosyada renk/doku bilgisi kayıp. Porsche 911 (Philipp Busse): tüm araç tek
+  doku atlasında, gövde ayrılamıyor. Toyota Corolla E70: boya dokuya gömülü. “Porsche Macan - Kaban”: karikatür.
+
+### Karşılaşılan sorunlar
+- Sketchfab API saatlik hız sınırı (429): 604 adayın yalnızca ilk 200’ü doğrulanabildi; kalanlar (VW, Lamborghini,
+  Ferrari, Tesla, Jeep, Land Rover, Volvo, Dodge, Mini vb.) sonraki oturumda.
+- Land Cruiser’da ön ızgara gövdeyle aynı parçada (gövde rengini alır; arayüzde not var); jantlar farklı
+  malzemelerde olduğu için jant seçenekleri kapalı.
+
+### Eksikler
+- 18 araç hâlâ düşük poligonlu modelle (görüntü iyileştirmeleriyle) gösteriliyor.
+- 6 araç modelsiz (beklemede).
+
+### Sonraki adımlar (Claude veya Codex)
+1. Sketchfab doğrulamasını kalan ~400 aday için tamamla (yavaş tempo: istek başına ≥1,5 sn; 429’da bekle).
+   Betikler bu oturumda geçici klasördeydi; mantık `AGENTS.md` ve bu kayıtta anlatılıyor.
+2. Mevcut düşük poligonlu araçların (Challenger, Charger, Camaro, R34, RX-7, Cybertruck, Wrangler, Range Rover…)
+   yüksek detaylı CC BY karşılıklarını bul, aynı kurallarla değiştir.
+3. Fotoğraf otomatik seçiminde ön/arka uç kenarlarını iyileştir (maske kenarında renk tabanlı büyütme).
+4. GitHub Actions eylem sürümlerini Node 24 uyumlu sürümlere güncelle.

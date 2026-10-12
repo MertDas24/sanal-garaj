@@ -12,10 +12,10 @@ bağlantı olarak paylaşın veya PNG olarak indirin.
 
 | | |
 |---|---|
-| Katalogdaki araç | **25** (sedan, hatchback, coupe, SUV, spor, pick-up) |
-| Gerçek, lisansı doğrulanmış 3D modeli olan | **19** |
-| 3D modeli olmayan (düzenleyicide açılmaz) | 6 — Toyota Corolla Sedan, BMW 3 Serisi (G20), Mercedes-Benz C-Serisi (W206), Volkswagen Passat (B8), Fiat Egea Sedan, Volkswagen Golf (1. nesil) |
-| Model kalitesi | Düşük poligonlu (low-poly) modeller; 18–550 KB arası |
+| Katalogdaki araç | **37** (sedan, hatchback, coupe, SUV, spor, pick-up) |
+| Gerçek, lisansı doğrulanmış 3D modeli olan | **31** — 13’ü yüksek detaylı (Sketchfab, CC BY 4.0), 18’i düşük poligonlu (Poly Pizza, CC BY 3.0) |
+| 3D modeli olmayan (düzenleyicide açılmaz) | 6 — Toyota Corolla Sedan (2019–), BMW 3 Serisi (G20), Mercedes-Benz C-Serisi (W206), Volkswagen Passat (B8), Fiat Egea Sedan, Volkswagen Golf (1. nesil) |
+| Model boyutu | 18 KB – 4,3 MB (toplam ≈ 26 MB; yalnızca seçilen araç indirilir) |
 
 Her araç kendi modelini kullanır; aynı model başka bir araç için gösterilmez. Modeli olmayan araçlar katalogda
 “3D model bekleniyor” olarak işaretlidir. Modifikasyonlar yalnızca modelin gerçekten desteklediği yerde açıktır
@@ -36,9 +36,13 @@ Her araç kendi modelini kullanır; aynı model başka bir araç için gösteril
 - **Paylaş:** tüm ayarlar bağlantıya yazılır (`#/arac/<id>?p=…&f=…`). Gelen değerler doğrulanır, sınırlanır ve
   modelin desteklemediği seçenekler yok sayılır.
 - **Görüntü indir:** aracın adı ve CC BY atfı alt yazılı PNG.
-- **Fotoğrafta dene:** kendi fotoğrafınızda, sihirli değnek + fırça ile seçtiğiniz bölgeyi gölgeleri koruyarak
-  yeniden renklendirme. **Tamamen tarayıcıda** çalışır, fotoğraf hiçbir yere gönderilmez. Fotoğraftan 3D model
-  üretmez ve aracı otomatik algılamaz.
+- **Gerçekçi görüntü:** HDRI oto atölyesi ortam ışığı (Poly Haven, CC0), yansıtıcı zemin (masaüstü), temas
+  gölgesi, yarı saydam renkli cam, gerçekçi lastik/jant malzemeleri; düşük poligonlu modellerde gövde yüzeyleri
+  keskin kenarları koruyarak yumuşatılır.
+- **Fotoğrafta dene:** kendi fotoğrafınızda aracı **otomatik seçme (deneysel)** veya sihirli değnek + fırça ile
+  seçme, gölgeleri koruyarak yeniden renklendirme. Otomatik seçim tarayıcıda çalışan bir bölütleme modeliyle
+  (MediaPipe + DeepLab v3, Apache 2.0) yapılır; model bu siteden yüklenir, **fotoğraf hiçbir yere gönderilmez**,
+  ücretli servis yoktur. Fotoğraftan 3D model üretmez.
 - **Kendi modelin:** yerel `.glb` dosyasını yalnızca tarayıcıda açma, döndürme ve seçilen malzemeyi boyama
   (en fazla 50 MB, tek dosya; Draco/KTX2 desteklenmez; dosya içinden harici adreslere istek engellenir).
 - **WebGL yoksa** anlaşılır bir mesaj gösterilir. Türkçe arayüz, klavye ile erişilebilir kontroller, mobil düzen.
@@ -92,7 +96,12 @@ src/
   three/CarViewer.tsx           # R3F sahnesi, önce/sonra çizimi, ekran görüntüsü
   lib/design.ts                 # tasarım türü, doğrulama, paylaşım kodlaması
   pages/                        # katalog, düzenleyici, tasarımlarım, fotoğraf, kendi modelin, kaynaklar
-public/models/                  # sıkıştırılmış GLB dosyaları (toplam ≈ 2,9 MB)
+scripts/model-sources-sketchfab.mjs  # yüksek detaylı (Sketchfab) model kayıtları
+scripts/copy-ml.mjs             # MediaPipe WASM dosyalarını public/ml/wasm altına kopyalar (dev/build öncesi otomatik)
+src/lib/autoSelect.ts           # fotoğrafta otomatik araç/gövde seçimi
+public/models/                  # sıkıştırılmış GLB dosyaları (toplam ≈ 26 MB)
+public/env/                     # HDRI ortam ışığı
+public/ml/                      # DeepLab v3 modeli (WASM derlemede kopyalanır)
 public/thumbs/                  # katalog küçük resimleri
 lab/                            # yalnızca geliştirme: model inceleme sayfası ve ekran görüntüsü betikleri
 ```
@@ -122,9 +131,17 @@ Katalog ile model dosyaları ayrı yönetilir.
 
 - **Kod:** MIT (bkz. `LICENSE`).
 - **3D modeller:** her biri kendi lisansıyla — tam liste [CREDITS.md](CREDITS.md) ve uygulamadaki “Kaynaklar”
-  sayfasında. Şu an tüm modeller [Poly Pizza](https://poly.pizza) üzerinden, **CC BY 3.0** lisansıyla, ücretsiz
-  alınmıştır. Düzenleyicide ve indirilen görsellerde ilgili modelin atfı gösterilir.
+  sayfasında. Düşük poligonlu modeller [Poly Pizza](https://poly.pizza) (CC BY 3.0); yüksek detaylı modeller
+  [Sketchfab](https://sketchfab.com) yazarlarının **CC BY 4.0** modelleridir. Sketchfab hesap gerektirdiği için
+  dosyalar, Sketchfab dışa aktarımının GitHub’daki herkese açık kopyalarından indirilir; her kopyanın içine gömülü
+  kaynak adresi Sketchfab kaydıyla karşılaştırılır ve lisans Sketchfab API’sinden doğrulanır. Hiçbir ücret
+  ödenmemiştir. Düzenleyicide ve indirilen görsellerde ilgili modelin atfı gösterilir.
+- **Ortam ışığı:** Poly Haven “Autoshop 01” (CC0). **Bölütleme modeli:** MediaPipe DeepLab v3 (Apache 2.0).
 - Marka ve model adları ilgili şirketlere aittir; proje bu şirketlerle bağlantılı değildir.
+
+## Yardımcı ajanlar (Codex)
+
+Codex veya başka bir kodlama ajanı için kurallar, komutlar ve görev listesi [AGENTS.md](AGENTS.md) dosyasındadır.
 
 ## Yayınlama
 
@@ -134,14 +151,15 @@ Site statiktir; `dist/` klasörü herhangi bir statik barındırmada çalışır
 derleme ve uçtan uca testleri çalıştırır; hepsi geçerse `dist/` klasörünü GitHub Pages’e yayınlar.
 Depo ayarlarında *Settings → Pages → Source: GitHub Actions* seçili olmalıdır.
 
-**Model dosyalarının barındırılması:** sıkıştırılmış modellerin toplamı ≈ 2,9 MB olduğu için doğrudan depoda ve
-Pages üzerinde tutulur; Git LFS veya ayrı CDN gerekmez. Yüksek poligonlu modellere geçilirse (model başına
-5–30 MB) dosyaların GitHub Releases, Cloudflare R2 veya benzeri bir nesne deposunda tutulması önerilir.
+**Model dosyalarının barındırılması:** sıkıştırılmış (meshopt + WebP doku) modellerin toplamı ≈ 26 MB, en büyüğü
+4,3 MB; GitHub’ın dosya başına 100 MB ve depo önerisi 1 GB sınırlarının çok altında olduğu için doğrudan depoda ve
+Pages üzerinde tutulur. Git LFS veya ücretli CDN gerekmez. Ham kaynak dosyalar (`.model-cache/`) depoya girmez.
 
 ## Bilinen sınırlamalar
 
-- Modeller düşük poligonludur; gerçekçi (yüksek detaylı) modeller için bkz. `PROJE_NOTLARI.md` → seçenekler.
+- 18 araç hâlâ düşük poligonlu modelle gösterilir (görüntü iyileştirmeleriyle); yüksek detaylı CC BY karşılıkları
+  bulundukça değiştirilecek (bkz. `PROJE_NOTLARI.md`).
 - 6 katalog aracının uygun modeli yoktur.
-- Fotoğraf düzenleme seçimi elle yapılır; otomatik araç algılama için harici bir yapay zekâ servisi gerekir
-  (kurulmadı; seçenekler ve maliyet `PROJE_NOTLARI.md` içinde).
+- Fotoğrafta otomatik seçim deneyseldir: aracı bulur ve baskın boya rengini seçer; ön/arka uçlarda eksik kalan
+  bölgeler fırçayla tamamlanabilir. Çok renkli (ör. iki tonlu) araçlarda yalnızca baskın renk seçilir.
 - Tasarımlar yalnızca o tarayıcıda saklanır; cihazlar arası eşitleme yoktur (paylaşım bağlantısı kullanılabilir).

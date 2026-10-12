@@ -3,9 +3,10 @@ import { floodSelect, paintMask, recolor } from '../lib/recolor';
 import { downloadBlob } from '../lib/image';
 import { PAINT_SWATCHES } from '../lib/design';
 import { useToast } from '../components/useToast';
+import { detectCar, selectBodyPaint } from '../lib/autoSelect';
 
-// "Fotoğrafta dene": kullanıcının fotoğrafı cihazdan çıkmaz. Seçim (sihirli değnek + fırça) ve
-// yeniden renklendirme tamamen tarayıcıda yapılır. Otomatik araç algılama yoktur.
+// "Fotoğrafta dene": kullanıcının fotoğrafı cihazdan çıkmaz. Seçim (otomatik algılama, sihirli değnek,
+// fırça) ve yeniden renklendirme tamamen tarayıcıda yapılır. Otomatik algılama modeli bu siteden yüklenir.
 
 const MAX_BYTES = 25 * 1024 * 1024;
 const MAX_SIDE = 1600;
@@ -27,6 +28,9 @@ export default function PhotoPage() {
   const [showOriginal, setShowOriginal] = useState(false);
   const [selected, setSelected] = useState(0);
   const [error, setError] = useState<string | null>(null);
+  const carMaskRef = useRef<Uint8Array | null>(null);
+  const [auto, setAuto] = useState<'idle' | 'loading' | 'done'>('idle');
+  const [autoTol, setAutoTol] = useState(22);
   const { toast, show } = useToast();
 
   const render = useCallback(() => {
@@ -72,6 +76,8 @@ export default function PhotoPage() {
       srcRef.current = g.getImageData(0, 0, w, h);
       outRef.current = g.createImageData(w, h);
       maskRef.current = new Uint8Array(w * h);
+      carMaskRef.current = null;
+      setAuto('idle');
       setSelected(0);
       setLoaded({ w, h, name: file.name.replace(/\.[^.]+$/, '') });
     } catch {
@@ -116,6 +122,35 @@ export default function PhotoPage() {
 
   const clearMask = () => { maskRef.current?.fill(0); countMask(); };
 
+  const applyAuto = (tol: number) => {
+    const src = srcRef.current, mask = maskRef.current, car = carMaskRef.current;
+    if (!src || !mask || !car) return;
+    const r = selectBodyPaint(src, car, tol, mask);
+    countMask();
+    return r;
+  };
+
+  const runAuto = async () => {
+    const src = srcRef.current;
+    if (!src) return;
+    setAuto('loading');
+    try {
+      carMaskRef.current = await detectCar(src);
+      const r = applyAuto(autoTol);
+      if (!r || r.carPixels < 500) {
+        setAuto('idle');
+        show('Fotoğrafta araç algılanamadı. Sihirli değnek veya fırçayla seçebilirsiniz.', 'error');
+        return;
+      }
+      setAuto('done');
+      show('Araç gövdesi seçildi. Gerekirse toleransı ayarlayın veya fırçayla düzeltin.');
+    } catch (e) {
+      console.error(e);
+      setAuto('idle');
+      show('Otomatik algılama başlatılamadı (tarayıcı desteklemiyor olabilir).', 'error');
+    }
+  };
+
   const download = () => {
     const src = srcRef.current, mask = maskRef.current, out = outRef.current;
     if (!src || !mask || !out) return;
@@ -132,7 +167,7 @@ export default function PhotoPage() {
       <p className="muted">
         Kendi aracınızın fotoğrafını yükleyin, boyalı yüzeyleri seçin ve yeni rengi önizleyin. Fotoğrafınız
         <strong> cihazınızdan çıkmaz</strong>; tüm işlem tarayıcıda yapılır. Bu bir 2D renk değiştirme aracıdır:
-        fotoğraftan 3D model üretmez ve aracı otomatik algılamaz — boyanacak alanı siz seçersiniz.
+        fotoğraftan 3D model üretmez. Gövdeyi otomatik seçtirebilir veya kendiniz seçebilirsiniz.
       </p>
 
       <div className="photo__layout">
@@ -161,6 +196,22 @@ export default function PhotoPage() {
             <>
               <section className="panel__section">
                 <h2 className="panel__title">1 · Alanı seç</h2>
+                <button className="btn" onClick={runAuto} disabled={auto === 'loading'}>
+                  {auto === 'loading' ? 'Araç algılanıyor…' : 'Aracı otomatik seç (deneysel)'}
+                </button>
+                {auto === 'done' && (
+                  <label className="range">
+                    <span className="range__head"><span className="field-label">Gövde rengi toleransı</span><output>{autoTol}</output></span>
+                    <input
+                      type="range" min={8} max={50} value={autoTol}
+                      onChange={(e) => { const v = Number(e.target.value); setAutoTol(v); applyAuto(v); }}
+                    />
+                  </label>
+                )}
+                <p className="muted small">
+                  Otomatik seçim tarayıcınızda çalışan bir görüntü bölütleme modeliyle (DeepLab v3) yapılır; ilk
+                  kullanımda yaklaşık 16 MB bu siteden indirilir. Fotoğrafınız hiçbir sunucuya gönderilmez.
+                </p>
                 <div className="segmented" role="radiogroup" aria-label="Seçim aracı">
                   <button role="radio" aria-checked={tool === 'wand'} onClick={() => setTool('wand')}>Sihirli değnek</button>
                   <button role="radio" aria-checked={tool === 'brush'} onClick={() => setTool('brush')}>Fırça</button>
@@ -225,12 +276,12 @@ export default function PhotoPage() {
               <h2 className="panel__title">Nasıl çalışır?</h2>
               <ol className="steps small">
                 <li>Aracınızın net, iyi ışıklı bir fotoğrafını seçin.</li>
-                <li>“Sihirli değnek” ile boyalı yüzeylere dokunun; fırça ve silgiyle düzeltin.</li>
+                <li>“Aracı otomatik seç” veya “Sihirli değnek” ile boyalı yüzeyleri seçin; fırça ve silgiyle düzeltin.</li>
                 <li>Yeni rengi seçin; gölgeler ve yansımalar korunur.</li>
                 <li>Sonucu PNG olarak indirin.</li>
               </ol>
               <p className="muted small">
-                Otomatik araç gövdesi algılama harici bir yapay zekâ servisi gerektirir ve bu sürümde kurulmamıştır.
+                İsterseniz aracı otomatik seçtirebilirsiniz; algılama da tamamen tarayıcınızda çalışır.
               </p>
             </section>
           )}

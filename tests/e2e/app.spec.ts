@@ -7,13 +7,15 @@ async function waitForModel(page: Page) {
 }
 
 test.describe('Katalog', () => {
-  test('25 araç, gerçek model sayısı ve arama/filtre', async ({ page }) => {
+  test('en az 25 araç, gerçek model sayısı ve arama/filtre', async ({ page }) => {
     await page.goto('/');
     await expect(page.getByRole('heading', { level: 1 })).toContainText('Aracını seç');
-    await expect(page.locator('.grid > li')).toHaveCount(25);
+    const total = await page.locator('.grid > li').count();
+    expect(total).toBeGreaterThanOrEqual(25);
+    await expect(page.locator('.catalog__intro')).toContainText(`Katalogda ${total} araç`);
     const ready = await page.locator('.card__status--ok').count();
     await expect(page.locator('.catalog__intro strong')).toHaveText(String(ready));
-    await expect(page.locator('.card__status--missing')).toHaveCount(25 - ready);
+    await expect(page.locator('.card__status--missing')).toHaveCount(total - ready);
 
     const search = page.getByPlaceholder('Marka, model veya yıl ara');
     await search.fill('nissan');
@@ -182,6 +184,28 @@ test.describe('Fotoğraf ve yerel model', () => {
     expect(px[2]).toBeGreaterThan(px[0]); // kırmızı alan maviye döndü
     const [dl] = await Promise.all([page.waitForEvent('download'), page.getByRole('button', { name: 'Görüntü indir' }).click()]);
     expect(dl.suggestedFilename()).toBe('araba-yeni-renk.png');
+    expect(external).toHaveLength(0);
+  });
+
+  test('otomatik seçim tarayıcıda çalışır, dış sunucuya istek atmaz', async ({ page }) => {
+    test.setTimeout(120_000);
+    const external: string[] = [];
+    page.on('request', (r) => {
+      const u = r.url();
+      if (!u.startsWith('http://localhost:4173') && !u.startsWith('data:') && !u.startsWith('blob:')) external.push(u);
+    });
+    await page.goto('/#/foto');
+    const png = await page.evaluate(() => {
+      const c = document.createElement('canvas');
+      c.width = 320; c.height = 200;
+      const g = c.getContext('2d')!;
+      g.fillStyle = '#5a7a3a'; g.fillRect(0, 0, 320, 200);
+      return c.toDataURL('image/png').split(',')[1];
+    });
+    await page.locator('input[type=file]').first().setInputFiles({ name: 'cimen.png', mimeType: 'image/png', buffer: Buffer.from(png, 'base64') });
+    await page.getByRole('button', { name: 'Aracı otomatik seç (deneysel)' }).click();
+    // Araç olmayan görselde dürüst sonuç: "algılanamadı" (veya tarayıcı desteklemiyorsa açık hata)
+    await expect(page.getByText(/araç algılanamadı|Otomatik algılama başlatılamadı/)).toBeVisible({ timeout: 90_000 });
     expect(external).toHaveLength(0);
   });
 
