@@ -58,11 +58,6 @@ export const CATALOG: Vehicle[] = [
   { id: 'toyota-corolla-e180', make: 'Toyota', model: 'Corolla (E180)', year: '2013–2019', category: 'sedan', modelId: 'toyota-corolla-e180' },
   { id: 'mercedes-c63-amg-w204', make: 'Mercedes-Benz', model: 'C 63 AMG (W204)', year: '2011–2014', category: 'sedan', modelId: 'mercedes-c63-amg-w204' },
   { id: 'toyota-crown-sedan', make: 'Toyota', model: 'Crown Sedan Super Deluxe', year: '1995–2017', category: 'sedan', modelId: 'toyota-crown-super-deluxe' },
-  { id: 'honda-integra-type-r-db8', make: 'Honda', model: 'Integra Type R (DB8)', year: '1995–2001', category: 'sedan', modelId: 'honda-integra-db8-type-r' },
-  {
-    id: 'audi-a4-2000', make: 'Audi', model: 'A4', year: '2000', category: 'sedan', modelId: 'audi-a4-2000',
-    note: 'Yıl, model kaynağının başlığına göre verilmiştir.',
-  },
   { id: 'toyota-prius-xw30', make: 'Toyota', model: 'Prius (XW30)', year: '2009–2015', category: 'hatchback', modelId: 'toyota-prius-2012' },
   { id: 'mercedes-300-ce-c124', make: 'Mercedes-Benz', model: '300 CE (C124)', year: '1987–1993', category: 'coupe', modelId: 'mercedes-300ce-w124' },
   { id: 'bmw-m3-e30', make: 'BMW', model: 'M3 (E30)', year: '1986–1991', category: 'coupe', modelId: 'bmw-m3-e30' },

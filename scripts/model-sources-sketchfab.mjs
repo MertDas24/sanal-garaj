@@ -108,25 +108,4 @@ export const SKETCHFAB_SOURCES = [
     materials: { paint: ['Color.002'], glass: ['Windows.002'], tire: ['Wheel0021Mtl.002', 'Wheel1Mtl'], rim: ['Rims.002'] },
     wheelQuadrants: ['Object_23', 'Object_24', 'Object_25'],
   },
-  {
-    id: 'honda-integra-db8-type-r',
-    download: `${GH}josiahthr/FinalGame/9c3fb66495210c8b9dccc3b5f28ba7633d59af53/honda_integra_db8_type-r/scene.gltf`,
-    source: { title: 'Honda Integra (DB8) Type-R', author: 'Myedsu', site: 'Sketchfab', url: SF('06f0eba84e9745e9aec41a985ccac915'), ...CCBY4 },
-    rotateY: 0, lengthM: 4.53,
-    materials: {
-      paint: ['paint'], glass: ['glass'],
-      tire: ['rubber', 'rubber.002', 'rubber.003', 'rubber.004'],
-      rim: ['wheel_metal', 'wheel_metal.001', 'wheel_metal.002', 'wheel_metal.003'],
-    },
-    wheelNodes: ['wheelFL', 'wheelRL', 'wheelFR', 'wheelRR'],
-    mods: { spoiler: false, frontLip: true },
-  },
-  {
-    id: 'audi-a4-2000',
-    download: `${GH}krisAndreev/MyMiniCar/bd2763216f78d734ad7fef4f13df08993c6bde0d/src/MyMiniCar.Web/wwwroot/models/audi-a4-2000/scene.gltf`,
-    source: { title: '2000 Audi A4', author: 'tonielpro520', site: 'Sketchfab', url: SF('22f072849b6a409ebac3a0b13dbb099a'), ...CCBY4 },
-    rotateY: 0, lengthM: 4.48,
-    materials: { paint: ['M_01___Default1'], tire: ['tyre1'] },
-    wheelQuadrants: ['Object_16'],
-  },
 ];

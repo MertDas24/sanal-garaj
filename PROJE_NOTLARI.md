@@ -150,7 +150,7 @@ Marka/tasarım hakları dosya lisansından ayrıdır; arayüzde marka uyarısı 
 4. Codex, Claude’un limiti dolunca devreye girecek. Modeller ücretsiz yollarla daha gerçekçi hale getirilecek.
 
 ### Tamamlanan işler
-- **12 yeni araç** (katalog 25 → 37, gerçek modelli araç 19 → 31) ve **AE86’nın yüksek detaylı modele geçirilmesi**.
+- **10 yeni araç** (katalog 25 → 35, gerçek modelli araç 19 → 29) ve **AE86’nın yüksek detaylı modele geçirilmesi**.
   Yeni modeller Sketchfab yazarlarının CC BY 4.0 modelleri (aşağıdaki tablo).
 - **Görüntü kalitesi:** Poly Haven CC0 HDRI ortam ışığı, masaüstünde yansıtıcı zemin, temas gölgesi, renkli yarı
   saydam cam, gerçekçi lastik malzemesi, orijinal (dokulu) jantların korunması; düşük poligonlu modellerde boya
@@ -184,8 +184,6 @@ Marka/tasarım hakları dosya lisansından ayrıdır; arayüzde marka uyarısı 
 | Toyota Corolla (E180) | 2014 Toyota Corolla E180 EU (with interior) | Armored Wave |
 | Mercedes-Benz C 63 AMG (W204) | Mercedes Benz C63 AMG | LuizZed36 |
 | Toyota Crown Sedan Super Deluxe | Toyota Crown Super Deluxe Mild Hybrid | Andrasfi Games |
-| Honda Integra Type R (DB8) | Honda Integra (DB8) Type-R | Myedsu |
-| Audi A4 (2000) | 2000 Audi A4 | tonielpro520 |
 | Toyota Prius (XW30) | Toyota Prius 2012 | Doz3 |
 | Mercedes-Benz 300 CE (C124) | Mercedes w124 300ce | timmiethizz |
 | BMW M3 (E30) | [FREE] BMW M3 E30 | Martin Trafas |
@@ -195,6 +193,13 @@ Marka/tasarım hakları dosya lisansından ayrıdır; arayüzde marka uyarısı 
 | Toyota Sprinter Trueno (AE86) | Toyota AE86 Sprinter Trueno Zenki | Martin Trafas |
 Diğer: Poly Haven “Autoshop 01” HDRI (Oliksiy Yakovlyev, CC0); MediaPipe DeepLab v3 (Google, Apache 2.0).
 Maliyet: 0 TL.
+
+### Kaynak açıklaması kontrolü (yayından önce)
+Kullanılan her Sketchfab modelinin açıklaması API’den okunup “yeniden yükleme / oyundan aktarma / başkasının
+modeli” ibaresi için kontrol edildi. Sonuç: W212, Corolla E180, Crown, 930 Turbo, AE86, M3 E30, Prius ve 300 SL
+(vecarz stüdyosu) özgün çalışma olarak tanımlanıyor; C 63 AMG, 300 CE ve Land Cruiser açıklamasız (olumsuz ibare
+yok). **Çıkarılanlar:** “2000 Audi A4” (açıklamada “Free REUPLOAD” — asıl kaynak belirsiz) ve “Honda Integra (DB8)”
+(dışarıda bırakılan Lexyc16 hesabının modelinden türetilmiş). Bu iki araç katalogdan da kaldırıldı.
 
 ### Elenen adaylar (neden)
 - Toyota Supra (Willy Decarpentrie): dosyada renk/doku bilgisi kayıp. Porsche 911 (Philipp Busse): tüm araç tek

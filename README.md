@@ -12,8 +12,8 @@ bağlantı olarak paylaşın veya PNG olarak indirin.
 
 | | |
 |---|---|
-| Katalogdaki araç | **37** (sedan, hatchback, coupe, SUV, spor, pick-up) |
-| Gerçek, lisansı doğrulanmış 3D modeli olan | **31** — 13’ü yüksek detaylı (Sketchfab, CC BY 4.0), 18’i düşük poligonlu (Poly Pizza, CC BY 3.0) |
+| Katalogdaki araç | **35** (sedan, hatchback, coupe, SUV, spor, pick-up) |
+| Gerçek, lisansı doğrulanmış 3D modeli olan | **29** — 11’i yüksek detaylı (Sketchfab, CC BY 4.0), 18’i düşük poligonlu (Poly Pizza, CC BY 3.0) |
 | 3D modeli olmayan (düzenleyicide açılmaz) | 6 — Toyota Corolla Sedan (2019–), BMW 3 Serisi (G20), Mercedes-Benz C-Serisi (W206), Volkswagen Passat (B8), Fiat Egea Sedan, Volkswagen Golf (1. nesil) |
 | Model boyutu | 18 KB – 4,3 MB (toplam ≈ 26 MB; yalnızca seçilen araç indirilir) |
 

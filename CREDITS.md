@@ -37,8 +37,6 @@ gereksiz sahne parçaları kaldırıldı ve meshopt ile sıkıştırıldı.
 | `models/toyota-ae86-trueno-zenki.glb` | [Toyota AE86 Sprinter Trueno Zenki](https://sketchfab.com/3d-models/a5737bf3cc9b4179a6e5ebe173ff70d9) | Martin Trafas | Sketchfab | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) | 3869 KB |
 | `models/bmw-m3-e30.glb` | [[FREE] BMW M3 E30](https://sketchfab.com/3d-models/ac3c7013434e403e8faff87948caf422) | Martin Trafas | Sketchfab | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) | 2007 KB |
 | `models/toyota-prius-2012.glb` | [Toyota Prius 2012](https://sketchfab.com/3d-models/04eaf6b288cc466785365b7d985e3b29) | Doz3 | Sketchfab | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) | 1122 KB |
-| `models/honda-integra-db8-type-r.glb` | [Honda Integra (DB8) Type-R](https://sketchfab.com/3d-models/06f0eba84e9745e9aec41a985ccac915) | Myedsu | Sketchfab | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) | 433 KB |
-| `models/audi-a4-2000.glb` | [2000 Audi A4](https://sketchfab.com/3d-models/22f072849b6a409ebac3a0b13dbb099a) | tonielpro520 | Sketchfab | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) | 167 KB |
 
 Sketchfab modelleri, Sketchfab dışa aktarımının GitHub’daki herkese açık kopyalarından indirilmiştir; her kopyanın içindeki
 gömülü kaynak adresi derleme sırasında yukarıdaki Sketchfab adresiyle karşılaştırılır ve lisans Sketchfab API’sinden doğrulanır.
