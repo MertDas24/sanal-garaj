@@ -316,7 +316,12 @@ export function createCarRuntime(source: THREE.Object3D, features: ModelFeatures
   };
 
   const runtimeDefault = defaultDesign(originalPaint, f.spoiler === 'builtin');
+  let appliedDesign: Design | null = null;
   const apply = (d: Design) => {
+    // Kamera karelerinde malzeme/matris hazırlığını tekrarlama. Asenkron logo
+    // yüklemesi appliedDesign'ı temizleyerek bu önbelleği geçersiz kılar.
+    if (alive && appliedDesign === d) return;
+    appliedDesign = d;
     alive = true;
     // Eski tasarım dosyaları ve kendi-model görüntüleyicisi yeni alanları içermeyebilir.
     d = { ...runtimeDefault, ...d };
@@ -411,7 +416,7 @@ export function createCarRuntime(source: THREE.Object3D, features: ModelFeatures
         if (d.decalLogo) {
           let img = logos.get(d.decalLogo);
           if (!img) {
-            img = new Image(); logos.set(d.decalLogo, img); img.onload = () => { if (alive) { decalKey = ''; invalidate(); } }; img.src = d.decalLogo;
+            img = new Image(); logos.set(d.decalLogo, img); img.onload = () => { if (alive) { decalKey = ''; appliedDesign = null; invalidate(); } }; img.src = d.decalLogo;
             if (logos.size > 4) { const first = logos.keys().next().value!; const old = logos.get(first)!; old.onload = null; old.src = ''; logos.delete(first); }
           }
           if (img.complete && img.naturalWidth) ctx.drawImage(img, d.decalText ? 0 : 384, 0, 256, 256);

@@ -2,6 +2,32 @@ import * as THREE from 'three';
 import { DecalGeometry } from 'three/examples/jsm/geometries/DecalGeometry.js';
 import type { WrapStyle } from '../lib/design';
 
+/** Kesme algoritmasına yalnızca projektör kutusuyla kesişebilecek üçgenleri gönderir.
+ * Kaynak öznitelikleri paylaşılır; geçici indeks kaynak modeli değiştirmez. */
+export function projectDecal(mesh: THREE.Mesh, position: THREE.Vector3, orientation: THREE.Euler, size: THREE.Vector3) {
+  const source = mesh.geometry, vertices = source.getAttribute('position'), index = source.index;
+  const projector = new THREE.Matrix4().makeRotationFromEuler(orientation).setPosition(position).invert().multiply(mesh.matrixWorld);
+  const half = size.clone().multiplyScalar(0.5), a = new THREE.Vector3(), b = new THREE.Vector3(), c = new THREE.Vector3();
+  const indices: number[] = [];
+  for (let i = 0, count = index?.count ?? vertices.count; i < count; i += 3) {
+    const ia = index ? index.getX(i) : i, ib = index ? index.getX(i + 1) : i + 1, ic = index ? index.getX(i + 2) : i + 2;
+    a.fromBufferAttribute(vertices, ia).applyMatrix4(projector);
+    b.fromBufferAttribute(vertices, ib).applyMatrix4(projector);
+    c.fromBufferAttribute(vertices, ic).applyMatrix4(projector);
+    if (Math.min(a.x, b.x, c.x) > half.x || Math.max(a.x, b.x, c.x) < -half.x ||
+        Math.min(a.y, b.y, c.y) > half.y || Math.max(a.y, b.y, c.y) < -half.y ||
+        Math.min(a.z, b.z, c.z) > half.z || Math.max(a.z, b.z, c.z) < -half.z) continue;
+    indices.push(ia, ib, ic);
+  }
+  const candidates = new THREE.BufferGeometry();
+  candidates.setAttribute('position', vertices);
+  if (source.getAttribute('normal')) candidates.setAttribute('normal', source.getAttribute('normal'));
+  candidates.setIndex(indices);
+  const proxy = new THREE.Mesh(candidates, mesh.material); proxy.matrixWorld.copy(mesh.matrixWorld);
+  try { return new DecalGeometry(proxy, position, orientation, size); }
+  finally { candidates.dispose(); }
+}
+
 /** Kaplamalar yalnızca CG_paint yüzeylerine projekte edilir; cam ve trim seçilmez. */
 export function buildWrap(meshes: THREE.Mesh[], box: THREE.Box3, style: WrapStyle, material: THREE.Material, settings = { width: 100, offset: 0, rotation: 0 }): THREE.Group {
   const group = new THREE.Group();
@@ -25,7 +51,7 @@ export function buildWrap(meshes: THREE.Mesh[], box: THREE.Box3, style: WrapStyl
     }
     extent.x *= settings.width / 100;
     for (const mesh of meshes) {
-      const projected = new DecalGeometry(mesh, p, new THREE.Euler(-Math.PI / 2, 0, THREE.MathUtils.degToRad(settings.rotation)), extent);
+      const projected = projectDecal(mesh, p, new THREE.Euler(-Math.PI / 2, 0, THREE.MathUtils.degToRad(settings.rotation)), extent);
       const pos = projected.getAttribute('position');
       const norm = projected.getAttribute('normal');
       const points: number[] = [], normals: number[] = [];
@@ -58,7 +84,7 @@ export function buildDecal(meshes: THREE.Mesh[], box: THREE.Box3, region: 'hood'
   if (side) { p.x = region === 'left' ? box.min.x : box.max.x; p.y = box.min.y + size.y * 0.44; }
   else { p.y = box.max.y - size.y * (region === 'hood' ? 0.3 : 0.04); if (region === 'hood') p.z = box.max.z - size.z * 0.18; }
   for (const mesh of meshes) {
-    const projected = new DecalGeometry(mesh, p, orientation, extent);
+    const projected = projectDecal(mesh, p, orientation, extent);
     const pos = projected.getAttribute('position'), norm = projected.getAttribute('normal'), uv = projected.getAttribute('uv');
     const points: number[] = [], normals: number[] = [], uvs: number[] = [];
     for (let i = 0; i < pos.count; i += 3) {

@@ -217,6 +217,14 @@ Pages üzerinde tutulur. Git LFS veya ücretli CDN gerekmez. Ham kaynak dosyalar
 poster `public/demo/` altına yazılır. Yerel sunucu ölçümü internet/mobil performansını temsil etmez.
 Üretilen kit kodu proje MIT lisansındadır; mevcut araç modellerinin CC BY şartları çıktılarda korunur.
 
+Kaplama projeksiyonu kutu dışındaki üçgenleri kesmeden önce eler; kamera hareketlerinde aynı tasarımın
+malzeme/matris hazırlığı tekrarlanmaz. Fotogerçekçi sahnenin BVH kurulumu yerel Web Worker'da yapılır;
+hazırlık iptal edilince worker kapatılır. İlk araç çizimi paralel shader hazırlığını bekler; yazılımsal GPU
+algılanırsa otomatik profil hafif görünümü seçer. Elle seçilen yüksek profil korunur. GPU gölgelendirici
+derlemesi ve gerçek ışık izleme hâlâ cihaz gücüne ve paralel derleme desteğine bağlıdır.
+Kesme hesabını ayrı ölçmek için Node 24 ile `node scripts/benchmark-decals.mjs` çalıştırılabilir:
+115.200 üçgenli sentetik yüzeyde eski/yeni yöntemlerin beş tur ortancasıdır; tüm site hızını ölçmez.
+
 ### Windows üzerinde uçtan uca test
 
 Playwright'ın istediği Chromium sürümü kurulu değilse PowerShell'de `$env:PW_CHANNEL='chrome'; npm run e2e`

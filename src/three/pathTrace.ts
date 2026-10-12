@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { DenoiseMaterial, GradientEquirectTexture, WebGLPathTracer } from 'three-gpu-pathtracer';
 import { HDRLoader } from 'three/examples/jsm/loaders/HDRLoader.js';
 import { FullScreenQuad } from 'three/examples/jsm/postprocessing/Pass.js';
+import { GenerateMeshBVHWorker } from 'three-mesh-bvh/worker';
 import { envUrl, SHOTS, type EnvPreset, type ShotId } from './scenes';
 
 // Fotogerçekçi görüntü: three-gpu-pathtracer ile ışık izleme.
@@ -66,9 +67,15 @@ export function shotCamera(base: THREE.PerspectiveCamera, car: THREE.Object3D, s
 }
 
 export function startPathTrace(o: PathTraceOptions): PathTraceSession {
+  // Worker engellenmişse WebGL kaynakları ayırmadan anlaşılır hata akışına dön.
+  const bvhWorker = new GenerateMeshBVHWorker();
+  let workerDisposed = false;
+  const disposeWorker = () => { if (!workerDisposed) { workerDisposed = true; bvhWorker.dispose(); } };
   const canvas = document.createElement('canvas');
   canvas.className = 'pt-canvas';
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, preserveDrawingBuffer: true });
+  let renderer: THREE.WebGLRenderer;
+  try { renderer = new THREE.WebGLRenderer({ canvas, antialias: true, preserveDrawingBuffer: true }); }
+  catch (error) { disposeWorker(); throw error; }
   renderer.setPixelRatio(1);
   renderer.setSize(o.width, o.height, false);
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -116,6 +123,8 @@ export function startPathTrace(o: PathTraceOptions): PathTraceSession {
   pt.renderDelay = 0;
   pt.fadeDuration = 0;
   pt.minSamples = 1;
+  // Derleme sırasında aynı sahne için ikinci, senkron raster shader derlemesi yapma.
+  pt.rasterizeScene = false;
 
   if (o.denoise) {
     const denoise = new FullScreenQuad(new DenoiseMaterial({ map: undefined }));
@@ -152,8 +161,9 @@ export function startPathTrace(o: PathTraceOptions): PathTraceSession {
     if (!done) raf = requestAnimationFrame(loop);
   };
 
+  pt.setBVHWorker(bvhWorker);
   loadEnv(o.env)
-    .then((env) => {
+    .then(async (env) => {
       if (stopped) return;
       scene.environment = env;
       scene.environmentIntensity = o.env.intensity;
@@ -164,16 +174,20 @@ export function startPathTrace(o: PathTraceOptions): PathTraceSession {
         scene.backgroundBlurriness = 0.25;
         scene.backgroundIntensity = 0.8;
       }
-      pt.setScene(scene, camera);
+      // Büyük modelin BVH kurulumu arayüz iş parçacığını kilitlemesin.
+      await pt.setSceneAsync(scene, camera);
+      if (stopped) return;
+      disposeWorker();
       raf = requestAnimationFrame(loop);
     })
-    .catch((e) => o.onError(e));
+    .catch((e) => { if (!stopped) o.onError(e); });
 
   return {
     canvas,
     stop() {
       stopped = true;
       cancelAnimationFrame(raf);
+      disposeWorker();
       pt.dispose();
       for (const d of disposables) d.dispose();
       renderer.dispose();

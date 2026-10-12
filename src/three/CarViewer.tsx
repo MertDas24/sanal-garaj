@@ -1,4 +1,4 @@
-import { Component, Suspense, forwardRef, useEffect, useImperativeHandle, useMemo, useRef, type ReactNode } from 'react';
+import { Component, Suspense, forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { ContactShadows, Environment, MeshReflectorMaterial, OrbitControls, useGLTF } from '@react-three/drei';
 import type { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
@@ -8,7 +8,7 @@ import type { Design } from '../lib/design';
 import { createCarRuntime, type CarRuntime } from './carRuntime';
 import { SHOTS, type ShotId } from './scenes';
 import { renderStudio, recordTurntable } from './studio';
-import { chooseQuality, type RenderQuality } from '../lib/quality';
+import { chooseQuality, isSoftwareRenderer, type RenderQuality } from '../lib/quality';
 
 export interface ViewerHandle {
   resetCamera(): void;
@@ -40,13 +40,15 @@ export interface ViewerProps {
 const envPath = (file = 'autoshop_01_1k.hdr') => `${import.meta.env.BASE_URL}env/${file}`;
 
 /** Güçlü cihazlarda yansıtıcı zemin; dokunmatik/küçük ekranlarda daha hafif zemin. */
-function highQuality(mode: RenderQuality): boolean {
+function highQuality(mode: RenderQuality, softwareRenderer: boolean): boolean {
   if (typeof window === 'undefined') return false;
-  return chooseQuality(mode, navigator.hardwareConcurrency || 4, (navigator as Navigator & { deviceMemory?: number }).deviceMemory ?? 4, window.matchMedia('(pointer: coarse)').matches || window.innerWidth < 900);
+  return chooseQuality(mode, navigator.hardwareConcurrency || 4, (navigator as Navigator & { deviceMemory?: number }).deviceMemory ?? 4, window.matchMedia('(pointer: coarse)').matches || window.innerWidth < 900, softwareRenderer);
 }
 
 export const CarViewer = forwardRef<ViewerHandle, ViewerProps>(function CarViewer(props, ref) {
-  const hq = highQuality(props.renderQuality ?? 'auto');
+  const [softwareRenderer, setSoftwareRenderer] = useState(false);
+  const mode = props.renderQuality ?? 'auto';
+  const hq = highQuality(mode, softwareRenderer);
   const glRef = useRef<THREE.WebGLRenderer | null>(null);
   const contextLostRef = useRef<EventListener | null>(null);
   useEffect(() => {
@@ -132,6 +134,8 @@ export const CarViewer = forwardRef<ViewerHandle, ViewerProps>(function CarViewe
         stateRef.current = { scene, camera };
         invalidateRef.current = invalidate;
         gl.toneMapping = THREE.ACESFilmicToneMapping;
+        const context = gl.getContext(), debug = context.getExtension('WEBGL_debug_renderer_info');
+        if (debug) setSoftwareRenderer(isSoftwareRenderer(String(context.getParameter(debug.UNMASKED_RENDERER_WEBGL))));
         contextLostRef.current = (e) => { if (!gl.domElement.isConnected) return; e.preventDefault(); props.onError(new Error('WebGL bağlamı kaybedildi.')); };
         gl.domElement.addEventListener('webglcontextlost', contextLostRef.current, { once: true });
       }}
@@ -214,11 +218,15 @@ export const CarViewer = forwardRef<ViewerHandle, ViewerProps>(function CarViewe
 });
 
 function Car({
-  url, features, triangles, modelId, design, compare, onReady, controlsRef,
+  url, features, triangles, modelId, design, compare, onReady, onError, controlsRef,
 }: ViewerProps & { controlsRef: React.RefObject<OrbitControlsImpl | null> }) {
   const gltf = useGLTF(url, false, true);
-  const { camera, invalidate } = useThree();
-  const runtime = useMemo<CarRuntime>(() => createCarRuntime(gltf.scene, features, triangles, modelId, invalidate), [gltf, features, triangles, modelId, invalidate]);
+  const { camera, gl, scene, invalidate } = useThree();
+  const runtime = useMemo<CarRuntime>(() => {
+    const car = createCarRuntime(gltf.scene, features, triangles, modelId, invalidate);
+    car.object.visible = false;
+    return car;
+  }, [gltf, features, triangles, modelId, invalidate]);
   const introUntil = useRef(0);
 
   // Açılış turu (öncelik 0: çizimden önce kamerayı ilerletir)
@@ -234,6 +242,7 @@ function Car({
   }, 0);
 
   useEffect(() => {
+    let cancelled = false;
     const size = new THREE.Box3().setFromObject(runtime.object).getSize(new THREE.Vector3());
     const len = Math.max(size.x, size.z);
     const target = new THREE.Vector3(0, size.y * 0.42, 0);
@@ -250,14 +259,25 @@ function Car({
       c.update();
       c.saveState();
     }
-    onReady({ features: runtime.features, originalPaint: runtime.originalPaint, originalRim: runtime.originalRim });
-    // Açılış turu: kamera aracın etrafında kısa bir süre döner; kullanıcı dokununca veya süre dolunca durur
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    introUntil.current = reduced ? 0 : performance.now() + 3200;
+    runtime.object.visible = false;
+    runtime.apply(design);
+    // İlk normal/ayna çizimi shader bağlantısını senkron bekletmesin.
+    // KHR_parallel_shader_compile destekleyen cihazlarda arayüz bu sırada yanıt verir.
+    gl.compileAsync(runtime.object, camera, scene).then(() => {
+      if (cancelled) return;
+      runtime.object.visible = true;
+      onReady({ features: runtime.features, originalPaint: runtime.originalPaint, originalRim: runtime.originalRim });
+      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      introUntil.current = reduced ? 0 : performance.now() + 3200;
+      invalidate();
+    }).catch((error: unknown) => { if (!cancelled) onError(error instanceof Error ? error : new Error(String(error))); });
     const stopIntro = () => { introUntil.current = 0; };
     c?.addEventListener('start', stopIntro);
     invalidate();
     return () => {
+      cancelled = true;
+      runtime.object.visible = false;
+      introUntil.current = 0;
       c?.removeEventListener('start', stopIntro);
       runtime.dispose();
     };

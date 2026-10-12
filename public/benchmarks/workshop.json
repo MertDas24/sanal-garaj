@@ -1,32 +1,32 @@
 {
-  "measuredAt": "2026-10-12T19:51:42.185Z",
+  "measuredAt": "2026-10-12T21:36:39.507Z",
   "browser": "155.0.8059.39",
   "requestedBackend": "Chrome / ANGLE D3D11",
   "viewport": "1440×960",
   "sourceSha256": {
-    "src/three/CarViewer.tsx": "623f4537d884600db0e82b6482c89c603febab52a70297892f117bfb1c7eed2b",
-    "src/three/carRuntime.ts": "3f3d7db341345b5bccb61028b5fe08e041c45c3e4f5ec0d8369f425685f87b82",
+    "src/three/CarViewer.tsx": "8edb6b317efd793c0da6f99ca01a5be2e27d123790ec2a0565f2f00cc4bcd35c",
+    "src/three/carRuntime.ts": "8b3507a4a0d7977c2166b640f12d7cf7d8da04b44e5293505450889be504e724",
     "src/three/bodyKit.ts": "965d11a215306c45f563929548813b678b1d15ba5818a93ac11c2292166cd522",
-    "src/three/workshopGeometry.ts": "d351ce27df0d12123200312a897f7013eb8e8b7f9e2cee666ab5616c9732633c",
+    "src/three/workshopGeometry.ts": "44566fb987e43019da78260ba6c0829f0eef97447be31a38f840aeb7baf417cb",
     "src/components/PerformancePanel.tsx": "b8efbab01e0dc028e30360ae5f9c47477d69496c2a279f133922befa7bb0bb73"
   },
   "method": "Her araç yeni tarayıcı bağlamında, soğuk HTTP önbelleğiyle bir kez açıldı. Süre navigasyondan düzenleme panelinin hazır olmasına kadardır. Yerel sunucu; gerçek internet ve mobil cihaz performansı temsil edilmez. Donanım ve eşzamanlı sistem işleri sonucu etkiler.",
   "rows": [
     {
       "vehicleId": "toyota-ae86",
-      "modelReadyMs": 6634,
-      "measuredAt": "2026-10-12T19:51:28.105Z",
+      "modelReadyMs": 3947,
+      "measuredAt": "2026-10-12T21:36:35.057Z",
       "renderer": {
-        "geometries": 78,
+        "geometries": 68,
         "textures": 47,
         "calls": 161,
         "triangles": 601056
       },
-      "heapUsedBytes": 40387277,
+      "heapUsedBytes": 42425954,
       "resources": [
         {
           "file": "toyota-ae86-trueno-zenki.glb",
-          "durationMs": 143,
+          "durationMs": 168,
           "transferredBytes": 3961760,
           "decodedBytes": 3961460
         }
@@ -36,19 +36,19 @@
     },
     {
       "vehicleId": "bmw-m3-e30",
-      "modelReadyMs": 5391,
-      "measuredAt": "2026-10-12T19:51:40.032Z",
+      "modelReadyMs": 2703,
+      "measuredAt": "2026-10-12T21:36:37.967Z",
       "renderer": {
-        "geometries": 66,
+        "geometries": 61,
         "textures": 34,
         "calls": 139,
         "triangles": 269104
       },
-      "heapUsedBytes": 35259331,
+      "heapUsedBytes": 32266534,
       "resources": [
         {
           "file": "bmw-m3-e30.glb",
-          "durationMs": 12,
+          "durationMs": 6,
           "transferredBytes": 2055212,
           "decodedBytes": 2054912
         }
@@ -58,19 +58,19 @@
     },
     {
       "vehicleId": "mercedes-c63-amg-w204",
-      "modelReadyMs": 1942,
-      "measuredAt": "2026-10-12T19:51:42.164Z",
+      "modelReadyMs": 1327,
+      "measuredAt": "2026-10-12T21:36:39.487Z",
       "renderer": {
-        "geometries": 68,
+        "geometries": 61,
         "textures": 22,
         "calls": 93,
         "triangles": 71466
       },
-      "heapUsedBytes": 25729381,
+      "heapUsedBytes": 28771011,
       "resources": [
         {
           "file": "mercedes-c63-amg-w204.glb",
-          "durationMs": 12,
+          "durationMs": 15,
           "transferredBytes": 794624,
           "decodedBytes": 794324
         }

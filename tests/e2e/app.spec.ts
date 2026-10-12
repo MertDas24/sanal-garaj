@@ -145,6 +145,29 @@ test.describe('Düzenleyici', () => {
     await page.getByRole('button', { name: 'Kamerayı sıfırla' }).click();
   });
 
+  test('ışık izleme hazırlığı beklerken iptal edilir ve worker kapatılır', async ({ page }) => {
+    await page.addInitScript(() => {
+      const NativeWorker = window.Worker;
+      const state = { created: 0, terminated: 0 };
+      Object.assign(window, { __bvhWorkers: state });
+      window.Worker = class extends NativeWorker {
+        constructor(url: string | URL, options?: WorkerOptions) { super(url, options); state.created++; }
+        terminate() { state.terminated++; super.terminate(); }
+      };
+    });
+    let release!: () => void;
+    const held = new Promise<void>((resolve) => { release = resolve; });
+    await page.route('**/generateMeshBVH.worker-*.js', async (route) => { await held; await route.abort(); });
+    await page.goto('/#/arac/bmw-m3-e30'); await waitForModel(page);
+    await page.getByRole('button', { name: 'Fotogerçekçi görüntü' }).click();
+    await expect.poll(() => page.evaluate(() => (window as unknown as { __bvhWorkers: { created: number } }).__bvhWorkers.created)).toBe(1);
+    await page.getByRole('button', { name: 'Etkileşimli görünüme dön' }).click({ timeout: 5000 });
+    await expect(page.locator('.pt-host--on')).toHaveCount(0);
+    await expect.poll(() => page.evaluate(() => (window as unknown as { __bvhWorkers: { terminated: number } }).__bvhWorkers.terminated)).toBe(1);
+    release();
+    await expect(page.getByRole('button', { name: 'Kamerayı sıfırla' })).toBeVisible();
+  });
+
   test('fotogerçekçi görüntü: ışık izleme başlar, ilerler ve kapatılabilir', async ({ page }) => {
     // Ekran kartı olmayan CI ortamında (yazılımsal WebGL) gölgelendirici derlemesi dakikalar sürebilir
     test.setTimeout(240_000);

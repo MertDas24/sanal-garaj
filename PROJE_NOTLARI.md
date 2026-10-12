@@ -524,3 +524,25 @@ Katkı: Codex. Mevcut ana mimari ve lisanslı model hazırlama katkısı: Claude
 - Üç doğrulanmış kit (AE86, M3 E30, C 63 W204) dışındaki araçları tek tek görsel doğrulama ile genişletin; kit desteği tüm 26 araçta varmış gibi sunulmasın.
 - Üretici kayıtlarını ve gerçek parça/montaj verisini genişletin. Mevcut motor bölümü tutarlılık kontrolü olan parça planıdır; güç kazancı, mekanik montaj ve motor içi 3D/fizik sonucu sunulmaz.
 - Yaklaşık kaplama bölgeleri kesim/üretim şablonu değildir. Fiziksel mobil cihazlarda büyük model/kaplama ve ışık izleme performansını ayrıca ölçün. Mevcut ölçümler tek yerel oturumun süre/JS heap/kaynak adetleridir.
+
+## 2026-10-13 — Donma ve hazırlık gecikmeleri
+Katkı: Codex. Ana mimari ve mevcut lisanslı model hattı: Claude.
+- Kullanıcının donma bildirimi üzerine ilk çizim, kaplama kesimi ve ışık izleme hazırlığı incelendi. Kapsamlı yeniden yazım yapılmadı.
+- `workshopGeometry.ts`: projektör kutusunun dışında kalan üçgenler `DecalGeometry` kesiminden önce elenir. Kaynak modelin geometrisi/malzemesi değiştirilmez. İndeksli/indekssiz, dönüşmüş yüzeylerde eski yöntemle aynı konum/normal/UV çıktısı ve kutuyu kesen büyük üçgenlerin korunması test edildi.
+- Kontrollü 115.200 üçgen ölçümü: eski kesme hesabı **87,59 ms**, yeni **8,90 ms** (ısınma sonrasında beş turun ortancası). `node scripts/benchmark-decals.mjs` ile yeniden üretilebilir. Bu oran tüm sitenin hızlanma oranı değildir.
+- Üç gerçek modelde CPU hazırlığı ayrıca karşılaştırıldı: AE86 227,3→218,7 ms; M3 E30 92,9→45,6 ms; C 63 51,1→37,0 ms. Üç modelin desteklenen özellik listeleri aynı. Kanıt: `lab-out/runtime-freeze-audit.json` (depoya girmez). Zamanlar yalnızca bu yerel oturum içindir.
+- `carRuntime.ts`: aynı değişmez tasarım kamera karelerinde yeniden uygulanmaz; 120 kare boyunca gereksiz matris/malzeme hazırlığı tekrarlanmaz. Karşılaştırma, logo yüklenmesi ve StrictMode temizliği önbelleği geçersiz kılar.
+- `CarViewer.tsx`: ilk model, `compileAsync` tamamlanana kadar gizlidir; normal/ayna çizimi shader bağlantısını erkenden senkron beklemez. Hazırlık sırasında katalog kullanılabilir; sayfadan ayrılınca geç tamamlanan hazırlık modeli geri açmaz. Paralel derleme uzantısı bulunmayan sürücülerde kazanım sınırlı olabilir.
+- `quality.ts`: SwiftShader/llvmpipe gibi yazılımsal GPU'lar algılanırsa otomatik profil hafif görünümü seçer; kullanıcının elle yüksek kalite seçmesi korunur. CPU/RAM güçlü diye yazılımsal GPU'ya yansıtıcı zemin açılmaz.
+- `pathTrace.ts`: mevcut ücretsiz `three-mesh-bvh` bağımlılığının Web Worker'ı ve `setSceneAsync` kullanılır. BVH kurulumu arayüz iş parçacığından ayrılır; iptal/bitirme worker'ı kapatır, geç hata iptal edilmiş oturumu değiştirmez. Shader hazırlanırken ikinci senkron raster çizimi kaldırıldı. Işık sekme sayıları ve bağımsız HDRI mimarisi korunur.
+- **Kontroller:** lint, `npx tsc -b`, **47/47 birim testi**, derleme, **41/41 E2E** (yerel Chrome, 5,3 dakika) geçti. Yeni E2E'ler bekleyen worker'ın iptal/temizliğini ve shader hazırlığı sürerken katalog gezinmesini sınar. Gerçek ışık izleme örneği üretimi de yerelde doğrulandı. Kaydetme/paylaşma, model/ortam 404 kurtarma, WebGL kaybı, stüdyo, klavye ve mobil kontroller geçti.
+- `public/benchmarks/workshop.json` yeni kaynak SHA-256 değerleri ve gerçek yerel ölçümlerle yenilendi: AE86 **3947 ms**, M3 E30 **2703 ms**, C 63 **1327 ms**; üçünde sayfa hatası yok. Soğuk HTTP önbelleği, 1440×960 yerel Chrome; önceki kayıtla farklı oturum olduğundan tek başına nedensel hızlanma oranı çıkarılmaz. Mevcut gerçek demo/video korunur.
+- **Değişen dosyalar:** `src/three/CarViewer.tsx`, `carRuntime.ts`, `carRuntime.test.ts`, `pathTrace.ts`, `workshopGeometry.ts`, `workshopGeometry.test.ts`; `src/lib/quality.ts`, `quality.test.ts`; `tests/e2e/app.spec.ts`, `freeze.spec.ts`; `scripts/benchmark-decals.mjs`; `public/benchmarks/workshop.json`; `README.md`; `PROJE_NOTLARI.md`.
+- Yeni 3D model/kaynak satın alınmadı veya indirilmedi. Katalogdaki 26 mevcut CC BY 4.0 model ve atıfları korunur. Eklenen kod proje MIT lisansındadır; yeni servis, hesap, bağımlılık veya ücret yok; maliyet **0 TL**. Kaynak/lisans sicili ve referans dosyaları değiştirilmedi. Gizli bilgi yazılmadı; dış kişilere mesaj gönderilmedi.
+
+### Devam eden iş
+- Codex: yerel kontrolleri geçen değişiklikleri mevcut GitHub Pages sitesine yayınlama ve canlı worker/iptal akışını doğrulama.
+
+### Sonraki adımlar / Claude'un karar alanı
+- Fiziksel mobil cihazlarda uzun kamera/kaplama oturumu, yüksek kalite ve ışık izleme ölçümleri yapılmalı. GPU derlemesi ve örnek üretimi cihaz gücüne bağlıdır; bütün cihazlarda donmasızlık/FPS garantisi verilmez.
+- Önceki kayıtların kit kapsamı ve gerçek motor/parça verisi kararları geçerlidir; bu düzeltme onları genişletmez.

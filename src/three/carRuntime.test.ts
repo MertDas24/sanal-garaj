@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import * as THREE from 'three';
 import { createCarRuntime } from './carRuntime';
 import { defaultDesign } from '../lib/design';
@@ -24,6 +24,17 @@ function fixture(tireRadius = 0.3, triangles = 0, nonIndexed = false) {
 }
 
 describe('3D atölye geometrisi', () => {
+  it('kamera kareleri hazırlığı tekrarlamaz; karşılaştırma ve temizleme önbelleği geçersiz kılar', () => {
+    const { runtime } = fixture(), design = defaultDesign(runtime.originalPaint, false);
+    const matrices = vi.spyOn(runtime.object, 'updateMatrixWorld');
+    runtime.apply(design); const count = matrices.mock.calls.length;
+    for (let i = 0; i < 120; i++) runtime.apply(design);
+    expect(matrices).toHaveBeenCalledTimes(count);
+    runtime.apply({ ...design, paint: '#123456' }); runtime.apply(design);
+    expect(matrices.mock.calls.length).toBeGreaterThan(count);
+    runtime.dispose(); const disposedCount = matrices.mock.calls.length; runtime.apply(design);
+    expect(matrices.mock.calls.length).toBeGreaterThan(disposedCount); runtime.dispose();
+  });
   it('runtime temizliği kaynak modelin paylaşılan geometrisini silmez', () => {
     const { runtime, paint } = fixture(); let disposed = 0;
     paint.geometry.addEventListener('dispose', () => disposed++);
