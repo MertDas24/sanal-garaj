@@ -577,3 +577,4 @@ Katkı: Codex (atölye kodu, testler, README) ve Claude (inceleme, doğrulama, k
 ### Sonraki adımlar / Claude'un karar alanı
 - V düzeninde pistonlar sıra açısı yerine dikey hareket eder ve silindir kapakları sıra açısıyla dönmez; şema için kabul edildi, istenirse düzeltilebilir.
 - Önceki kayıtlardaki adımlar geçerli: fiziksel mobil cihaz ölçümleri, üç doğrulanmış kit dışındaki araçlara kit genişletme, üretici motor kayıtlarının artırılması (motor atölyesi bu kayıtlar arttıkça daha çok araçta fabrika düzenini gösterir).
+- **Yayın (Claude):** `879d03e` için https://github.com/MertDas24/sanal-garaj/actions/runs/38315512786 lint/tip/birim/derleme, bulut E2E ve GitHub Pages dağıtımı ile başarılı tamamlandı. Canlı site https://mertdas24.github.io/sanal-garaj/ 200 yanıtı veriyor.
