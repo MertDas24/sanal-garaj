@@ -329,3 +329,9 @@ Maliyet: 0 TL.
   kontrolü yerelde). Sonraki çalıştırmada tüm adımlar ve Pages yayını başarılı.
 - Canlı sitede masaüstü ve mobil: 26 kart, 26’sı “3D model hazır”, hata yok. Aston Martin DB11 için fotogerçekçi
   görüntü canlı sitede ~110 saniyede (tümleşik Intel GPU) tamamlandı.
+
+### Yayın doğrulaması (5. oturum)
+- CI: güvenlik taraması, lint, birim, derleme, uçtan uca testler ve Pages yayını başarılı.
+- Canlı sitede: 26 araç, CSP etiketi mevcut, Open Graph kapak görseli erişilebilir (200, image/jpeg),
+  gün batımı + koyu cam + sarı kaliper + sedef boyalı Gallardo için fotogerçekçi görüntü tamamlandı,
+  Hakkında sayfası açılıyor; konsolda CSP ihlali, hata veya 4xx/5xx yanıt yok.
