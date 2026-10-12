@@ -8,6 +8,9 @@ pg.on('console', (m) => { if (m.type() === 'error') console.log('console', m.tex
 await pg.goto((process.env.BASE ?? 'http://localhost:5199/') + hash);
 await pg.waitForSelector('.viewer canvas', { timeout: 60000 });
 await pg.waitForSelector('.viewer__overlay', { state: 'detached', timeout: 60000 });
+if (process.env.SHOT) await pg.getByLabel('Fotoğraf açısı (fotogerçekçi mod)').selectOption(process.env.SHOT);
+if (process.env.Q) await pg.getByRole('radio', { name: process.env.Q }).click();
+if (process.env.NODN) await pg.getByText('Gürültü giderme').click();
 await pg.getByRole('button', { name: 'Fotogerçekçi görüntü' }).click();
 const t0 = Date.now();
 await pg.waitForSelector('text=Fotogerçekçi görüntü hazır', { timeout: +wait }).catch(() => {});

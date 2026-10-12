@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react';
 //   #/foto             fotoğraf üzerinde dene
 //   #/kendi-modelin    yerel GLB görüntüleyici
 //   #/kaynaklar        model kaynakları ve lisanslar
+//   #/hakkinda         proje tanıtımı
 
 export type Route =
   | { name: 'catalog' }
@@ -15,6 +16,7 @@ export type Route =
   | { name: 'photo' }
   | { name: 'custom' }
   | { name: 'credits' }
+  | { name: 'about' }
   | { name: 'notfound' };
 
 export function parseHash(hash: string): Route {
@@ -27,6 +29,7 @@ export function parseHash(hash: string): Route {
   if (parts[0] === 'foto') return { name: 'photo' };
   if (parts[0] === 'kendi-modelin') return { name: 'custom' };
   if (parts[0] === 'kaynaklar') return { name: 'credits' };
+  if (parts[0] === 'hakkinda') return { name: 'about' };
   return { name: 'notfound' };
 }
 

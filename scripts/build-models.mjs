@@ -19,7 +19,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const CACHE = path.join(ROOT, '.model-cache');
 const OUT = path.join(ROOT, 'public', 'models');
 const MANIFEST = path.join(ROOT, 'src', 'data', 'models.generated.json');
-const ROLE_NAMES = { paint: 'CG_paint', glass: 'CG_glass', tire: 'CG_tire', rim: 'CG_rim' };
+const ROLE_NAMES = { paint: 'CG_paint', glass: 'CG_glass', tire: 'CG_tire', rim: 'CG_rim', caliper: 'CG_caliper' };
 
 await MeshoptEncoder.ready;
 await MeshoptDecoder.ready;
@@ -270,6 +270,8 @@ async function buildOne(src) {
       rideHeight: wheels.length >= 4,
       spoiler: parts.spoiler ? 'builtin' : src.mods?.spoiler ? 'addon' : false,
       frontLip: src.mods?.frontLip ? 'addon' : false,
+      windowTint: !!roles.glass,
+      caliperColor: !!roles.caliper,
     },
     materials: has,
     notes: src.notes ?? null,

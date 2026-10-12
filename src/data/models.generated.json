@@ -25,7 +25,9 @@
       "rimStyle": true,
       "rideHeight": true,
       "spoiler": false,
-      "frontLip": "addon"
+      "frontLip": "addon",
+      "windowTint": true,
+      "caliperColor": false
     },
     "materials": {
       "glass": true,
@@ -62,7 +64,9 @@
       "rimStyle": false,
       "rideHeight": true,
       "spoiler": false,
-      "frontLip": false
+      "frontLip": false,
+      "windowTint": true,
+      "caliperColor": false
     },
     "materials": {
       "paint": true,
@@ -75,7 +79,7 @@
   {
     "id": "mercedes-c63-amg-w204",
     "file": "models/mercedes-c63-amg-w204.glb",
-    "bytes": 794320,
+    "bytes": 794324,
     "triangles": 33342,
     "sourceTriangles": 33342,
     "size": [
@@ -98,9 +102,12 @@
       "rimStyle": true,
       "rideHeight": true,
       "spoiler": "addon",
-      "frontLip": false
+      "frontLip": false,
+      "windowTint": true,
+      "caliperColor": true
     },
     "materials": {
+      "caliper": true,
       "paint": true,
       "glass": true,
       "tire": true,
@@ -135,7 +142,9 @@
       "rimStyle": false,
       "rideHeight": false,
       "spoiler": false,
-      "frontLip": false
+      "frontLip": false,
+      "windowTint": false,
+      "caliperColor": false
     },
     "materials": {
       "paint": true,
@@ -169,7 +178,9 @@
       "rimStyle": false,
       "rideHeight": true,
       "spoiler": false,
-      "frontLip": false
+      "frontLip": false,
+      "windowTint": true,
+      "caliperColor": false
     },
     "materials": {
       "glass": true,
@@ -205,7 +216,9 @@
       "rimStyle": false,
       "rideHeight": true,
       "spoiler": false,
-      "frontLip": false
+      "frontLip": false,
+      "windowTint": true,
+      "caliperColor": false
     },
     "materials": {
       "paint": true,
@@ -240,7 +253,9 @@
       "rimStyle": true,
       "rideHeight": true,
       "spoiler": false,
-      "frontLip": false
+      "frontLip": false,
+      "windowTint": true,
+      "caliperColor": false
     },
     "materials": {
       "rim": true,
@@ -277,13 +292,16 @@
       "rimStyle": true,
       "rideHeight": true,
       "spoiler": "addon",
-      "frontLip": "addon"
+      "frontLip": "addon",
+      "windowTint": true,
+      "caliperColor": true
     },
     "materials": {
       "glass": true,
       "paint": true,
       "tire": true,
       "rim": true,
+      "caliper": true,
       "wheels": 16
     },
     "notes": null
@@ -291,7 +309,7 @@
   {
     "id": "bmw-m3-e30",
     "file": "models/bmw-m3-e30.glb",
-    "bytes": 2054916,
+    "bytes": 2054912,
     "triangles": 86625,
     "sourceTriangles": 117261,
     "size": [
@@ -314,13 +332,16 @@
       "rimStyle": true,
       "rideHeight": true,
       "spoiler": false,
-      "frontLip": "addon"
+      "frontLip": "addon",
+      "windowTint": true,
+      "caliperColor": true
     },
     "materials": {
       "paint": true,
       "glass": true,
       "rim": true,
       "tire": true,
+      "caliper": true,
       "wheels": 20
     },
     "notes": null
@@ -351,7 +372,9 @@
       "rimStyle": true,
       "rideHeight": true,
       "spoiler": false,
-      "frontLip": false
+      "frontLip": false,
+      "windowTint": true,
+      "caliperColor": false
     },
     "materials": {
       "paint": true,
@@ -388,7 +411,9 @@
       "rimStyle": true,
       "rideHeight": true,
       "spoiler": false,
-      "frontLip": "addon"
+      "frontLip": "addon",
+      "windowTint": true,
+      "caliperColor": false
     },
     "materials": {
       "glass": true,
@@ -425,7 +450,9 @@
       "rimStyle": true,
       "rideHeight": true,
       "spoiler": false,
-      "frontLip": false
+      "frontLip": false,
+      "windowTint": true,
+      "caliperColor": false
     },
     "materials": {
       "paint": true,
@@ -462,7 +489,9 @@
       "rimStyle": true,
       "rideHeight": true,
       "spoiler": false,
-      "frontLip": false
+      "frontLip": false,
+      "windowTint": true,
+      "caliperColor": false
     },
     "materials": {
       "paint": true,
@@ -476,7 +505,7 @@
   {
     "id": "aston-martin-db11",
     "file": "models/aston-martin-db11.glb",
-    "bytes": 2962660,
+    "bytes": 2962664,
     "triangles": 205160,
     "sourceTriangles": 296071,
     "size": [
@@ -499,11 +528,14 @@
       "rimStyle": false,
       "rideHeight": true,
       "spoiler": false,
-      "frontLip": false
+      "frontLip": false,
+      "windowTint": false,
+      "caliperColor": true
     },
     "materials": {
       "paint": true,
       "tire": true,
+      "caliper": true,
       "wheels": 4
     },
     "notes": "Sol ve sağ jantlar kaynakta farklı malzemeler kullandığı için jant rengi ve modeli kapalıdır."
@@ -511,7 +543,7 @@
   {
     "id": "lamborghini-gallardo-2010",
     "file": "models/lamborghini-gallardo-2010.glb",
-    "bytes": 3781256,
+    "bytes": 3781260,
     "triangles": 154698,
     "sourceTriangles": 154698,
     "size": [
@@ -534,13 +566,16 @@
       "rimStyle": true,
       "rideHeight": true,
       "spoiler": false,
-      "frontLip": false
+      "frontLip": false,
+      "windowTint": true,
+      "caliperColor": true
     },
     "materials": {
       "paint": true,
       "glass": true,
       "tire": true,
       "rim": true,
+      "caliper": true,
       "wheels": 4
     },
     "notes": "Fren diski ve kaliper modeli, yazarın belirttiğine göre Velstyde’a aittir (aynı CC BY 4.0 Sketchfab modelinin parçası)."
@@ -548,7 +583,7 @@
   {
     "id": "chevrolet-corvette-c7",
     "file": "models/chevrolet-corvette-c7.glb",
-    "bytes": 2731044,
+    "bytes": 2731040,
     "triangles": 273133,
     "sourceTriangles": 1070389,
     "size": [
@@ -571,11 +606,14 @@
       "rimStyle": true,
       "rideHeight": true,
       "spoiler": false,
-      "frontLip": false
+      "frontLip": false,
+      "windowTint": true,
+      "caliperColor": true
     },
     "materials": {
       "rim": true,
       "tire": true,
+      "caliper": true,
       "glass": true,
       "paint": true,
       "wheels": 4
@@ -608,7 +646,9 @@
       "rimStyle": false,
       "rideHeight": true,
       "spoiler": false,
-      "frontLip": false
+      "frontLip": false,
+      "windowTint": false,
+      "caliperColor": false
     },
     "materials": {
       "paint": true,
@@ -642,7 +682,9 @@
       "rimStyle": true,
       "rideHeight": true,
       "spoiler": false,
-      "frontLip": false
+      "frontLip": false,
+      "windowTint": true,
+      "caliperColor": false
     },
     "materials": {
       "rim": true,
@@ -655,7 +697,7 @@
   {
     "id": "ferrari-488-pista-widebody",
     "file": "models/ferrari-488-pista-widebody.glb",
-    "bytes": 1888308,
+    "bytes": 1888312,
     "triangles": 119329,
     "sourceTriangles": 119329,
     "size": [
@@ -678,10 +720,13 @@
       "rimStyle": true,
       "rideHeight": true,
       "spoiler": false,
-      "frontLip": false
+      "frontLip": false,
+      "windowTint": false,
+      "caliperColor": true
     },
     "materials": {
       "paint": true,
+      "caliper": true,
       "rim": true,
       "tire": true,
       "wheels": 4
@@ -714,7 +759,9 @@
       "rimStyle": true,
       "rideHeight": true,
       "spoiler": false,
-      "frontLip": false
+      "frontLip": false,
+      "windowTint": true,
+      "caliperColor": false
     },
     "materials": {
       "paint": true,
@@ -751,7 +798,9 @@
       "rimStyle": false,
       "rideHeight": true,
       "spoiler": false,
-      "frontLip": false
+      "frontLip": false,
+      "windowTint": true,
+      "caliperColor": false
     },
     "materials": {
       "paint": true,
@@ -787,7 +836,9 @@
       "rimStyle": false,
       "rideHeight": true,
       "spoiler": false,
-      "frontLip": false
+      "frontLip": false,
+      "windowTint": true,
+      "caliperColor": false
     },
     "materials": {
       "paint": true,
@@ -823,7 +874,9 @@
       "rimStyle": true,
       "rideHeight": true,
       "spoiler": false,
-      "frontLip": false
+      "frontLip": false,
+      "windowTint": false,
+      "caliperColor": false
     },
     "materials": {
       "rim": true,
@@ -859,10 +912,13 @@
       "rimStyle": false,
       "rideHeight": true,
       "spoiler": false,
-      "frontLip": false
+      "frontLip": false,
+      "windowTint": false,
+      "caliperColor": true
     },
     "materials": {
       "paint": true,
+      "caliper": true,
       "wheels": 4
     },
     "notes": null
@@ -870,7 +926,7 @@
   {
     "id": "honda-civic-type-r-fl5",
     "file": "models/honda-civic-type-r-fl5.glb",
-    "bytes": 2222588,
+    "bytes": 2222576,
     "triangles": 224158,
     "sourceTriangles": 352560,
     "size": [
@@ -893,12 +949,15 @@
       "rimStyle": true,
       "rideHeight": true,
       "spoiler": false,
-      "frontLip": false
+      "frontLip": false,
+      "windowTint": true,
+      "caliperColor": true
     },
     "materials": {
       "rim": true,
       "tire": true,
       "glass": true,
+      "caliper": true,
       "paint": true,
       "wheels": 4
     },
@@ -930,7 +989,9 @@
       "rimStyle": true,
       "rideHeight": true,
       "spoiler": false,
-      "frontLip": false
+      "frontLip": false,
+      "windowTint": true,
+      "caliperColor": false
     },
     "materials": {
       "paint": true,

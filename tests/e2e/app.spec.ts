@@ -72,7 +72,7 @@ test.describe('Düzenleyici', () => {
   test('desteklenmeyen seçenekler gerekçeyle kapalı gösterilir', async ({ page }) => {
     await page.goto('/#/arac/mercedes-300-ce-c124');
     await waitForModel(page);
-    await expect(page.getByText('jantlar lastik veya gövdeyle aynı parçada')).toBeVisible();
+    await expect(page.getByText('jantlar ayrı ve tutarlı bir malzeme olarak ayrılamadı')).toBeVisible();
     await expect(page.getByText('yükseklik ayarlanamaz')).toBeVisible();
     await expect(page.getByRole('radio', { name: '5 kollu' })).toHaveCount(0);
   });
@@ -89,7 +89,7 @@ test.describe('Düzenleyici', () => {
   test('paylaş: bağlantı panoya kopyalanır ve aynı tasarımı açar', async ({ page, context }) => {
     await page.goto('/#/arac/toyota-ae86');
     await waitForModel(page);
-    await page.getByRole('radio', { name: 'Kırmızı' }).click();
+    await page.getByRole('radiogroup', { name: 'Gövde rengi' }).getByRole('radio', { name: 'Kırmızı' }).click();
     await page.getByRole('button', { name: 'Bağlantıyı paylaş' }).click();
     await expect(page.getByText('panoya kopyalandı')).toBeVisible();
     const link = await page.evaluate(() => navigator.clipboard.readText());
@@ -98,7 +98,7 @@ test.describe('Düzenleyici', () => {
     const p2 = await context.newPage();
     await p2.goto(link);
     await waitForModel(p2);
-    await expect(p2.getByRole('radio', { name: 'Kırmızı' })).toHaveAttribute('aria-checked', 'true');
+    await expect(p2.getByRole('radiogroup', { name: 'Gövde rengi' }).getByRole('radio', { name: 'Kırmızı' })).toHaveAttribute('aria-checked', 'true');
   });
 
   test('görüntü indir: alt yazılı PNG', async ({ page }) => {
@@ -114,7 +114,7 @@ test.describe('Düzenleyici', () => {
   test('kaydet → Tasarımlarım → aç → sil', async ({ page }) => {
     await page.goto('/#/arac/toyota-corolla-e180');
     await waitForModel(page);
-    await page.getByRole('radio', { name: 'Yeşil' }).click();
+    await page.getByRole('radiogroup', { name: 'Gövde rengi' }).getByRole('radio', { name: 'Yeşil' }).click();
     await page.getByRole('button', { name: 'Kaydet' }).click();
     await expect(page.getByText('bu cihaza kaydedildi')).toBeVisible();
     await page.goto('/#/tasarimlarim');
@@ -122,7 +122,7 @@ test.describe('Düzenleyici', () => {
     await expect(page.locator('.card__title')).toContainText('Toyota Corolla');
     await page.getByRole('link', { name: 'Aç', exact: true }).click();
     await waitForModel(page);
-    await expect(page.getByRole('radio', { name: 'Yeşil' })).toHaveAttribute('aria-checked', 'true');
+    await expect(page.getByRole('radiogroup', { name: 'Gövde rengi' }).getByRole('radio', { name: 'Yeşil' })).toHaveAttribute('aria-checked', 'true');
     await page.goto('/#/tasarimlarim');
     page.once('dialog', (d) => d.accept());
     await page.getByRole('button', { name: 'Sil' }).click();
@@ -154,6 +154,29 @@ test.describe('Düzenleyici', () => {
     await page.getByRole('button', { name: 'Etkileşimli görünüme dön' }).click({ timeout: 180_000 });
     await expect(page.locator('.pt-host--on')).toHaveCount(0, { timeout: 60_000 });
     await expect(page.getByRole('button', { name: 'Kamerayı sıfırla' })).toBeVisible();
+  });
+
+  test('cam filmi, kaliper, sedef boya ve hazır paket; ortam bağlantıya yazılır', async ({ page }) => {
+    await page.goto('/#/arac/lamborghini-gallardo');
+    await waitForModel(page);
+    await page.getByRole('radio', { name: 'Koyu' }).click();
+    await page.getByRole('radiogroup', { name: 'Kaliper rengi' }).getByRole('radio', { name: 'Sarı' }).click();
+    await page.getByRole('radio', { name: 'Sedef' }).click();
+    await page.getByLabel('Ortam ışığı').selectOption('sunset');
+    for (const part of ['wt=dark', 'cc=f2c40f', 'f=p', 'env=sunset']) await expect(page).toHaveURL(new RegExp(part));
+    await page.locator('button.preset', { hasText: 'Klasik' }).click();
+    await expect(page).toHaveURL(/p=14213d/);
+    await expect(page).not.toHaveURL(/wt=/);
+  });
+
+  test('CSP etkin ve ihlal yok', async ({ page }) => {
+    const violations: string[] = [];
+    page.on('console', (m) => { if (/Content Security Policy|Refused to/i.test(m.text())) violations.push(m.text()); });
+    await page.goto('/#/arac/bmw-m3-e30');
+    await waitForModel(page);
+    const csp = await page.locator('meta[http-equiv="Content-Security-Policy"]').getAttribute('content');
+    expect(csp).toContain("script-src 'self'");
+    expect(violations).toEqual([]);
   });
 
   test('WebGL yoksa anlaşılır mesaj gösterilir', async ({ page }) => {
@@ -238,6 +261,12 @@ test.describe('Fotoğraf ve yerel model', () => {
     await page.getByRole('combobox').selectOption({ label: 'CG_paint' });
   });
 
+  test('Hakkında sayfası ve sosyal önizleme etiketleri', async ({ page }) => {
+    await page.goto('/#/hakkinda');
+    await expect(page.getByRole('heading', { name: 'Sanal Garaj nasıl yapıldı?' })).toBeVisible();
+    expect(await page.locator('meta[property="og:image"]').getAttribute('content')).toContain('og-image.jpg');
+  });
+
   test('GLB olmayan dosya reddedilir', async ({ page }) => {
     await page.goto('/#/kendi-modelin');
     await page.locator('input[type=file]').first().setInputFiles({ name: 'x.glb', mimeType: 'model/gltf-binary', buffer: Buffer.from('not a model') });
@@ -262,7 +291,7 @@ test.describe('Mobil', () => {
   test('dokunmatik ekranda renk değişimi @mobil', async ({ page }) => {
     await page.goto('/#/arac/volkswagen-passat-b55');
     await waitForModel(page);
-    await page.getByRole('radio', { name: 'Turuncu' }).tap();
+    await page.getByRole('radiogroup', { name: 'Gövde rengi' }).getByRole('radio', { name: 'Turuncu' }).tap();
     await expect(page).toHaveURL(/p=e8650f/);
   });
 });

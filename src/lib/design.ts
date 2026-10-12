@@ -1,8 +1,9 @@
 import type { ModelFeatures } from '../data/models';
 
-export type Finish = 'gloss' | 'matte' | 'metallic';
+export type Finish = 'gloss' | 'metallic' | 'pearl' | 'satin' | 'matte';
 export type RimStyle = 'original' | 'spoke5' | 'multi' | 'dish';
 export type PartColor = 'body' | 'carbon';
+export type WindowTint = 'stock' | 'light' | 'medium' | 'dark';
 
 export interface Design {
   paint: string;
@@ -15,12 +16,19 @@ export interface Design {
   spoiler: boolean;
   lip: boolean;
   partColor: PartColor;
+  /** Cam filmi */
+  tint: WindowTint;
+  /** Fren kaliperi rengi; null = orijinal */
+  caliper: string | null;
 }
 
 export const HEIGHT_MIN_MM = -40;
 export const HEIGHT_MAX_MM = 40;
 
-export const FINISH_LABELS: Record<Finish, string> = { gloss: 'Parlak', matte: 'Mat', metallic: 'Metalik' };
+export const TINT_LABELS: Record<WindowTint, string> = { stock: 'Fabrika', light: 'Açık', medium: 'Orta', dark: 'Koyu' };
+const TINTS: WindowTint[] = ['stock', 'light', 'medium', 'dark'];
+
+export const FINISH_LABELS: Record<Finish, string> = { gloss: 'Parlak', metallic: 'Metalik', pearl: 'Sedef', satin: 'Saten', matte: 'Mat' };
 export const RIM_STYLE_LABELS: Record<RimStyle, string> = {
   original: 'Orijinal',
   spoke5: '5 kollu',
@@ -29,7 +37,7 @@ export const RIM_STYLE_LABELS: Record<RimStyle, string> = {
 };
 
 const HEX = /^#[0-9a-f]{6}$/;
-const FINISHES: Finish[] = ['gloss', 'matte', 'metallic'];
+const FINISHES: Finish[] = ['gloss', 'metallic', 'pearl', 'satin', 'matte'];
 const RIM_STYLES: RimStyle[] = ['original', 'spoke5', 'multi', 'dish'];
 
 export function normalizeHex(value: unknown): string | null {
@@ -50,6 +58,8 @@ export function defaultDesign(originalPaint: string, builtinSpoiler: boolean): D
     spoiler: builtinSpoiler,
     lip: false,
     partColor: 'body',
+    tint: 'stock',
+    caliper: null,
   };
 }
 
@@ -70,12 +80,14 @@ export function sanitizeDesign(input: Partial<Record<keyof Design, unknown>>, ba
   if (f.spoiler && typeof input.spoiler === 'boolean') d.spoiler = input.spoiler;
   if (f.frontLip && typeof input.lip === 'boolean') d.lip = input.lip;
   if (input.partColor === 'body' || input.partColor === 'carbon') d.partColor = input.partColor;
+  if (f.windowTint && TINTS.includes(input.tint as WindowTint)) d.tint = input.tint as WindowTint;
+  if (f.caliperColor) d.caliper = input.caliper === null ? null : (normalizeHex(input.caliper) ?? base.caliper);
   return d;
 }
 
 // ---- Paylaşım bağlantısı: kısa, okunabilir sorgu parametreleri ----
 
-const FINISH_CODES: Record<Finish, string> = { gloss: 'g', matte: 'm', metallic: 'x' };
+const FINISH_CODES: Record<Finish, string> = { gloss: 'g', matte: 'm', metallic: 'x', pearl: 'p', satin: 's' };
 
 export function encodeDesign(d: Design, base: Design): URLSearchParams {
   const q = new URLSearchParams();
@@ -87,6 +99,8 @@ export function encodeDesign(d: Design, base: Design): URLSearchParams {
   if (d.spoiler !== base.spoiler) q.set('s', d.spoiler ? '1' : '0');
   if (d.lip) q.set('l', '1');
   if (d.partColor !== 'body') q.set('pc', 'c');
+  if (d.tint !== 'stock') q.set('wt', d.tint);
+  if (d.caliper) q.set('cc', d.caliper.slice(1));
   return q;
 }
 
@@ -98,6 +112,8 @@ export function encodeDesignFull(d: Design): URLSearchParams {
   if (d.heightMm) q.set('h', String(d.heightMm));
   if (d.lip) q.set('l', '1');
   if (d.partColor !== 'body') q.set('pc', 'c');
+  if (d.tint !== 'stock') q.set('wt', d.tint);
+  if (d.caliper) q.set('cc', d.caliper.slice(1));
   return q;
 }
 
@@ -117,6 +133,10 @@ export function decodeDesign(q: URLSearchParams): Partial<Record<keyof Design, u
   if (s === '1' || s === '0') out.spoiler = s === '1';
   if (q.get('l') === '1') out.lip = true;
   if (q.get('pc') === 'c') out.partColor = 'carbon';
+  const wt = q.get('wt');
+  if (wt) out.tint = wt;
+  const cc = q.get('cc');
+  if (cc) out.caliper = cc;
   return out;
 }
 
@@ -133,6 +153,24 @@ export const PAINT_SWATCHES: { name: string; hex: string }[] = [
   { name: 'Gece mavisi', hex: '#14213d' },
   { name: 'Mor', hex: '#5b2a86' },
   { name: 'Bronz', hex: '#8c6239' },
+];
+
+export const CALIPER_SWATCHES: { name: string; hex: string }[] = [
+  { name: 'Kırmızı', hex: '#c4161c' },
+  { name: 'Sarı', hex: '#f2c40f' },
+  { name: 'Turuncu', hex: '#ef6a10' },
+  { name: 'Mavi', hex: '#1f5fd1' },
+  { name: 'Yeşil', hex: '#2f9e44' },
+  { name: 'Siyah', hex: '#151515' },
+  { name: 'Gümüş', hex: '#b9bcc2' },
+];
+
+/** Hazır paketler: modelin desteklemediği ayarlar uygulanırken otomatik atlanır (sanitizeDesign). */
+export const PRESETS: { id: string; label: string; hint: string; design: Partial<Design> }[] = [
+  { id: 'sokak', label: 'Sokak', hint: 'Saten siyah, koyu cam, alçak', design: { paint: '#111214', finish: 'satin', rimStyle: 'spoke5', rimColor: '#141414', heightMm: -20, tint: 'dark', caliper: '#c4161c', lip: false, partColor: 'carbon' } },
+  { id: 'pist', label: 'Pist', hint: 'Sarı, aero parçalar, en alçak', design: { paint: '#f2c40f', finish: 'gloss', rimStyle: 'multi', rimColor: '#141414', heightMm: -40, spoiler: true, lip: true, partColor: 'carbon', tint: 'medium', caliper: '#1f5fd1' } },
+  { id: 'klasik', label: 'Klasik', hint: 'Gece mavisi metalik, fabrika', design: { paint: '#14213d', finish: 'metallic', rimStyle: 'original', rimColor: null, heightMm: 0, lip: false, tint: 'stock', caliper: null } },
+  { id: 'gece', label: 'Gece', hint: 'Mor sedef, altın jant', design: { paint: '#5b2a86', finish: 'pearl', rimColor: '#c9a227', heightMm: -30, tint: 'dark', caliper: '#c9a227' } },
 ];
 
 export const RIM_SWATCHES: { name: string; hex: string }[] = [

@@ -2,8 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { decodeDesign, defaultDesign, encodeDesign, encodeDesignFull, normalizeHex, sanitizeDesign } from './design';
 import type { ModelFeatures } from '../data/models';
 
-const ALL: ModelFeatures = { paint: true, rimColor: true, rimStyle: true, rideHeight: true, spoiler: 'addon', frontLip: 'addon' };
-const NONE: ModelFeatures = { paint: true, rimColor: false, rimStyle: false, rideHeight: false, spoiler: false, frontLip: false };
+const ALL: ModelFeatures = { paint: true, rimColor: true, rimStyle: true, rideHeight: true, spoiler: 'addon', frontLip: 'addon', windowTint: true, caliperColor: true };
+const NONE: ModelFeatures = { paint: true, rimColor: false, rimStyle: false, rideHeight: false, spoiler: false, frontLip: false, windowTint: false, caliperColor: false };
 const base = defaultDesign('#112233', false);
 
 describe('normalizeHex', () => {
@@ -28,7 +28,9 @@ describe('sanitizeDesign', () => {
     expect(d).toEqual(base);
   });
   it('modelin desteklemediği seçenekleri kapatır', () => {
-    const d = sanitizeDesign({ rimColor: 'ff0000', rimStyle: 'dish', heightMm: 30, spoiler: true, lip: true }, base, NONE);
+    const d = sanitizeDesign({ rimColor: 'ff0000', rimStyle: 'dish', heightMm: 30, spoiler: true, lip: true, tint: 'dark', caliper: 'ff0000' }, base, NONE);
+    expect(d.tint).toBe('stock');
+    expect(d.caliper).toBeNull();
     expect(d.rimColor).toBeNull();
     expect(d.rimStyle).toBe('original');
     expect(d.heightMm).toBe(0);
@@ -39,7 +41,7 @@ describe('sanitizeDesign', () => {
 
 describe('paylaşım bağlantısı', () => {
   it('kodla → çöz → doğrula sonucu aynı tasarımı verir', () => {
-    const d = { ...base, paint: '#ff0000', finish: 'metallic' as const, rimColor: '#c9a227', rimStyle: 'spoke5' as const, heightMm: -25, spoiler: true, lip: true, partColor: 'carbon' as const };
+    const d = { ...base, paint: '#ff0000', finish: 'metallic' as const, rimColor: '#c9a227', rimStyle: 'spoke5' as const, heightMm: -25, spoiler: true, lip: true, partColor: 'carbon' as const, tint: 'dark' as const, caliper: '#c4161c' };
     const q = encodeDesign(d, base);
     expect(sanitizeDesign(decodeDesign(new URLSearchParams(q.toString())), base, ALL)).toEqual(d);
   });
@@ -50,5 +52,16 @@ describe('paylaşım bağlantısı', () => {
     const d = { ...base, paint: '#00ff00', spoiler: true };
     const other = defaultDesign('#999999', false);
     expect(sanitizeDesign(decodeDesign(encodeDesignFull(d)), other, ALL)).toEqual(d);
+  });
+});
+
+describe('yeni ayarlar', () => {
+  const F = { paint: true, rimColor: true, rimStyle: true, rideHeight: true, spoiler: 'addon', frontLip: 'addon', windowTint: true, caliperColor: true } as const;
+  const b = defaultDesign('#112233', false);
+  it('sedef ve saten yüzeyler kabul edilir, geçersiz film reddedilir', () => {
+    expect(sanitizeDesign({ finish: 'pearl' }, b, F).finish).toBe('pearl');
+    expect(sanitizeDesign({ finish: 'satin' }, b, F).finish).toBe('satin');
+    expect(sanitizeDesign({ tint: 'opak' }, b, F).tint).toBe('stock');
+    expect(sanitizeDesign({ caliper: 'javascript:1' }, b, F).caliper).toBeNull();
   });
 });

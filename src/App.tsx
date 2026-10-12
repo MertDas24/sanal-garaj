@@ -4,6 +4,7 @@ import { Header } from './components/Header';
 import { CatalogPage } from './pages/CatalogPage';
 import { CreditsPage } from './pages/CreditsPage';
 import { SavedPage } from './pages/SavedPage';
+import { AboutPage } from './pages/AboutPage';
 
 // 3D içeren sayfalar ayrı paketlerde: katalog açılırken Three.js indirilmez
 const EditorPage = lazy(() => import('./pages/EditorPage'));
@@ -29,6 +30,7 @@ export default function App() {
           {route.name === 'photo' && <PhotoPage />}
           {route.name === 'custom' && <CustomModelPage />}
           {route.name === 'credits' && <CreditsPage />}
+          {route.name === 'about' && <AboutPage />}
           {route.name === 'notfound' && (
             <section className="page empty-state">
               <h1>Sayfa bulunamadı</h1>

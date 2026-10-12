@@ -1,8 +1,8 @@
 import { useId } from 'react';
 import type { ModelFeatures } from '../data/models';
 import {
-  FINISH_LABELS, HEIGHT_MAX_MM, HEIGHT_MIN_MM, PAINT_SWATCHES, RIM_STYLE_LABELS, RIM_SWATCHES,
-  type Design, type Finish, type RimStyle,
+  PRESETS, sanitizeDesign, CALIPER_SWATCHES, FINISH_LABELS, HEIGHT_MAX_MM, HEIGHT_MIN_MM, PAINT_SWATCHES, RIM_STYLE_LABELS, RIM_SWATCHES,
+  TINT_LABELS, type Design, type Finish, type RimStyle, type WindowTint,
 } from '../lib/design';
 
 interface Props {
@@ -19,6 +19,19 @@ export function EditorPanel({ design, base, features: f, notes, onChange }: Prop
 
   return (
     <div className="panel">
+      <section className="panel__section">
+        <h2 className="panel__title">Hazır paketler</h2>
+        <div className="presets">
+          {PRESETS.map((p) => (
+            <button key={p.id} className="preset" onClick={() => onChange(sanitizeDesign({ ...design, ...p.design }, base, f))}>
+              <strong>{p.label}</strong>
+              <span>{p.hint}</span>
+            </button>
+          ))}
+        </div>
+        <p className="muted small">Paketler modelin desteklemediği ayarları atlar; sonra istediğiniz gibi değiştirebilirsiniz.</p>
+      </section>
+
       <Section title="Gövde boyası" disabled={!f.paint} reason="Bu modelde gövde boyası ayrı bir malzeme değil.">
         <Swatches
           label="Gövde rengi"
@@ -38,7 +51,7 @@ export function EditorPanel({ design, base, features: f, notes, onChange }: Prop
         />
       </Section>
 
-      <Section title="Jantlar" disabled={!f.rimColor && !f.rimStyle} reason="Bu modelde jantlar lastik veya gövdeyle aynı parçada; jant değişikliği desteklenmiyor.">
+      <Section title="Jantlar" disabled={!f.rimColor && !f.rimStyle} reason="Bu modelde jantlar ayrı ve tutarlı bir malzeme olarak ayrılamadı; jant değişikliği desteklenmiyor.">
         {f.rimColor && (
           <Swatches
             label="Jant rengi"
@@ -55,6 +68,24 @@ export function EditorPanel({ design, base, features: f, notes, onChange }: Prop
             onPick={(v) => set('rimStyle', v)}
           />
         )}
+      </Section>
+
+      <Section title="Cam filmi" disabled={!f.windowTint} reason="Bu modelde camlar ayrı bir malzeme değil; cam filmi uygulanamıyor.">
+        <Segmented<WindowTint>
+          label="Film koyuluğu"
+          options={(Object.keys(TINT_LABELS) as WindowTint[]).map((k) => ({ value: k, label: TINT_LABELS[k] }))}
+          value={design.tint}
+          onPick={(v) => set('tint', v)}
+        />
+      </Section>
+
+      <Section title="Fren kaliperi" disabled={!f.caliperColor} reason="Bu modelde fren kaliperleri ayrı bir parça değil.">
+        <Swatches
+          label="Kaliper rengi"
+          options={[{ name: 'Orijinal', hex: '' }, ...CALIPER_SWATCHES]}
+          value={design.caliper ?? ''}
+          onPick={(hex) => set('caliper', hex || null)}
+        />
       </Section>
 
       <Section title="Sürüş yüksekliği" disabled={!f.rideHeight} reason="Bu modelde tekerlekler gövdeyle tek parça; yükseklik ayarlanamaz.">

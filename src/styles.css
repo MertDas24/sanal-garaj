@@ -238,3 +238,19 @@ tr:last-child td { border-bottom: 0; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition: none !important; animation: none !important; }
 }
+
+/* ---- Hakkında ---- */
+.about .lead { font-size: 1.08rem; color: var(--text); }
+.about__hero { width: 100%; height: auto; border-radius: var(--radius); border: 1px solid var(--border); margin: 8px 0 20px; }
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; margin: 0 0 24px; }
+.stats > div { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; display: flex; flex-direction: column; }
+.stats strong { font-size: 1.6rem; line-height: 1.2; }
+.stats span { color: var(--muted); font-size: 0.9rem; }
+.about ul { display: grid; gap: 10px; padding-left: 20px; }
+.tags { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip--static { cursor: default; }
+.scene-controls select { width: 100%; min-height: 40px; }
+.presets { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.preset { text-align: left; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface); color: var(--text); font: inherit; cursor: pointer; display: flex; flex-direction: column; gap: 2px; min-height: 56px; }
+.preset:hover { border-color: var(--accent); }
+.preset span { color: var(--muted); font-size: 0.8rem; }

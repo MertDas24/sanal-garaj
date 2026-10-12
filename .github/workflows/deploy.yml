@@ -18,16 +18,18 @@ jobs:
     name: Lint, tip kontrolü, birim testleri, derleme
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
-          node-version: 22
+          node-version: 24
           cache: npm
       - run: npm ci
+      - name: Bağımlılık güvenlik taraması
+        run: npm audit --audit-level=high
       - run: npm run lint
       - run: npm test
       - run: npm run build
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v5
         if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
         with:
           path: dist
@@ -36,17 +38,17 @@ jobs:
     name: Uçtan uca testler (Chromium)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
-          node-version: 22
+          node-version: 24
           cache: npm
       - run: npm ci
       - run: npx playwright install --with-deps chromium
       - run: npm run e2e
         env:
           CI: 'true'
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: failure()
         with:
           name: playwright-izleri
@@ -66,4 +68,4 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5

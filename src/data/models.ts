@@ -19,6 +19,10 @@ export interface ModelFeatures {
   /** builtin: modelin kendi parçası açılıp kapatılır; addon: uygulamanın ürettiği parça eklenir */
   spoiler: 'builtin' | 'addon' | false;
   frontLip: 'addon' | false;
+  /** Cam filmi (camlar ayrı malzeme ise) */
+  windowTint: boolean;
+  /** Fren kaliperi rengi (kaliper ayrı malzeme ise) */
+  caliperColor: boolean;
 }
 
 export interface ModelAsset {

@@ -7,6 +7,7 @@ const LINKS: { href: string; label: string; match: Route['name'][] }[] = [
   { href: '#/foto', label: 'Fotoğrafta dene', match: ['photo'] },
   { href: '#/kendi-modelin', label: 'Kendi modelin', match: ['custom'] },
   { href: '#/kaynaklar', label: 'Kaynaklar', match: ['credits'] },
+  { href: '#/hakkinda', label: 'Hakkında', match: ['about'] },
 ];
 
 export function Header({ route }: { route: Route }) {

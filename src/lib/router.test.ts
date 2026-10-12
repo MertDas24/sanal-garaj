@@ -9,6 +9,7 @@ describe('parseHash', () => {
     expect(parseHash('#/foto').name).toBe('photo');
     expect(parseHash('#/kendi-modelin').name).toBe('custom');
     expect(parseHash('#/kaynaklar').name).toBe('credits');
+    expect(parseHash('#/hakkinda').name).toBe('about');
     expect(parseHash('#/yok').name).toBe('notfound');
   });
   it('düzenleyici rotasını ve sorguyu ayrıştırır', () => {

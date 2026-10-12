@@ -1,21 +1,26 @@
 import * as THREE from 'three';
-import { GradientEquirectTexture, WebGLPathTracer } from 'three-gpu-pathtracer';
+import { DenoiseMaterial, GradientEquirectTexture, WebGLPathTracer } from 'three-gpu-pathtracer';
 import { HDRLoader } from 'three/examples/jsm/loaders/HDRLoader.js';
+import { FullScreenQuad } from 'three/examples/jsm/postprocessing/Pass.js';
+import { envUrl, SHOTS, type EnvPreset, type ShotId } from './scenes';
 
 // Fotogerçekçi görüntü: three-gpu-pathtracer ile ışık izleme.
 // Etkileşimli görüntüleyiciden bağımsız, kendi WebGL bağlamında ve sade bir sahnede çalışır:
-// aracın o anki hâlinin kopyası + cilalı stüdyo zemini + HDRI ortam ışığı (arka planda bulanık).
+// aracın o anki hâlinin kopyası + stüdyo fonu ya da açık hava zemini + HDRI ortam ışığı.
 
-const HDRI = `${import.meta.env.BASE_URL}env/autoshop_01_1k.hdr`;
-let envPromise: Promise<THREE.DataTexture> | null = null;
+const envCache = new Map<string, Promise<THREE.DataTexture>>();
 
-function loadEnv(): Promise<THREE.DataTexture> {
-  envPromise ??= new HDRLoader().loadAsync(HDRI).then((t) => {
-    t.mapping = THREE.EquirectangularReflectionMapping;
-    return t;
-  });
-  envPromise.catch(() => { envPromise = null; });
-  return envPromise;
+function loadEnv(e: EnvPreset): Promise<THREE.DataTexture> {
+  let p = envCache.get(e.id);
+  if (!p) {
+    p = new HDRLoader().loadAsync(envUrl(e)).then((t) => {
+      t.mapping = THREE.EquirectangularReflectionMapping;
+      return t;
+    });
+    p.catch(() => envCache.delete(e.id));
+    envCache.set(e.id, p);
+  }
+  return p;
 }
 
 export interface PathTraceSession {
@@ -30,8 +35,34 @@ export interface PathTraceOptions {
   width: number;
   height: number;
   maxSamples: number;
+  env: EnvPreset;
+  shot: ShotId;
+  /** Kenar korumalı gürültü giderme (örnek sayısı arttıkça etkisi azalır) */
+  denoise: boolean;
   onProgress(samples: number, done: boolean): void;
   onError(e: unknown): void;
+}
+
+/** Seçilen açıya göre kamera konumu; 'free' ise etkileşimli kameranın kopyası. */
+export function shotCamera(base: THREE.PerspectiveCamera, car: THREE.Object3D, shot: ShotId, aspect: number): THREE.PerspectiveCamera {
+  const cam = base.clone();
+  cam.aspect = aspect;
+  const s = SHOTS.find((x) => x.id === shot);
+  if (s && s.id !== 'free') {
+    const box = new THREE.Box3().setFromObject(car);
+    const size = box.getSize(new THREE.Vector3());
+    const len = Math.max(size.x, size.z);
+    const target = new THREE.Vector3(0, size.y * 0.42, 0);
+    cam.fov = s.fov;
+    // Araç kadraja sığsın: dar ekranlarda uzaklaş
+    const fit = (len * s.dist * 32) / s.fov / Math.min(1, aspect / 1.4);
+    const az = THREE.MathUtils.degToRad(s.az), el = THREE.MathUtils.degToRad(s.el);
+    cam.position.set(Math.sin(az) * Math.cos(el) * fit, target.y + Math.sin(el) * fit, Math.cos(az) * Math.cos(el) * fit);
+    cam.lookAt(target);
+  }
+  cam.updateProjectionMatrix();
+  cam.updateMatrixWorld();
+  return cam;
 }
 
 export function startPathTrace(o: PathTraceOptions): PathTraceSession {
@@ -42,32 +73,41 @@ export function startPathTrace(o: PathTraceOptions): PathTraceSession {
   renderer.setSize(o.width, o.height, false);
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
 
-  const scene = new THREE.Scene();
-  // Stüdyo fonu (cyclorama): zeminden duvara yumuşakça kıvrılan tek parça yüzey, kameranın karşısına döner
-  const floorGeo = cycloramaGeometry();
-  const floorMat = new THREE.MeshStandardMaterial({ color: '#2b2e33', roughness: 0.45, metalness: 0 });
-  const floor = new THREE.Mesh(floorGeo, floorMat);
-  floor.rotation.y = Math.atan2(o.camera.position.x, o.camera.position.z);
-  scene.add(floor);
-  // Tepe ışığı (softbox): aracın üstünde, aşağı bakan geniş alan ışığı — boyada uzun, yumuşak yansıma bandı
-  const softbox = new THREE.RectAreaLight('#ffffff', 5, 7, 3.2);
-  softbox.position.set(0, 5.5, 0);
-  softbox.lookAt(0, 0, 0);
-  softbox.rotation.z = floor.rotation.y;
-  scene.add(softbox);
-
   const car = o.car.clone(true);
+  const camera = shotCamera(o.camera, car, o.shot, o.width / o.height);
+
+  const scene = new THREE.Scene();
   scene.add(car);
+  const disposables: { dispose(): void }[] = [];
+  const track = <T extends { dispose(): void }>(x: T) => (disposables.push(x), x);
 
-  const camera = o.camera.clone();
-  camera.aspect = o.width / o.height;
-  camera.updateProjectionMatrix();
-
-  const background = new GradientEquirectTexture(64);
-  background.topColor.set('#07080a');
-  background.bottomColor.set('#3a3e44');
-  background.exponent = 4;
-  background.update();
+  const floorMat = track(new THREE.MeshStandardMaterial({ color: o.env.floor, roughness: o.env.backdrop === 'studio' ? 0.45 : 0.7, metalness: 0 }));
+  let background: THREE.Texture | null = null;
+  if (o.env.backdrop === 'studio') {
+    // Stüdyo fonu (cyclorama): zeminden duvara yumuşakça kıvrılan tek parça yüzey, kameranın karşısına döner
+    const floor = new THREE.Mesh(track(cycloramaGeometry()), floorMat);
+    floor.rotation.y = Math.atan2(camera.position.x, camera.position.z);
+    scene.add(floor);
+    const g = track(new GradientEquirectTexture(64));
+    g.topColor.set('#07080a');
+    g.bottomColor.set(o.env.floor);
+    g.exponent = 4;
+    g.update();
+    background = g;
+  } else {
+    // Açık hava: geniş zemin, arka planda bulanık gökyüzü (HDRI'nin kendisi)
+    const floor = new THREE.Mesh(track(new THREE.CircleGeometry(60, 64)), floorMat);
+    floor.rotation.x = -Math.PI / 2;
+    scene.add(floor);
+  }
+  if (o.env.softbox > 0) {
+    // Tepe ışığı (softbox): aracın üstünde, aşağı bakan geniş alan ışığı — boyada uzun, yumuşak yansıma bandı
+    const softbox = new THREE.RectAreaLight('#ffffff', o.env.softbox, 7, 3.2);
+    softbox.position.set(0, 5.5, 0);
+    softbox.lookAt(0, 0, 0);
+    softbox.rotation.z = Math.atan2(camera.position.x, camera.position.z);
+    scene.add(softbox);
+  }
 
   const pt = new WebGLPathTracer(renderer);
   // Not: sekme sayıları kütüphane varsayılanlarında bırakıldı. Düşük değerlerde (ör. 6/4) tabakalı örnekleme
@@ -76,6 +116,24 @@ export function startPathTrace(o: PathTraceOptions): PathTraceSession {
   pt.renderDelay = 0;
   pt.fadeDuration = 0;
   pt.minSamples = 1;
+
+  if (o.denoise) {
+    const denoise = new FullScreenQuad(new DenoiseMaterial({ map: undefined }));
+    const dm = denoise.material as DenoiseMaterial & { map: THREE.Texture; sigma: number; threshold: number; kSigma: number; opacity: number };
+    track({ dispose: () => { denoise.dispose(); dm.dispose(); } });
+    pt.renderToCanvasCallback = (target, r, quad) => {
+      dm.map = target.texture;
+      // Az örnekte güçlü, örnek arttıkça hafif filtre
+      dm.sigma = THREE.MathUtils.clamp(5 - Math.log2(pt.samples + 1) * 0.6, 1.2, 5);
+      dm.threshold = 0.04;
+      dm.kSigma = 1;
+      dm.opacity = (quad.material as THREE.Material).opacity;
+      const autoClear = r.autoClear;
+      r.autoClear = false;
+      denoise.render(r);
+      r.autoClear = autoClear;
+    };
+  }
 
   let raf = 0;
   let stopped = false;
@@ -93,13 +151,18 @@ export function startPathTrace(o: PathTraceOptions): PathTraceSession {
     if (!done) raf = requestAnimationFrame(loop);
   };
 
-  loadEnv()
+  loadEnv(o.env)
     .then((env) => {
       if (stopped) return;
       scene.environment = env;
-      scene.environmentIntensity = 1.3;
-      // Stüdyo arka planı: ufukta zeminin uzak tonuna, yukarıda koyuya geçen degrade (sert ufuk çizgisi yok)
-      scene.background = background;
+      scene.environmentIntensity = o.env.intensity;
+      if (background) {
+        scene.background = background;
+      } else {
+        scene.background = env;
+        scene.backgroundBlurriness = 0.25;
+        scene.backgroundIntensity = 0.8;
+      }
       pt.setScene(scene, camera);
       raf = requestAnimationFrame(loop);
     })
@@ -111,9 +174,7 @@ export function startPathTrace(o: PathTraceOptions): PathTraceSession {
       stopped = true;
       cancelAnimationFrame(raf);
       pt.dispose();
-      background.dispose();
-      floorGeo.dispose();
-      floorMat.dispose();
+      for (const d of disposables) d.dispose();
       renderer.dispose();
       renderer.forceContextLoss();
     },

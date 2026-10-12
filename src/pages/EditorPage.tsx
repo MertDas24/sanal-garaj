@@ -11,12 +11,17 @@ import { captionImage, downloadBlob, makeThumb, slugify } from '../lib/image';
 import { saveDesign } from '../lib/storage';
 import { CarViewer, type ViewerHandle } from '../three/CarViewer';
 import { startPathTrace, type PathTraceSession } from '../three/pathTrace';
+import { ENVIRONMENTS, findEnv, PT_QUALITY, type EnvId, type PtQuality, type ShotId } from '../three/scenes';
+import { SceneControls } from '../components/SceneControls';
 import { EditorPanel } from '../components/EditorPanel';
 import { NoWebGL } from '../components/NoWebGL';
 import { useToast } from '../components/useToast';
 
-/** Fotogerçekçi modda hesaplanacak örnek sayısı */
-const PT_SAMPLES = 300;
+
+function withEnv(q: URLSearchParams, env: EnvId): URLSearchParams {
+  if (env !== ENVIRONMENTS[0].id) q.set('env', env);
+  return q;
+}
 
 export default function EditorPage({ vehicleId, query }: { vehicleId: string; query: URLSearchParams }) {
   const vehicle = findVehicle(vehicleId);
@@ -62,6 +67,12 @@ function Editor({ vehicleId, title, year, note, modelId, query }: {
   const [ptProgress, setPtProgress] = useState({ samples: 0, done: false });
   const ptHost = useRef<HTMLDivElement>(null);
   const ptSession = useRef<PathTraceSession | null>(null);
+  const [envId, setEnvId] = useState<EnvId>(() => findEnv(query.get('env')).id);
+  const [shot, setShot] = useState<ShotId>('front34');
+  const [quality, setQuality] = useState<PtQuality>('normal');
+  const [denoise, setDenoise] = useState(true);
+  const PT_SAMPLES = PT_QUALITY[quality].samples;
+  const env = findEnv(envId);
 
   // Fotogerçekçi mod: ayrı bir WebGL bağlamında ışık izleme; tasarım değişince baştan hesaplanır
   useEffect(() => {
@@ -75,6 +86,9 @@ function Editor({ vehicleId, title, year, note, modelId, query }: {
       const session = startPathTrace({
         ...snap,
         maxSamples: PT_SAMPLES,
+        env,
+        shot,
+        denoise,
         onProgress: (samples, done) => setPtProgress({ samples, done }),
         onError: () => { setPhotoreal(false); show('Fotogerçekçi görüntü başlatılamadı.', 'error'); },
       });
@@ -87,7 +101,7 @@ function Editor({ vehicleId, title, year, note, modelId, query }: {
       ptSession.current?.stop();
       ptSession.current = null;
     };
-  }, [photoreal, design, show]);
+  }, [photoreal, design, show, PT_SAMPLES, env, shot, denoise]);
   const [busy, setBusy] = useState(false);
   const [retry, setRetry] = useState(0);
   const { progress } = useProgress();
@@ -107,12 +121,12 @@ function Editor({ vehicleId, title, year, note, modelId, query }: {
 
   // Adres çubuğu her zaman paylaşılabilir güncel tasarımı gösterir
   useEffect(() => {
-    if (design && base) replaceHash(editorHash(vehicleId, encodeDesign(design, base)));
-  }, [design, base, vehicleId]);
+    if (design && base) replaceHash(editorHash(vehicleId, withEnv(encodeDesign(design, base), envId)));
+  }, [design, base, vehicleId, envId]);
 
   const shareUrl = useMemo(
-    () => (design && base ? absoluteUrl(editorHash(vehicleId, encodeDesign(design, base))) : ''),
-    [design, base, vehicleId],
+    () => (design && base ? absoluteUrl(editorHash(vehicleId, withEnv(encodeDesign(design, base), envId))) : ''),
+    [design, base, vehicleId, envId],
   );
 
   const attribution = `3D model: “${model.source.title}” — ${model.source.author} (${model.source.site}), ${LICENSE_LABELS[model.source.license]}`;
@@ -178,6 +192,7 @@ function Editor({ vehicleId, title, year, note, modelId, query }: {
               url={modelUrl(model)}
               features={model.features}
               triangles={model.triangles}
+              envFile={env.file}
               design={design ?? base ?? defaultDesign('#cccccc', false)}
               compare={comparing && base && !photoreal ? { before: base, split } : null}
               onReady={onReady}
@@ -255,6 +270,13 @@ function Editor({ vehicleId, title, year, note, modelId, query }: {
         {ready ? (
           <>
             <EditorPanel design={design!} base={base!} features={features} notes={model.notes} onChange={setDesign} />
+            <SceneControls
+              env={envId} onEnv={setEnvId}
+              shot={shot} onShot={setShot}
+              quality={quality} onQuality={setQuality}
+              denoise={denoise} onDenoise={setDenoise}
+              photoreal={photoreal}
+            />
             <div className="panel-actions">
               <button className="btn btn--primary" onClick={handleSave}>Kaydet</button>
               <button className="btn" onClick={handleShare}>Bağlantıyı paylaş</button>

@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import type { ModelFeatures } from '../data/models';
-import type { Design, Finish, RimStyle } from '../lib/design';
+import type { Design, Finish, RimStyle, WindowTint } from '../lib/design';
 import { toCreasedNormals } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { buildFrontLip, buildRim, buildSpoiler } from './addons';
 
@@ -32,13 +32,24 @@ interface WheelInfo {
   rimMeshes: THREE.Mesh[];
 }
 
+// iridescence: ince film girişimi — açıya göre renk kayması (sedef / "flip" boya etkisi)
 const FINISH_PARAMS: Record<Finish, Partial<THREE.MeshPhysicalMaterialParameters>> = {
-  gloss: { roughness: 0.3, metalness: 0.1, clearcoat: 1, clearcoatRoughness: 0.06 },
-  metallic: { roughness: 0.34, metalness: 0.72, clearcoat: 1, clearcoatRoughness: 0.12 },
-  matte: { roughness: 0.82, metalness: 0.04, clearcoat: 0, clearcoatRoughness: 1 },
+  gloss: { roughness: 0.3, metalness: 0.1, clearcoat: 1, clearcoatRoughness: 0.06, iridescence: 0, sheen: 0 },
+  metallic: { roughness: 0.34, metalness: 0.72, clearcoat: 1, clearcoatRoughness: 0.12, iridescence: 0.18, iridescenceIOR: 1.3, iridescenceThicknessRange: [100, 300], sheen: 0 },
+  pearl: { roughness: 0.28, metalness: 0.35, clearcoat: 1, clearcoatRoughness: 0.05, iridescence: 0.9, iridescenceIOR: 1.35, iridescenceThicknessRange: [250, 650], sheen: 0 },
+  satin: { roughness: 0.55, metalness: 0.25, clearcoat: 0.35, clearcoatRoughness: 0.45, iridescence: 0, sheen: 0.4, sheenRoughness: 0.6, sheenColor: new THREE.Color('#ffffff') },
+  matte: { roughness: 0.82, metalness: 0.04, clearcoat: 0, clearcoatRoughness: 1, iridescence: 0, sheen: 0 },
 };
 
 const CARBON = new THREE.Color('#16171a');
+
+/** Cam filmi: koyuluk (opaklık) ve ton */
+const TINT_PARAMS: Record<WindowTint, { opacity: number; color: string }> = {
+  stock: { opacity: 0.5, color: '#0d1217' },
+  light: { opacity: 0.66, color: '#0b0f13' },
+  medium: { opacity: 0.8, color: '#07090b' },
+  dark: { opacity: 0.93, color: '#030405' },
+};
 
 /**
  * Sıkıştırılmış (KHR_mesh_quantization: normalize int8/int16) köşe verilerini float32'ye açar.
@@ -91,6 +102,9 @@ export function createCarRuntime(source: THREE.Object3D, features: ModelFeatures
     clearcoat: 1, clearcoatRoughness: 0.02, envMapIntensity: 1.6, side: THREE.DoubleSide, depthWrite: false,
   }));
   const tireClones = new Map<string, THREE.MeshStandardMaterial>();
+  const caliperMat = track(new THREE.MeshPhysicalMaterial({ name: 'CG_caliper', roughness: 0.32, metalness: 0.1, clearcoat: 1, clearcoatRoughness: 0.1 }));
+  const caliperOriginal = new Map<THREE.Mesh, THREE.Material>();
+  let glassFound = false;
   const rimOriginal = new Map<THREE.Mesh, THREE.Material>();
   const rimMeshes: THREE.Mesh[] = [];
   const wheelObjects: THREE.Object3D[] = [];
@@ -116,7 +130,10 @@ export function createCarRuntime(source: THREE.Object3D, features: ModelFeatures
       }
       mesh.material = paintMat;
       if (triangles && triangles < SMOOTH_BELOW_TRIANGLES) mesh.geometry = track(toCreasedNormals(mesh.geometry, CREASE));
+    } else if (mat.name === 'CG_caliper') {
+      caliperOriginal.set(mesh, mat);
     } else if (mat.name === 'CG_glass') {
+      glassFound = true;
       mesh.material = glassMat;
       mesh.castShadow = false;
       mesh.renderOrder = 2;
@@ -196,6 +213,8 @@ export function createCarRuntime(source: THREE.Object3D, features: ModelFeatures
   if (wheels.length < 4) { f.rideHeight = false; f.rimStyle = false; f.rimColor = false; }
   if (!rimMeshes.length) { f.rimStyle = false; f.rimColor = false; }
   if (!paintFound) f.paint = false;
+  if (!glassFound) f.windowTint = false;
+  if (!caliperOriginal.size) f.caliperColor = false;
 
   // Jant modelleri tembel üretilir
   const rimSets = new Map<RimStyle, THREE.Group>();
@@ -236,6 +255,14 @@ export function createCarRuntime(source: THREE.Object3D, features: ModelFeatures
     rimSets.forEach((set, k) => { set.visible = k === style; });
     // Orijinal jant: renk seçilmediyse modelin kendi (dokulu olabilir) malzemesi, seçildiyse jant rengi
     for (const m of rimMeshes) m.material = customRimColor ? rimMat : rimOriginal.get(m)!;
+
+    const tint = TINT_PARAMS[f.windowTint ? d.tint : 'stock'];
+    glassMat.opacity = tint.opacity;
+    glassMat.color.set(tint.color);
+
+    const caliperColor = f.caliperColor ? d.caliper : null;
+    if (caliperColor) caliperMat.color.set(caliperColor);
+    caliperOriginal.forEach((orig, m) => { m.material = caliperColor ? caliperMat : orig; });
 
     const h = f.rideHeight ? d.heightMm / 1000 : 0;
     body.position.y = bodyBaseY + h / rootScale;

@@ -9,7 +9,8 @@
 //  - rotateY: aracın önü +Z yönüne bakacak şekilde Y ekseninde döndürme (radyan)
 //  - lengthM: gerçek araç uzunluğu (metre); model bu uzunluğa ölçeklenir
 //  - materials: kaynak malzeme adlarının kanonik rollere eşlenmesi
-//      paint -> CG_paint (boyanabilir gövde), glass -> CG_glass, tire -> CG_tire, rim -> CG_rim
+//      paint -> CG_paint (boyanabilir gövde), glass -> CG_glass, tire -> CG_tire, rim -> CG_rim,
+//      caliper -> CG_caliper (fren kaliperi)
 //  - paletteSplit: gövde rengini doku paletinde tutan modeller için; bu UV hücrelerine düşen
 //      üçgenler ayrı CG_paint malzemesine taşınır (8x8 palet ızgarası, [sütun, satır, minY?], satır üstten).
 //      color: dokudaki orijinal gövde renginin yaklaşığı (karşılaştırmadaki "önce" görünümü için).
@@ -57,7 +58,7 @@ export const MODEL_SOURCES = [
     download: `${GH}mstoyanov7/ModelViewer/3ecd0feb199c07e3b2173b96d89aa98a681cafac/assets/c63/scene.gltf`,
     source: { title: 'Mercedes Benz C63 AMG', author: 'LuizZed36', site: 'Sketchfab', url: SF('38eb721c70d34046a60ef7a8984024c5'), ...CCBY4 },
     rotateY: -Math.PI / 2, lengthM: 4.73,
-    materials: { paint: ['CAR_BODY_PAINT'], glass: ['WINDOW_GLASS'], tire: ['TARMAC_TYRE_TREAD', 'TARMAC_TYRE_WALL'], rim: ['TARMAC_WHEEL'] },
+    materials: { paint: ['CAR_BODY_PAINT'], glass: ['WINDOW_GLASS'], tire: ['TARMAC_TYRE_TREAD', 'TARMAC_TYRE_WALL'], rim: ['TARMAC_WHEEL'], caliper: ['CALIPER'] },
     wheelQuadrants: ['Object_15', 'Object_13', 'Object_14', 'Object_6', 'Object_4'],
     mods: { spoiler: true, frontLip: false },
   },
@@ -102,7 +103,7 @@ export const MODEL_SOURCES = [
     download: `${GH}WatchDogStudios/JDebug/a090fa07a3c2baa286c6a3c33e2aa9382125d120/Data/Base/Meshes/Renders/toyota_ae86_sprinter_trueno_zenki/scene.gltf`,
     source: { title: 'Toyota AE86 Sprinter Trueno Zenki', author: 'Martin Trafas', site: 'Sketchfab', url: SF('a5737bf3cc9b4179a6e5ebe173ff70d9'), ...CCBY4 },
     rotateY: 0, lengthM: 4.18, simplify: 0.18,
-    materials: { paint: ['Primary'], glass: ['Windows'], tire: ['TireMaterial'], rim: ['RimMaterial'] },
+    materials: { paint: ['Primary'], glass: ['Windows'], tire: ['TireMaterial'], rim: ['RimMaterial'], caliper: ['BrakeCaliper'] },
     wheelMaterials: ['TireMaterial', 'RimMaterial', 'Brake_Disc', 'BrakeCaliper'],
     mods: { spoiler: true, frontLip: true },
   },
@@ -111,7 +112,7 @@ export const MODEL_SOURCES = [
     download: `${GH}ArianitBalidemaj/PortWebsite/b54ba96366c280f91e20f6958266b15595d3419b/public/bmw/scene.gltf`,
     source: { title: '[FREE] BMW M3 E30', author: 'Martin Trafas', site: 'Sketchfab', url: SF('ac3c7013434e403e8faff87948caf422'), ...CCBY4 },
     rotateY: 0, lengthM: 4.35, simplify: 0.7,
-    materials: { paint: ['BMW_E30_M3_PAINT'], glass: ['BMW_E30_M3_WINDOWS'], tire: ['BMW_E30_M3_TIRE'], rim: ['BMW_E30_M3_RIM'] },
+    materials: { paint: ['BMW_E30_M3_PAINT'], glass: ['BMW_E30_M3_WINDOWS'], tire: ['BMW_E30_M3_TIRE'], rim: ['BMW_E30_M3_RIM'], caliper: ['Brembo_Calipers'] },
     wheelMaterials: ['BMW_E30_M3_RIM', 'BMW_E30_M3_TIRE', 'Brake_Disc', 'Brembo_Calipers', 'Logo_Plane'],
     mods: { spoiler: false, frontLip: true },
   },
@@ -154,7 +155,7 @@ export const MODEL_SOURCES = [
     source: { title: "2017 Aston Martin DB11 [5.2L Twin-Turbo V12]", author: "Hari Prasath R", site: 'Sketchfab', url: SF('936854ba7dde46f09a47d355d433808c'), ...CCBY4 },
     rotateY: Math.PI, lengthM: 4.74,
     simplify: 0.6,
-    materials: { paint: ['Body_Color'], tire: ['Tire_Treads', 'Tire_Sidewall'] },
+    materials: { paint: ['Body_Color'], tire: ['Tire_Treads', 'Tire_Sidewall'], caliper: ['Chassis'] },
     notes: 'Sol ve sağ jantlar kaynakta farklı malzemeler kullandığı için jant rengi ve modeli kapalıdır.',
     autoWheels: ['Tire_Treads', 'Tire_Sidewall'],
   },
@@ -163,7 +164,7 @@ export const MODEL_SOURCES = [
     download: `${GH}mizanxali/r3f-demo/5c990206736bb2df9c1177bf7335f083431d50d7/public/lamborghini_gallardo_2010/scene.gltf`,
     source: { title: "Lamborghini Gallardo 2010", author: "Artem P", site: 'Sketchfab', url: SF('ff0eb2242d0e42eb8b7034b4db639e56'), ...CCBY4 },
     rotateY: 0, lengthM: 4.39,
-    materials: { paint: ['paint'], glass: ['glass'], tire: ['tire'], rim: ['material'] },
+    materials: { paint: ['paint'], glass: ['glass'], tire: ['tire'], rim: ['material'], caliper: ['caliper'] },
     autoWheels: ['tire'],
     notes: 'Fren diski ve kaliper modeli, yazarın belirttiğine göre Velstyde’a aittir (aynı CC BY 4.0 Sketchfab modelinin parçası).',
   },
@@ -173,7 +174,7 @@ export const MODEL_SOURCES = [
     source: { title: "Chevrolet Corvette (C7)", author: "Martin Trafas", site: 'Sketchfab', url: SF('2b509d1bce104224b147c81757f6f43a'), ...CCBY4 },
     rotateY: 0, lengthM: 4.49,
     simplify: 0.22,
-    materials: { paint: ['Car_Paint'], glass: ['Windows'], tire: ['TireMaterial'], rim: ['material'] },
+    materials: { paint: ['Car_Paint'], glass: ['Windows'], tire: ['TireMaterial'], rim: ['material'], caliper: ['Brake_Caliper'] },
     autoWheels: ['TireMaterial'],
   },
   {
@@ -199,7 +200,7 @@ export const MODEL_SOURCES = [
     download: `${GH}Uknowme-h/Operation-GearHead/6e5d02e53f5df2aef3e175dbbfe3787571d1251c/games/Assets/ferrari_488_pista_widebody/scene.gltf`,
     source: { title: "Ferrari 488 Pista Widebody", author: "Dev365TH", site: 'Sketchfab', url: SF('16c28f5b3ed24991ac3d1208f4a8bc1f'), ...CCBY4 },
     rotateY: -Math.PI / 2, lengthM: 4.7,
-    materials: { paint: ['GREEN_car_paint'], tire: ['Tyre_Side', 'Tyre'], rim: ['material'] },
+    materials: { paint: ['GREEN_car_paint'], tire: ['Tyre_Side', 'Tyre'], rim: ['material'], caliper: ['Caliper'] },
     autoWheels: ['Tyre_Side', 'Tyre'],
   },
   {
@@ -248,7 +249,7 @@ export const MODEL_SOURCES = [
     source: { title: "Nissan GTR R35", author: "Ciasny", site: 'Sketchfab', url: SF('51c912a8310c4e00a82ad7673d84228a'), ...CCBY4 },
     rotateY: Math.PI / 2, lengthM: 4.71,
     simplify: 0.35,
-    materials: { paint: ['CarPaint'] },
+    materials: { paint: ['CarPaint'], caliper: ['Material'] },
     autoWheels: ['Plastic.001'],
   },
   {
@@ -257,7 +258,7 @@ export const MODEL_SOURCES = [
     source: { title: "Custom Honda Civic Type-R (2024)", author: "Jumping Jax", site: 'Sketchfab', url: SF('c36abddc783445fbb00f72356c576fca'), ...CCBY4 },
     rotateY: 0, lengthM: 4.59,
     simplify: 0.6,
-    materials: { paint: ['Paintid9490011Mtl'], glass: ['Windshieldid1330011Mtl'], tire: ['Tyreid18260021Mtl', 'Tyre01id18260031Mtl', 'Tyre02003id18260211Mtl'], rim: ['Rimid18260041Mtl'] },
+    materials: { paint: ['Paintid9490011Mtl'], glass: ['Windshieldid1330011Mtl'], tire: ['Tyreid18260021Mtl', 'Tyre01id18260031Mtl', 'Tyre02003id18260211Mtl'], rim: ['Rimid18260041Mtl'], caliper: ['Caliperid18260061Mtl'] },
     autoWheels: ['Tyreid18260021Mtl', 'Tyre01id18260031Mtl', 'Tyre02003id18260211Mtl'],
   },
   {

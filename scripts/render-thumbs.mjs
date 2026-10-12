@@ -11,7 +11,7 @@ const only = process.argv.slice(2);
 fs.mkdirSync(new URL('../public/thumbs/', import.meta.url), { recursive: true });
 
 const browser = await chromium.launch({ channel: process.env.PW_CHANNEL ?? 'chrome' });
-const page = await browser.newPage({ viewport: { width: 1280, height: 860 }, deviceScaleFactor: 1 });
+const page = await browser.newPage({ viewport: { width: 1280, height: 860 }, deviceScaleFactor: 1, reducedMotion: 'reduce' });
 for (const { vehicle, model } of pairs) {
   if (only.length && !only.includes(model)) continue;
   await page.goto('about:blank');

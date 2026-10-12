@@ -21,10 +21,20 @@ export function loadSaved(): SavedDesign[] {
     const raw = localStorage.getItem(KEY);
     const parsed: unknown = raw ? JSON.parse(raw) : [];
     if (!Array.isArray(parsed)) return [];
+    // Depolama dışarıdan değiştirilebilir: her kaydı sıkı doğrula, şüpheli alanları at
     return parsed.filter(
       (s): s is SavedDesign =>
-        !!s && typeof s.id === 'string' && typeof s.vehicleId === 'string' && typeof s.name === 'string' && typeof s.design === 'object',
-    );
+        !!s && typeof s === 'object' &&
+        typeof s.id === 'string' && s.id.length <= 40 &&
+        typeof s.vehicleId === 'string' && /^[a-z0-9-]{1,64}$/.test(s.vehicleId) &&
+        typeof s.name === 'string' && s.name.length <= 120 &&
+        typeof s.createdAt === 'number' &&
+        !!s.design && typeof s.design === 'object' && typeof s.design.paint === 'string' && /^#[0-9a-f]{6}$/i.test(s.design.paint),
+    ).map((s) => ({
+      ...s,
+      // Önizleme yalnızca kendi ürettiğimiz JPEG veri adresi olabilir
+      thumb: typeof s.thumb === 'string' && /^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/.test(s.thumb) ? s.thumb : null,
+    }));
   } catch {
     return [];
   }

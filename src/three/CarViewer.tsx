@@ -19,14 +19,16 @@ export interface ViewerProps {
   url: string;
   features: ModelFeatures;
   triangles: number;
+  /** public/env altındaki HDRI dosyası */
+  envFile?: string;
   design: Design;
   compare: { before: Design; split: number } | null;
   onReady(info: { features: ModelFeatures; originalPaint: string; originalRim: string | null }): void;
   onError(err: Error): void;
 }
 
-// Ortam ışığı: Poly Haven "Autoshop 01" (CC0, Oliksiy Yakovlyev) — sitenin kendisinden yüklenir
-const HDRI = `${import.meta.env.BASE_URL}env/autoshop_01_1k.hdr`;
+// Ortam ışıkları: Poly Haven (CC0) — sitenin kendisinden yüklenir (bkz. three/scenes.ts)
+const envPath = (file = 'autoshop_01_1k.hdr') => `${import.meta.env.BASE_URL}env/${file}`;
 
 /** Güçlü cihazlarda yansıtıcı zemin; dokunmatik/küçük ekranlarda daha hafif zemin. */
 function highQuality(): boolean {
@@ -92,7 +94,7 @@ export const CarViewer = forwardRef<ViewerHandle, ViewerProps>(function CarViewe
         shadow-camera-bottom={-6}
         shadow-bias={-0.0005}
       />
-      <Environment files={HDRI} environmentIntensity={1.1} />
+      <Environment files={envPath(props.envFile)} environmentIntensity={1.1} />
       <mesh rotation-x={-Math.PI / 2} position-y={-0.002} receiveShadow>
         <circleGeometry args={[14, 64]} />
         {hq ? (
@@ -139,6 +141,19 @@ function Car({
   const gltf = useGLTF(url, false, true);
   const { camera, invalidate } = useThree();
   const runtime = useMemo<CarRuntime>(() => createCarRuntime(gltf.scene, features, triangles), [gltf, features, triangles]);
+  const introUntil = useRef(0);
+
+  // Açılış turu (öncelik 0: çizimden önce kamerayı ilerletir)
+  useFrame((_, dt) => {
+    const c = controlsRef.current;
+    if (!c || !introUntil.current) return;
+    if (performance.now() > introUntil.current) { introUntil.current = 0; return; }
+    const offset = camera.position.clone().sub(c.target);
+    offset.applyAxisAngle(new THREE.Vector3(0, 1, 0), dt * 0.55);
+    camera.position.copy(c.target).add(offset);
+    camera.lookAt(c.target);
+    invalidate();
+  }, 0);
 
   useEffect(() => {
     const size = new THREE.Box3().setFromObject(runtime.object).getSize(new THREE.Vector3());
@@ -158,8 +173,14 @@ function Car({
       c.saveState();
     }
     onReady({ features: runtime.features, originalPaint: runtime.originalPaint, originalRim: runtime.originalRim });
+    // Açılış turu: kamera aracın etrafında kısa bir süre döner; kullanıcı dokununca veya süre dolunca durur
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    introUntil.current = reduced ? 0 : performance.now() + 3200;
+    const stopIntro = () => { introUntil.current = 0; };
+    c?.addEventListener('start', stopIntro);
     invalidate();
     return () => {
+      c?.removeEventListener('start', stopIntro);
       runtime.dispose();
     };
     // onReady kasıtlı olarak bağımlılık değil: yalnızca model değiştiğinde çağrılır
