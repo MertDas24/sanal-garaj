@@ -28,6 +28,8 @@ export interface ModelFeatures {
   wrap?: boolean;
   wrapStyles?: string[];
   underglow?: boolean;
+  bodyKit?: boolean;
+  decalRegions?: string[];
 }
 
 export interface ModelAsset {

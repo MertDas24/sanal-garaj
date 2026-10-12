@@ -1,4 +1,5 @@
 import { ENVIRONMENTS, PT_QUALITY, SHOTS, type EnvId, type PtQuality, type ShotId } from '../three/scenes';
+import { radioKeys } from '../lib/radioKeys';
 
 interface Props {
   env: EnvId;
@@ -32,9 +33,9 @@ export function SceneControls(p: Props) {
       <p className="muted small">3D görünümü klavyeyle de kullanabilirsiniz: ok tuşlarıyla döndürün, +/− ile yakınlaşın, Home ile sıfırlayın.</p>
       <div className="segmented-wrap">
         <span className="field-label">Kalite</span>
-        <div className="segmented" role="radiogroup" aria-label="Fotogerçekçi kalite">
+        <div className="segmented" role="radiogroup" aria-label="Fotogerçekçi kalite" onKeyDown={radioKeys}>
           {(Object.keys(PT_QUALITY) as PtQuality[]).map((q) => (
-            <button key={q} role="radio" aria-checked={p.quality === q} onClick={() => p.onQuality(q)}>
+            <button key={q} role="radio" tabIndex={p.quality === q ? 0 : -1} aria-checked={p.quality === q} onClick={() => p.onQuality(q)}>
               {PT_QUALITY[q].label}
             </button>
           ))}

@@ -40,7 +40,7 @@ export function loadSaved(): SavedDesign[] {
       design: sanitizeDesign(s.design, defaultDesign(s.design.paint.toLowerCase(), false), {
         paint: true, rimColor: true, rimStyle: true, rideHeight: true,
         spoiler: 'addon', frontLip: 'addon', windowTint: true, caliperColor: true,
-        stance: true, wrap: true, underglow: true,
+        stance: true, wrap: true, underglow: true, bodyKit: true,
       }),
       // Önizleme yalnızca kendi ürettiğimiz JPEG veri adresi olabilir
       thumb: typeof s.thumb === 'string' && /^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/.test(s.thumb) ? s.thumb : null,

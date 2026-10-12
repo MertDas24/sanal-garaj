@@ -3,12 +3,13 @@ import * as THREE from 'three';
 import { createCarRuntime } from './carRuntime';
 import { defaultDesign } from '../lib/design';
 
-function fixture(tireRadius = 0.3) {
+function fixture(tireRadius = 0.3, triangles = 0, nonIndexed = false) {
   const source = new THREE.Group();
   const root = new THREE.Group(); root.name = 'CG_root'; source.add(root);
   const body = new THREE.Group(); body.name = 'CG_body'; root.add(body);
   const paint = new THREE.Mesh(new THREE.BoxGeometry(1.8, 0.8, 4), new THREE.MeshStandardMaterial({ name: 'CG_paint', color: '#ff0000' }));
   paint.position.y = 0.8; body.add(paint);
+  if (nonIndexed) { const original = paint.geometry; paint.geometry = original.toNonIndexed(); original.dispose(); }
   const glass = new THREE.Mesh(new THREE.BoxGeometry(1, 0.2, 1), new THREE.MeshStandardMaterial({ name: 'CG_glass', color: '#123456' }));
   glass.position.y = 1.3; body.add(glass);
   for (const x of [-0.9, 0.9]) for (const z of [-1.3, 1.3]) {
@@ -19,10 +20,31 @@ function fixture(tireRadius = 0.3) {
     rim.rotation.z = Math.PI / 2; rim.position.x = Math.sign(x) * 0.105; wheel.add(rim);
   }
   const features = { paint: true, rimColor: true, rimStyle: true, rideHeight: true, spoiler: false, frontLip: false, windowTint: true, caliperColor: false } as const;
-  return { source, runtime: createCarRuntime(source, features), paint };
+  return { source, runtime: createCarRuntime(source, features, triangles), paint };
 }
 
 describe('3D atölye geometrisi', () => {
+  it('runtime temizliği kaynak modelin paylaşılan geometrisini silmez', () => {
+    const { runtime, paint } = fixture(); let disposed = 0;
+    paint.geometry.addEventListener('dispose', () => disposed++);
+    runtime.dispose(); expect(disposed).toBe(0);
+  });
+  it('indeksiz float gövde yumuşatılırken kaynak geometrisi silinmez', () => {
+    const { runtime, paint } = fixture(0.3, 50000, true); let disposed = 0;
+    paint.geometry.addEventListener('dispose', () => disposed++);
+    runtime.dispose(); expect(disposed).toBe(0);
+  });
+  it('özel kaplama önbelleği sınırlıdır; tekrar çizim ve yükseklik geometrileri çoğaltmaz', () => {
+    const { runtime } = fixture(), base = defaultDesign(runtime.originalPaint, false);
+    const design = { ...base, wrap: 'double' as const, wrapWidth: 70, heightMm: -20 };
+    runtime.apply(design);
+    const group = runtime.object.getObjectByName('body-addons')!;
+    const first = group.children.filter((o) => o.name === 'wrap-double').at(-1)!;
+    runtime.apply({ ...design, heightMm: 20 }); expect(group.children).toContain(first);
+    for (let width = 40; width < 100; width += 5) runtime.apply({ ...design, wrapWidth: width });
+    expect(group.children.filter((o) => o.name === 'wrap-double').length).toBeLessThanOrEqual(5);
+    runtime.dispose();
+  });
   it('boya ve kaplama camı/lastiği değiştirmez; kaynak model korunur', () => {
     const { source, runtime, paint } = fixture();
     const base = defaultDesign(runtime.originalPaint, false);

@@ -229,8 +229,8 @@ a.card__link:hover .card__media img { transform: scale(1.03); }
 .range input { width: 100%; accent-color: var(--accent); min-height: 32px; }
 .range__scale { display: flex; justify-content: space-between; }
 
-.switch { display: flex; align-items: center; gap: 12px; cursor: pointer; min-height: 36px; }
-.switch input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.switch { position: relative; display: flex; align-items: center; gap: 12px; cursor: pointer; min-height: 36px; }
+.switch input { position: absolute; opacity: 0; width: 42px; height: 24px; left: 0; top: 50%; transform: translateY(-50%); margin: 0; z-index: 1; cursor: pointer; }
 .switch__track { width: 42px; height: 24px; border-radius: 12px; background: var(--surface-2); border: 1px solid var(--border); position: relative; flex: none; transition: background 0.15s; }
 .switch__track::after { content: ''; position: absolute; top: 2px; left: 2px; width: 18px; height: 18px; border-radius: 50%; background: var(--muted); transition: transform 0.15s, background 0.15s; }
 .switch input:checked + .switch__track { background: rgba(76, 195, 255, 0.3); border-color: var(--accent); }
@@ -293,3 +293,12 @@ tr:last-child td { border-bottom: 0; }
 .preset { text-align: left; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface); color: var(--text); font: inherit; cursor: pointer; display: flex; flex-direction: column; gap: 2px; min-height: 56px; }
 .preset:hover { border-color: var(--accent); }
 .preset span { color: var(--muted); font-size: 0.8rem; }
+/* Atölye çıktıları ve portfolyo kanıtları */
+.studio-actions { display: flex; flex-wrap: wrap; gap: .5rem; }
+.metrics-report { white-space: pre-wrap; overflow-wrap: anywhere; font-size: .7rem; }
+.architecture { display: grid; gap: .6rem; text-align: center; margin: 1.5rem 0; }
+.architecture div { border: 1px solid #353944; border-radius: .75rem; padding: 1rem; }
+.architecture strong, .architecture span { display: block; }
+.architecture div span { color: #a9b1bd; margin-top: .4rem; }
+.about__demo { display: block; width: 100%; max-width: 960px; border-radius: .75rem; background: #101216; }
+.compatibility { border-left: 3px solid #91b5f5; padding-left: .75rem; margin: 1rem 0; }

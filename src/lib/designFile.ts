@@ -2,7 +2,7 @@ import { findVehicle } from '../data/catalog';
 import { findModel } from '../data/models';
 import { defaultDesign, sanitizeDesign, FINISH_LABELS, RIM_STYLE_LABELS, WRAP_LABELS, RIM_FINISH_LABELS, TINT_LABELS, SPOILER_LABELS, type Design } from './design';
 import { findEnv, type EnvId } from '../three/scenes';
-import { powertrainSummary } from './powertrain';
+import { POWERTRAIN_FIELDS, POWERTRAIN_KEYS, sanitizePowertrain } from './powertrain';
 
 export const MAX_DESIGN_FILE_BYTES = 128 * 1024;
 export function parseDesignFile(text: string): { vehicleId: string; design: Design; environment: EnvId } {
@@ -19,7 +19,7 @@ export function parseDesignFile(text: string): { vehicleId: string; design: Desi
   return {
     vehicleId: vehicle.id,
     // Ek geometri yetenekleri model yüklenince gerçek ölçümlerle tekrar doğrulanır.
-    design: sanitizeDesign(d.design, defaultDesign('#cccccc', model.features.spoiler === 'builtin'), { ...model.features, stance: true, wrap: true, underglow: true }),
+    design: sanitizeDesign(d.design, defaultDesign('#cccccc', model.features.spoiler === 'builtin'), { ...model.features, stance: true, wrap: true, underglow: true, bodyKit: true }),
     environment: findEnv(typeof d.environment === 'string' ? d.environment : null).id,
   };
 }
@@ -34,6 +34,10 @@ export function designSummary(d: Design, base: Design): { label: string; value: 
   const add = (key: keyof Design, label: string, value: string) => { if (d[key] !== base[key]) rows.push({ label, value }); };
   add('paint', 'Gövde rengi', d.paint.toUpperCase()); add('finish', 'Boya yüzeyi', FINISH_LABELS[d.finish]);
   add('wrap', 'Kaplama', WRAP_LABELS[d.wrap]);
+  for (const [key, label] of [['skirts', 'Yan etek'], ['diffuser', 'Difüzör'], ['exhaustTips', 'Egzoz uçları'], ['fenders', 'Çamurluk uzantıları'], ['bumper', 'Tampon köşe uzantıları']] as const) add(key, label, d[key] ? 'Açık' : 'Kapalı');
+  add('wrapWidth', 'Kaplama genişliği', `%${d.wrapWidth}`); add('wrapOffset', 'Kaplama konumu', `%${d.wrapOffset}`); add('wrapRotation', 'Kaplama açısı', `${d.wrapRotation}°`);
+  add('decalText', 'Gövde yazısı', d.decalText || 'Kapalı'); add('decalRegion', 'Yazı bölgesi', d.decalRegion);
+  add('decalLogo', 'Yerel logo', d.decalLogo ? '128 px PNG' : 'Kapalı');
   if (d.wrap !== 'none') add('wrapColor', 'Kaplama rengi', d.wrapColor.toUpperCase());
   add('rimStyle', 'Jant', RIM_STYLE_LABELS[d.rimStyle]); add('rimColor', 'Jant rengi', d.rimColor?.toUpperCase() ?? 'Orijinal');
   add('rimFinish', 'Jant yüzeyi', RIM_FINISH_LABELS[d.rimFinish]);
@@ -49,6 +53,7 @@ export function designSummary(d: Design, base: Design): { label: string; value: 
   if (d.lip || d.spoiler) add('partColor', 'Aero yüzeyi', d.partColor === 'carbon' ? 'Karbon siyah' : 'Gövde rengi');
   add('underglow', 'Alt aydınlatma', d.underglow ? 'Açık' : 'Kapalı');
   if (d.underglow) add('glowColor', 'LED rengi', d.glowColor.toUpperCase());
-  rows.push(...powertrainSummary(d.powertrain).map((row) => ({ label: `Motor planı · ${row.label}`, value: row.value })));
+  const plan = sanitizePowertrain(d.powertrain), before = sanitizePowertrain(base.powertrain);
+  rows.push(...POWERTRAIN_KEYS.filter((key) => plan[key] !== before[key]).map((key) => ({ label: `Motor planı · ${POWERTRAIN_FIELDS[key].label}`, value: (POWERTRAIN_FIELDS[key].options as Record<string, string>)[plan[key]] })));
   return rows;
 }

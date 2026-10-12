@@ -10,6 +10,7 @@
     "preview": "vite preview",
     "models": "node scripts/build-models.mjs",
     "test": "vitest run",
+    "benchmark": "node scripts/benchmark-workshop.mjs",
     "e2e": "playwright test",
     "pree2e": "npm run build",
     "predev": "node scripts/copy-ml.mjs",

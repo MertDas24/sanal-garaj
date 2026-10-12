@@ -1,4 +1,5 @@
 import type { ModelFeatures } from '../data/models';
+import { sanitizeLogo } from './logo';
 import { defaultPowertrain, sanitizePowertrain, encodePowertrain, decodePowertrain, type PowertrainDesign } from './powertrain';
 
 export type Finish = 'gloss' | 'metallic' | 'pearl' | 'satin' | 'matte';
@@ -37,6 +38,17 @@ export interface Design {
   underglow: boolean;
   glowColor: string;
   powertrain: PowertrainDesign;
+  skirts: boolean;
+  diffuser: boolean;
+  exhaustTips: boolean;
+  fenders: boolean;
+  bumper: boolean;
+  wrapWidth: number;
+  wrapOffset: number;
+  wrapRotation: number;
+  decalText: string;
+  decalLogo: string;
+  decalRegion: 'hood' | 'roof' | 'left' | 'right';
 }
 
 export const WRAP_LABELS: Record<WrapStyle, string> = { none: 'Kapalı', single: 'Tek şerit', double: 'Çift şerit', hood: 'Kaput kaplama', roof: 'Tavan kaplama' };
@@ -88,6 +100,8 @@ export function defaultDesign(originalPaint: string, builtinSpoiler: boolean): D
     wheelWidth: 100, offsetMm: 0, frontCamber: 0, rearCamber: 0,
     spoilerStyle: 'sport', lipExtension: 100, underglow: false, glowColor: '#4cc3ff',
     powertrain: defaultPowertrain(),
+    skirts: false, diffuser: false, exhaustTips: false, fenders: false, bumper: false,
+    wrapWidth: 100, wrapOffset: 0, wrapRotation: 0, decalText: '', decalLogo: '', decalRegion: 'hood',
   };
 }
 
@@ -118,9 +132,19 @@ export function sanitizeDesign(input: Partial<Record<keyof Design, unknown>>, ba
     }
   };
   if (f.wrap) {
+    d.decalLogo = sanitizeLogo(input.decalLogo ?? base.decalLogo);
+    number('wrapWidth', 40, 180); number('wrapOffset', -25, 25); number('wrapRotation', -30, 30);
+    if (typeof input.decalText === 'string') d.decalText = [...input.decalText].filter((c) => c.charCodeAt(0) >= 32 && c.charCodeAt(0) !== 127).join('').slice(0, 32);
+    if (['hood', 'roof', 'left', 'right'].includes(input.decalRegion as string)) d.decalRegion = input.decalRegion as Design['decalRegion'];
+    if (f.decalRegions && !f.decalRegions.includes(d.decalRegion)) {
+      d.decalRegion = (f.decalRegions[0] as Design['decalRegion']) ?? 'hood'; d.decalText = ''; d.decalLogo = '';
+    }
     if (typeof input.wrap === 'string' && Object.hasOwn(WRAP_LABELS, input.wrap) &&
       (input.wrap === 'none' || !f.wrapStyles || f.wrapStyles.includes(input.wrap))) d.wrap = input.wrap as WrapStyle;
     d.wrapColor = normalizeHex(input.wrapColor) ?? base.wrapColor;
+  }
+  for (const key of ['skirts', 'diffuser', 'exhaustTips', 'fenders', 'bumper'] as const) {
+    d[key] = !!f.bodyKit && typeof input[key] === 'boolean' ? input[key] : false;
   }
   if (f.rimColor && typeof input.rimFinish === 'string' && Object.hasOwn(RIM_FINISH_LABELS, input.rimFinish)) d.rimFinish = input.rimFinish as RimFinish;
   if (f.rimStyle) number('rimScale', 85, 115);
@@ -144,6 +168,8 @@ const EXTRA_CODES = {
   wrap: 'w', wrapColor: 'wc', rimFinish: 'rf', rimScale: 'rz', wheelWidth: 'ww',
   offsetMm: 'of', frontCamber: 'cf', rearCamber: 'cr', spoilerStyle: 'ss',
   lipExtension: 'le', underglow: 'ug', glowColor: 'gc',
+  skirts: 'ks', diffuser: 'kd', exhaustTips: 'ke', fenders: 'kf', bumper: 'kb',
+  wrapWidth: 'width', wrapOffset: 'shift', wrapRotation: 'angle', decalText: 'text', decalLogo: 'logo', decalRegion: 'region',
 } as const;
 function encodeExtras(q: URLSearchParams, d: Design) {
   const defaults = defaultDesign(d.paint, false);
@@ -209,7 +235,7 @@ export function decodeDesign(q: URLSearchParams): Partial<Record<keyof Design, u
   if (cc) out.caliper = cc;
   for (const [key, code] of Object.entries(EXTRA_CODES)) {
     const value = q.get(code);
-    if (value !== null) out[key as keyof typeof EXTRA_CODES] = key === 'underglow' ? value === 'true' : value;
+    if (value !== null) out[key as keyof typeof EXTRA_CODES] = ['underglow', 'skirts', 'diffuser', 'exhaustTips', 'fenders', 'bumper'].includes(key) ? value === 'true' : value;
   }
   return out;
 }

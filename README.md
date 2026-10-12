@@ -181,8 +181,10 @@ Pages üzerinde tutulur. Git LFS veya ücretli CDN gerekmez. Ham kaynak dosyalar
 ## Bilinen sınırlamalar
 
 - Proje görsel kişiselleştirme ve parça planlama aracıdır. Motor/aktarma seçenekleri plan olarak saklanır;
-  motor içi 3D görünüm, sürüş fiziği, iç mekân kitleri, egzoz/far geometrisi değişimi
-  ve araca özel geniş gövde/tampon/yan etek/difüzör parçaları henüz uygulanmaz; gerekçeleri arayüzde görünür.
+  motor içi 3D görünüm, sürüş fiziği, iç mekân kitleri ve far geometrisi değişimi
+  henüz uygulanmaz; gerekçeleri arayüzde görünür. AE86, M3 E30 ve C 63 W204 için özgün yan etek,
+  difüzör, çamurluk/ön tampon uzantıları ve egzoz uçları hazırlanmıştır. Orijinal tampon/egzoz korunur;
+  bunlar görsel eklentidir, OEM kit veya fiziksel montaj şablonu değildir.
   Bunlar için ayrı hazırlanmış, lisansı doğrulanmış parça geometrisi ve/veya fizik/uyumluluk verisi gerekir.
 - Kamber ve dışa açılma mekanik uygunluk ya da çamurluk çakışmasını hesaplamaz. Kaput/tavan kaplaması yaklaşık
   geometrik bölgeyi kullanır; modeldeki bütün panel sınırları semantik olarak tanımlı değildir.
@@ -191,6 +193,29 @@ Pages üzerinde tutulur. Git LFS veya ücretli CDN gerekmez. Ham kaynak dosyalar
 - Fotoğrafta otomatik seçim deneyseldir: aracı bulur ve baskın boya rengini seçer; ön/arka uçlarda eksik kalan
   bölgeler fırçayla tamamlanabilir. Çok renkli (ör. iki tonlu) araçlarda yalnızca baskın renk seçilir.
 - Tasarımlar yalnızca o tarayıcıda saklanır; cihazlar arası eşitleme yoktur (paylaşım bağlantısı ve JSON dosyası kullanılabilir).
+
+## Gelişmiş atölye ve portfolyo
+
+- Kaplama genişliği/konumu/açısı, kaput/tavan/kapı yazısı ve yerel logo. Logo PNG/JPEG/WebP olabilir
+  (girdi en fazla 2 MB); cihazda 128 px PNG’ye dönüştürülür (en fazla 16 KB). Küçük görsel veri URL,
+  kayıt ve JSON'a dahil edilir; paylaşım bağlantısı uzayabilir. Yükleme sunucuya gönderilmez.
+- Aynı aracın kayıtlı A/B tasarımlarını tek kamera, ortak ortam ve fark listesiyle karşılaştırma.
+- Fotoğraf stüdyosu: 1280/1920/2560 px yeniden render, 16:9/1:1/4:5, dört açı panosu ve
+  960×600 alt yazılı 6 saniye WebM tur videosu. PNG boyuna model atıf şeridi eklenir.
+  Stüdyo etkileşimli sahneyi kullanır; ışık izleme çıktısı mevcut Görüntü indir düğmesinden alınır.
+- Motor planı tutarlılığı: ECU/yakıt/aktarma/elektrikli dönüşüm bağımlılıkları. AE86 ve M3 E30
+  temel motor kayıtları üretici kaynaklarına bağlıdır; bilinmeyen araçta fabrika motoru tahmin edilmez.
+  “Çelişki yok” ifadesi montaj uyumluluğu anlamına gelmez. Güç artışı hesaplanmaz.
+- Otomatik/hafif/yüksek grafik profili, WebGL bağlam kaybında anlaşılır yeniden deneme, radyo
+  kontrollerinde tek Tab durağı ve ok tuşları. Kalite otomatiği cihaz ipuçlarına dayanır; FPS garantisi yok.
+- Hakkında sayfasında mimari akışı, teknik kararlar, gerçek tur videosu ve tarihlenmiş ölçüm dosyası.
+  Düzenleyicide oturum ölçümü JSON olarak indirilebilir; destekleyen tarayıcıda yaklaşık JS heap ölçümü
+  de alınır. Bu değer toplam RAM/GPU belleği değildir; kaynak adetleri de GPU bellek baytı değildir.
+
+Ölçümü ve demoyu yeniden üretmek için önizleme sunucusu açıkken `npm run benchmark -- http://localhost:4173`
+çalıştırın (yerel Chrome; `PW_CHANNEL` değiştirilebilir). Sonuç `public/benchmarks/workshop.json`, video ve
+poster `public/demo/` altına yazılır. Yerel sunucu ölçümü internet/mobil performansını temsil etmez.
+Üretilen kit kodu proje MIT lisansındadır; mevcut araç modellerinin CC BY şartları çıktılarda korunur.
 
 ### Windows üzerinde uçtan uca test
 

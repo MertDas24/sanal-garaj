@@ -22,7 +22,7 @@ export function DesignWorkbench({ design, base, vehicleId, title, environment, u
     <nav className="workshop-nav" aria-label="Modifikasyon bölümlerine git">
       {[
         ['Motor', 'motor'], ['Boya', 'gövde-boyası'], ['Kaplama', 'kaplama-ve-yarış-şeritleri'], ['Jant', 'jantlar'],
-        ['Duruş', 'tekerlek-duruşu'], ['Aero', 'aerodinamik-parçalar'], ['LED', 'alt-aydınlatma'],
+        ['Duruş', 'tekerlek-duruşu'], ['Kit', 'gövde-kiti'], ['Aero', 'aerodinamik-parçalar'], ['LED', 'alt-aydınlatma'], ['Stüdyo', 'studyo'],
       ].map(([label, id]) => <button className="chip" key={id} onClick={() => {
         const section = document.getElementById(`mod-${id}`);
         section?.scrollIntoView({ block: 'start', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });

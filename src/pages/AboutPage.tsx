@@ -2,6 +2,7 @@ import { CATALOG } from '../data/catalog';
 import { MODELS } from '../data/models';
 import { ENVIRONMENTS } from '../three/scenes';
 import { ProjectShare } from '../components/ProjectShare';
+import { BenchmarkSummary } from '../components/BenchmarkSummary';
 
 const REPO = 'https://github.com/MertDas24/sanal-garaj';
 
@@ -65,6 +66,21 @@ export function AboutPage() {
       </ul>
 
       <h2>Teknoloji</h2>
+      <h3>Mimari ve teknik kararlar</h3>
+      <div className="architecture" aria-label="Uygulama veri akışı">
+        <div><strong>Kaynak doğrulama</strong><span>CC BY / CC0 → model hazırlama → kanonik GLB</span></div><span aria-hidden="true">↓</span>
+        <div><strong>Statik katalog</strong><span>Seçilen araç → tembel 3D paket yükleme</span></div><span aria-hidden="true">↓</span>
+        <div><strong>Doğrulanan tasarım</strong><span>Sanitize → boya / geometri / kamera → WebGL2</span></div><span aria-hidden="true">↓</span>
+        <div><strong>Cihazda çıktı</strong><span>Yerel kayıt · URL · JSON · PNG · WebM</span></div>
+      </div>
+      <p>En önemli geometri kararı: boya yalnızca kanonik gövde malzemesine uygulanır. Kit bağlantıları gerçek model yüzeyinden ölçülür; kaplamalar boya üçgenlerine projekte edilir. Desteklenmeyen modellerde ilgili kontroller gerekçesiyle kapatılır.</p>
+      <p>Önemli kaynak yönetimi kararı: sabit sahne talep üzerine çizilir, kaplama geometrileri sınırlı önbellekte tutulur, çıktı render hedefleri işlem sonunda temizlenir. Yalnızca motor parça planını değiştirmek ışık izlemeyi yeniden başlatmaz.</p>
+      <h3>Ölçülebilir portfolyo</h3>
+      <BenchmarkSummary />
+      <p>Düzenleyicideki “Performans ölçümü ve rapor” aracından kendi oturumunuzun indirme süreleri ve renderer kaynak adetlerini JSON olarak alabilirsiniz. Sonuçlar donanım ve önbelleğe bağlıdır; geometri/doku adetleri bellek boyutu olarak sunulmaz.</p>
+      <p><a href={`${import.meta.env.BASE_URL}benchmarks/workshop.json`} target="_blank" rel="noopener noreferrer">Tarihli geliştirme ölçümü (JSON)</a></p>
+      <video className="about__demo" controls preload="none" poster={`${import.meta.env.BASE_URL}demo/poster.jpg`} aria-label="Gerçek 3D sahneden kaydedilmiş Sanal Garaj turu" src={`${import.meta.env.BASE_URL}demo/garaj-turu.webm`} />
+      <p className="small muted">Demo ve poster: <a href="https://sketchfab.com/3d-models/a5737bf3cc9b4179a6e5ebe173ff70d9" target="_blank" rel="noopener noreferrer">Toyota AE86 Sprinter Trueno Zenki — Martin Trafas</a>, <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer license">CC BY 4.0</a>. Ölçek/yön/sıkıştırma, boya, kaplama ve üretilen eklenti kit uygulanmıştır. Video gerçek model sahnesinden uygulamanın kendi kaydedicisiyle oluşturuldu.</p>
       <h3>Motor ve aktarma planı</h3>
       <p>Motor değişimi, iç aksam, turbo/kompresör, ECU, yakıt, egzoz, soğutma ve aktarma seçenekleri tasarımın
         parça planına eklenir; kayıt, dosya ve bağlantı üzerinden taşınır. Bu bölüm güç ölçümü, fizik simülasyonu

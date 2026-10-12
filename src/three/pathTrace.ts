@@ -144,7 +144,8 @@ export function startPathTrace(o: PathTraceOptions): PathTraceSession {
     const samples = Math.floor(pt.samples);
     const done = samples >= o.maxSamples;
     if (!done) pt.renderSample();
-    if (samples !== lastReported && (done || samples % 4 === 0)) {
+    // İlk tamamlanan örneği hemen bildir: yazılımsal WebGL'de dört örneği beklemek uzun süre 0 gösterir.
+    if (samples !== lastReported && (done || samples === 1 || samples % 4 === 0)) {
       lastReported = samples;
       o.onProgress(samples, done);
     }

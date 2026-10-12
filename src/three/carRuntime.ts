@@ -3,7 +3,8 @@ import type { ModelFeatures } from '../data/models';
 import { defaultDesign, type Design, type Finish, type RimStyle, type WindowTint, type WrapStyle } from '../lib/design';
 import { toCreasedNormals } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { buildFrontLip, buildRim, buildSpoiler } from './addons';
-import { buildUnderglow, buildWrap } from './workshopGeometry';
+import { buildDecal, buildUnderglow, buildWrap } from './workshopGeometry';
+import { buildBodyKit, KIT_MODELS } from './bodyKit';
 
 /** Bu açıdan küçük kenarlar yumuşatılır; daha keskin kenarlar (panel hatları) korunur. */
 const CREASE = THREE.MathUtils.degToRad(35);
@@ -77,7 +78,7 @@ function dequantize(geom: THREE.BufferGeometry): THREE.BufferGeometry {
   return out;
 }
 
-export function createCarRuntime(source: THREE.Object3D, features: ModelFeatures, triangles = 0): CarRuntime {
+export function createCarRuntime(source: THREE.Object3D, features: ModelFeatures, triangles = 0, modelId = '', invalidate = () => {}): CarRuntime {
   const object = new THREE.Group();
   object.name = 'car';
   const scene = source.clone(true);
@@ -119,7 +120,9 @@ export function createCarRuntime(source: THREE.Object3D, features: ModelFeatures
     const mesh = o as THREE.Mesh;
     if (!mesh.isMesh) return;
     mesh.castShadow = true;
-    mesh.geometry = track(dequantize(mesh.geometry));
+    const sourceGeometry = mesh.geometry;
+    const geometry = dequantize(sourceGeometry);
+    mesh.geometry = geometry === sourceGeometry ? geometry : track(geometry);
     const mat = mesh.material as THREE.MeshStandardMaterial;
     if (Array.isArray(mat)) return;
     if (mat.name === 'CG_paint') {
@@ -134,7 +137,13 @@ export function createCarRuntime(source: THREE.Object3D, features: ModelFeatures
         if (mat.aoMap) paintMat.aoMap = mat.aoMap;
       }
       mesh.material = paintMat;
-      if (triangles && triangles < SMOOTH_BELOW_TRIANGLES) mesh.geometry = track(toCreasedNormals(mesh.geometry, CREASE));
+      if (triangles && triangles < SMOOTH_BELOW_TRIANGLES) {
+        // toCreasedNormals, indeksiz geometriyi yerinde değiştirir; kaynak modelin geometrisi korunmalı.
+        const owned = mesh.geometry === sourceGeometry ? mesh.geometry.clone() : mesh.geometry;
+        const smooth = toCreasedNormals(owned, CREASE);
+        if (smooth !== owned && owned !== geometry) owned.dispose();
+        mesh.geometry = smooth === geometry ? smooth : track(smooth);
+      }
     } else if (mat.name === 'CG_caliper') {
       caliperOriginal.set(mesh, mat);
     } else if (mat.name === 'CG_glass') {
@@ -239,6 +248,13 @@ export function createCarRuntime(source: THREE.Object3D, features: ModelFeatures
     Math.abs(w.outerX - w.center.x) < 0.3);
   // Bazı kaynaklarda lastik düğümü uzak geometriyi de içerir; bu ölçümle yeni jant üretme.
   if (!f.stance) f.rimStyle = false;
+  f.bodyKit = !!f.stance && KIT_MODELS.includes(modelId);
+  const kit = f.bodyKit ? buildBodyKit(bodyBox, wheels, partMat, body) : null;
+  if (kit) {
+    if ([...kit.parts.values()].some((part) => !part.children.length)) f.bodyKit = false;
+    kit.materials.forEach(track);
+    kit.parts.forEach((group) => { bodyParts.add(group); group.traverse((o) => { if (o instanceof THREE.Mesh) track(o.geometry); }); });
+  }
   f.wrap = paintFound;
   f.underglow = !bodyBox.isEmpty() && bodyBox.min.y < 0.7;
   const wrapMat = track(new THREE.MeshPhysicalMaterial({ name: 'CG_wrap', roughness: 0.4, metalness: 0.15, clearcoat: 0.8 }));
@@ -252,6 +268,23 @@ export function createCarRuntime(source: THREE.Object3D, features: ModelFeatures
   }
   f.wrapStyles = [...wraps.keys()];
   f.wrap = wraps.size > 0;
+  let customWrap: THREE.Group | null = null, wrapKey = '';
+  const customWraps = new Map<string, THREE.Group>();
+  const decals = new Map<Design['decalRegion'], THREE.Group>();
+  let decal: THREE.Group | null = null, decalKey = '';
+  const logos = new Map<string, HTMLImageElement>();
+  let alive = true;
+  const decalCanvas = typeof document !== 'undefined' ? document.createElement('canvas') : null;
+  if (decalCanvas) { decalCanvas.width = 1024; decalCanvas.height = 256; }
+  const decalTexture = decalCanvas ? track(new THREE.CanvasTexture(decalCanvas)) : null;
+  if (decalTexture) decalTexture.colorSpace = THREE.SRGBColorSpace;
+  const decalMat = track(new THREE.MeshStandardMaterial({ map: decalTexture, transparent: true, alphaTest: 0.05, roughness: 0.5, depthWrite: false }));
+  for (const region of ['hood', 'roof', 'left', 'right'] as const) {
+    const group = buildDecal(paintMeshes, bodyBox, region, decalMat);
+    if (group.children.length) { group.visible = false; decals.set(region, group); bodyParts.add(group); }
+  }
+  f.decalRegions = [...decals.keys()];
+  const removeLayer = (layer: THREE.Group | null) => { layer?.removeFromParent(); layer?.traverse((o) => { if (o instanceof THREE.Mesh) o.geometry.dispose(); }); };
   const glowMat = track(new THREE.MeshStandardMaterial({ name: 'CG_glow', emissiveIntensity: 8, toneMapped: false }));
   const glow = buildUnderglow(bodyBox, glowMat);
   object.add(glow);
@@ -284,6 +317,7 @@ export function createCarRuntime(source: THREE.Object3D, features: ModelFeatures
 
   const runtimeDefault = defaultDesign(originalPaint, f.spoiler === 'builtin');
   const apply = (d: Design) => {
+    alive = true;
     // Eski tasarım dosyaları ve kendi-model görüntüleyicisi yeni alanları içermeyebilir.
     d = { ...runtimeDefault, ...d };
     if (f.paint) {
@@ -331,7 +365,9 @@ export function createCarRuntime(source: THREE.Object3D, features: ModelFeatures
     caliperOriginal.forEach((orig, m) => { m.material = caliperColor ? caliperMat : orig; });
 
     const h = f.rideHeight ? d.heightMm / 1000 : 0;
-    body.position.y = bodyBaseY + h / rootScale;
+    // Projeksiyon fabrika koordinatlarında üretilir; yükseklik eklenti grubuna yalnızca bir kez uygulanır.
+    body.position.y = bodyBaseY;
+    object.updateMatrixWorld(true);
     bodyParts.position.y = h;
 
     if (builtinSpoiler) builtinSpoiler.visible = f.spoiler === 'builtin' ? d.spoiler : true;
@@ -355,7 +391,40 @@ export function createCarRuntime(source: THREE.Object3D, features: ModelFeatures
       });
     }
     wrapMat.color.set(d.wrapColor);
-    wraps.forEach((wrap, key) => { wrap.visible = key === d.wrap && !!f.wrap; });
+    const customized = d.wrapWidth !== 100 || d.wrapOffset !== 0 || d.wrapRotation !== 0;
+    wraps.forEach((wrap, key) => { wrap.visible = !customized && key === d.wrap && !!f.wrap; });
+    const nextWrapKey = `${d.wrap}/${d.wrapWidth}/${d.wrapOffset}/${d.wrapRotation}`;
+    if (customized && nextWrapKey !== wrapKey) {
+      customWrap = customWraps.get(nextWrapKey) ?? null;
+      if (!customWrap) {
+        customWrap = buildWrap(paintMeshes, bodyBox, d.wrap, wrapMat, { width: d.wrapWidth, offset: d.wrapOffset, rotation: d.wrapRotation }); bodyParts.add(customWrap); customWraps.set(nextWrapKey, customWrap);
+        if (customWraps.size > 4) { const first = customWraps.keys().next().value!; removeLayer(customWraps.get(first)!); customWraps.delete(first); }
+      }
+      wrapKey = nextWrapKey;
+    }
+    customWraps.forEach((group) => { group.visible = group === customWrap && customized && d.wrap !== 'none'; });
+    const nextDecalKey = `${d.decalText}/${d.decalRegion}/${d.wrapColor}/${d.decalLogo}`;
+    if (nextDecalKey !== decalKey && decalCanvas && decalTexture) {
+      decals.forEach((group) => { group.visible = false; }); decal = null;
+      if (d.decalText || d.decalLogo) {
+        const ctx = decalCanvas.getContext('2d')!; ctx.clearRect(0, 0, 1024, 256); ctx.fillStyle = d.wrapColor; ctx.font = 'bold 120px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(d.decalText, d.decalLogo ? 640 : 512, 128, d.decalLogo ? 720 : 980);
+        if (d.decalLogo) {
+          let img = logos.get(d.decalLogo);
+          if (!img) {
+            img = new Image(); logos.set(d.decalLogo, img); img.onload = () => { if (alive) { decalKey = ''; invalidate(); } }; img.src = d.decalLogo;
+            if (logos.size > 4) { const first = logos.keys().next().value!; const old = logos.get(first)!; old.onload = null; old.src = ''; logos.delete(first); }
+          }
+          if (img.complete && img.naturalWidth) ctx.drawImage(img, d.decalText ? 0 : 384, 0, 256, 256);
+        }
+        decalTexture.needsUpdate = true;
+        decal = decals.get(d.decalRegion) ?? null;
+        if (!decal) { decal = buildDecal(paintMeshes, bodyBox, d.decalRegion, decalMat); bodyParts.add(decal); decals.set(d.decalRegion, decal); }
+        decal.visible = true;
+      }
+      decalKey = nextDecalKey;
+    }
+    kit?.parts.forEach((group, key) => { group.visible = !!f.bodyKit && d[key]; });
+    body.position.y = bodyBaseY + h / rootScale;
     glow.visible = !!f.underglow && d.underglow;
     glowMat.color.set(d.glowColor); glowMat.emissive.set(d.glowColor);
     glow.traverse((o) => { if (o instanceof THREE.PointLight) o.color.set(d.glowColor); });
@@ -378,6 +447,8 @@ export function createCarRuntime(source: THREE.Object3D, features: ModelFeatures
     // GPU kaynaklarını serbest bırakır; nesne ağacına dokunmaz (React StrictMode'da efekt
     // yeniden çalışırsa three.js kaynakları bir sonraki çizimde otomatik yeniden yükler).
     dispose() {
+      alive = false; logos.forEach((img) => { img.onload = null; img.src = ''; }); logos.clear();
+      customWraps.forEach(removeLayer); customWraps.clear(); decals.forEach(removeLayer); decals.clear(); wrapKey = ''; decalKey = '';
       for (const c of created) c.dispose();
     },
   };

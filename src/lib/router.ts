@@ -22,7 +22,8 @@ export type Route =
 export function parseHash(hash: string): Route {
   const raw = hash.replace(/^#/, '') || '/';
   const [path, qs = ''] = raw.split('?');
-  const parts = path.split('/').filter(Boolean).map(decodeURIComponent);
+  let parts: string[];
+  try { parts = path.split('/').filter(Boolean).map(decodeURIComponent); } catch { return { name: 'notfound' }; }
   if (parts.length === 0) return { name: 'catalog' };
   if (parts[0] === 'arac' && parts[1]) return { name: 'editor', vehicleId: parts[1], query: new URLSearchParams(qs) };
   if (parts[0] === 'tasarimlarim') return { name: 'saved' };

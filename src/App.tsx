@@ -20,9 +20,9 @@ export default function App() {
 
   return (
     <div className="app">
-      <a className="skip-link" href="#icerik">İçeriğe geç</a>
+      <a className="skip-link" href="#icerik" onClick={(event) => { event.preventDefault(); document.getElementById('icerik')?.focus(); }}>İçeriğe geç</a>
       <Header route={route} />
-      <main id="icerik" className={route.name === 'editor' ? 'main main--editor' : 'main'}>
+      <main id="icerik" tabIndex={-1} className={route.name === 'editor' ? 'main main--editor' : 'main'}>
         <Suspense fallback={<div className="page-loading" role="status">Yükleniyor…</div>}>
           {route.name === 'catalog' && <CatalogPage />}
           {route.name === 'editor' && <EditorPage key={route.vehicleId} vehicleId={route.vehicleId} query={route.query} />}

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useGLTF, useProgress } from '@react-three/drei';
+import { useEnvironment, useGLTF, useProgress } from '@react-three/drei';
 import { findVehicle } from '../data/catalog';
 import { findModel, LICENSE_LABELS, modelUrl, type ModelFeatures } from '../data/models';
 import {
@@ -8,7 +8,7 @@ import {
 import { absoluteUrl, editorHash, replaceHash } from '../lib/router';
 import { hasWebGL } from '../lib/webgl';
 import { captionImage, downloadBlob, makeThumb, slugify } from '../lib/image';
-import { saveDesign } from '../lib/storage';
+import { loadSaved, saveDesign } from '../lib/storage';
 import { CarViewer, type ViewerHandle } from '../three/CarViewer';
 import { startPathTrace, type PathTraceSession } from '../three/pathTrace';
 import { ENVIRONMENTS, findEnv, PT_QUALITY, type EnvId, type PtQuality, type ShotId } from '../three/scenes';
@@ -18,6 +18,10 @@ import { NoWebGL } from '../components/NoWebGL';
 import { useToast } from '../components/useToast';
 import { useDesignHistory } from '../lib/useDesignHistory';
 import { DesignWorkbench } from '../components/DesignWorkbench';
+import { StudioPanel } from '../components/StudioPanel';
+import { PerformancePanel } from '../components/PerformancePanel';
+import { designSummary } from '../lib/designFile';
+import type { RenderQuality } from '../lib/quality';
 
 
 function withEnv(q: URLSearchParams, env: EnvId): URLSearchParams {
@@ -60,9 +64,14 @@ function Editor({ vehicleId, title, year, note, modelId, query }: {
   const [initialQuery] = useState(query);
   const [base, setBase] = useState<Design | null>(null);
   const { design, setDesign, reset: resetHistory, undo, redo, canUndo, canRedo } = useDesignHistory();
+  const lastDesign = useRef<Design | null>(null);
+  useEffect(() => { if (design) lastDesign.current = design; }, [design]);
   const [features, setFeatures] = useState<ModelFeatures>(model.features);
   const [error, setError] = useState<string | null>(null);
   const [comparing, setComparing] = useState(false);
+  const [savedOptions, setSavedOptions] = useState(() => loadSaved().filter((s) => s.vehicleId === vehicleId));
+  const [compareId, setCompareId] = useState('factory');
+  const [renderQuality, setRenderQuality] = useState<RenderQuality>('auto');
   const [split, setSplit] = useState(0.5);
   const { toast, show } = useToast();
   const [photoreal, setPhotoreal] = useState(false);
@@ -76,6 +85,9 @@ function Editor({ vehicleId, title, year, note, modelId, query }: {
   const PT_SAMPLES = PT_QUALITY[quality].samples;
   const env = findEnv(envId);
   const modelReady = !!design;
+  const visualSignature = useMemo(() => { if (!design) return ''; const { powertrain: _plan, ...visual } = design; return JSON.stringify(visual); }, [design]);
+  const beforeDesign = compareId === 'factory' ? base : savedOptions.find((s) => s.id === compareId)?.design ?? base;
+  const differences = design && beforeDesign ? designSummary(design, beforeDesign) : [];
   useEffect(() => {
     if (modelReady && !photoreal) viewer.current?.setShot(shot);
     // Tasarım değişikliklerinde kullanıcının serbest kamerayı kaybetmemesi için yalnızca hazır olma durumu izlenir.
@@ -83,7 +95,7 @@ function Editor({ vehicleId, title, year, note, modelId, query }: {
 
   // Fotogerçekçi mod: ayrı bir WebGL bağlamında ışık izleme; tasarım değişince baştan hesaplanır
   useEffect(() => {
-    if (!photoreal || !design) return;
+    if (!photoreal || !visualSignature) return;
     // Tasarımın etkileşimli sahneye uygulanması için bir kare bekle
     const id = requestAnimationFrame(() => {
       const snap = viewer.current?.snapshot();
@@ -112,17 +124,18 @@ function Editor({ vehicleId, title, year, note, modelId, query }: {
       ptSession.current?.stop();
       ptSession.current = null;
     };
-  }, [photoreal, design, show, PT_SAMPLES, env, shot, denoise]);
+  }, [photoreal, visualSignature, show, PT_SAMPLES, env, shot, denoise]);
   const [busy, setBusy] = useState(false);
   const [retry, setRetry] = useState(0);
   const { progress } = useProgress();
 
   const onReady = useCallback((info: { features: ModelFeatures; originalPaint: string; originalRim: string | null }) => {
     const b = defaultDesign(info.originalPaint, info.features.spoiler === 'builtin');
+    b.decalRegion = (info.features.decalRegions?.[0] as Design['decalRegion']) ?? 'hood';
     if (import.meta.env.DEV) (window as unknown as { __features?: ModelFeatures }).__features = info.features;
     setFeatures(info.features);
     setBase(b);
-    resetHistory(sanitizeDesign(decodeDesign(initialQuery), b, info.features));
+    resetHistory(sanitizeDesign(lastDesign.current ?? decodeDesign(initialQuery), b, info.features));
   }, [initialQuery, resetHistory]);
 
   useEffect(() => {
@@ -138,7 +151,10 @@ function Editor({ vehicleId, title, year, note, modelId, query }: {
 
   const onError = useCallback((e: Error) => {
     console.error(e);
-    setError('3D model yüklenemedi. İnternet bağlantınızı kontrol edip tekrar deneyin.');
+    const contextLost = e.message.includes('bağlam');
+    const message = contextLost ? 'Grafik bağlamı kaybedildi. Açık sekmeleri azaltın ve tekrar deneyin.' : e.message.startsWith('Ortam:') ? 'Ortam ışığı dosyası yüklenemedi. İnternet bağlantınızı kontrol edip tekrar deneyin.' : '3D model yüklenemedi. İnternet bağlantınızı kontrol edip tekrar deneyin.';
+    // Hata sahneyi kapatır; kapanıştaki bağlam kaybı asıl dosya hatasının üstüne yazmamalı.
+    setError((previous) => contextLost && previous ? previous : message);
   }, [setError]);
 
   // Adres çubuğu her zaman paylaşılabilir güncel tasarımı gösterir
@@ -151,7 +167,7 @@ function Editor({ vehicleId, title, year, note, modelId, query }: {
     [design, base, vehicleId, envId],
   );
 
-  const attribution = `3D model: “${model.source.title}” — ${model.source.author} (${model.source.site}), ${LICENSE_LABELS[model.source.license]}`;
+  const attribution = `3D model: “${model.source.title}” — ${model.source.author}, ${LICENSE_LABELS[model.source.license]} · ${model.source.url}`;
 
   const handleDownload = async () => {
     const data = photoreal && ptSession.current ? ptSession.current.canvas.toDataURL('image/png') : viewer.current?.capture();
@@ -190,7 +206,7 @@ function Editor({ vehicleId, title, year, note, modelId, query }: {
     const thumb = data ? await makeThumb(data) : null;
     const date = new Date().toLocaleDateString('tr-TR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
     const r = saveDesign({ vehicleId, name: `${title} · ${date}`, design, thumb, environment: envId });
-    if (r.ok) show('Tasarım bu cihaza kaydedildi.', 'ok', { href: '#/tasarimlarim', label: 'Tasarımlarım' });
+    if (r.ok) { setSavedOptions(loadSaved().filter((s) => s.vehicleId === vehicleId)); show('Tasarım bu cihaza kaydedildi.', 'ok', { href: '#/tasarimlarim', label: 'Tasarımlarım' }); }
     else show(r.reason === 'full' ? 'Kayıt sınırına ulaşıldı (30). Eski tasarımlardan silin.' : 'Tarayıcı depolaması kullanılamıyor (gizli mod olabilir).', 'error');
   };
 
@@ -214,9 +230,11 @@ function Editor({ vehicleId, title, year, note, modelId, query }: {
               url={modelUrl(model)}
               features={model.features}
               triangles={model.triangles}
+              modelId={modelId}
+              renderQuality={renderQuality}
               envFile={env.file}
               design={design ?? base ?? defaultDesign('#cccccc', false)}
-              compare={comparing && base && !photoreal ? { before: base, split } : null}
+              compare={comparing && beforeDesign && !photoreal ? { before: sanitizeDesign(beforeDesign, base!, features), split } : null}
               onReady={onReady}
               onError={onError}
             />
@@ -234,7 +252,7 @@ function Editor({ vehicleId, title, year, note, modelId, query }: {
             <div className="viewer__overlay" role="alert">
               <div className="loader">
                 <p>{error}</p>
-                <button className="btn btn--primary" onClick={() => { useGLTF.clear(modelUrl(model)); setError(null); setRetry((n) => n + 1); }}>Tekrar dene</button>
+                <button className="btn btn--primary" onClick={() => { if (error.startsWith('Ortam')) useEnvironment.clear({ files: `${import.meta.env.BASE_URL}env/${env.file}` }); useGLTF.clear(modelUrl(model)); setError(null); setRetry((n) => n + 1); }}>Tekrar dene</button>
               </div>
             </div>
           )}
@@ -251,7 +269,7 @@ function Editor({ vehicleId, title, year, note, modelId, query }: {
           )}
           {ready && comparing && !photoreal && (
             <div className="compare">
-              <span className="compare__label compare__label--left">Önce</span>
+              <span className="compare__label compare__label--left">{compareId === 'factory' ? 'Önce' : 'Kayıt A'}</span>
               <span className="compare__label compare__label--right">Sonra</span>
               <div className="compare__line" style={{ left: `${split * 100}%` }} aria-hidden="true" />
               <label className="compare__slider">
@@ -292,7 +310,7 @@ function Editor({ vehicleId, title, year, note, modelId, query }: {
         {ready ? (
           <>
             <DesignWorkbench design={design!} base={base!} vehicleId={vehicleId} title={title} environment={envId} undo={undo} redo={redo} canUndo={canUndo} canRedo={canRedo} />
-            <EditorPanel design={design!} base={base!} features={features} notes={model.notes} onChange={(d) => setDesign(sanitizeDesign(d, base!, features))} />
+            <EditorPanel vehicleId={vehicleId} design={design!} base={base!} features={features} notes={model.notes} onChange={(d) => setDesign(sanitizeDesign(d, base!, features))} />
             <SceneControls
               env={envId} onEnv={setEnvId}
               shot={shot} onShot={setShot}
@@ -300,6 +318,15 @@ function Editor({ vehicleId, title, year, note, modelId, query }: {
               denoise={denoise} onDenoise={setDenoise}
               photoreal={photoreal}
             />
+            <section className="panel__section"><h2 className="panel__title">Kayıtlı tasarım karşılaştırması</h2>
+              <label className="field"><span>Sol görünüm (A)</span><select aria-label="Sol görünüm (A)" value={compareId} onChange={(e) => { setCompareId(e.target.value); setComparing(true); }}><option value="factory">Fabrika tasarımı</option>{savedOptions.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}</select></label>
+              <label className="field"><span>Sağ görünüm (B)</span><select aria-label="Sağ görünüm (B)" value="" onChange={(e) => { const item = savedOptions.find((s) => s.id === e.target.value); if (item) { setDesign(sanitizeDesign(item.design, base!, features)); setComparing(true); } }}><option value="">Mevcut tasarım / kayıt seç</option>{savedOptions.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}</select></label>
+              <p className="muted small">Aynı aracın iki tasarımı tek kamera ile eşzamanlı karşılaştırılır. Ortam ışığı ortaktır. Farklı araç kayıtları listelenmez.</p>
+              {comparing && <details><summary>{differences.length} tasarım farkı</summary><ul>{differences.map((row) => <li key={row.label}>{row.label}: {row.value}</li>)}</ul></details>}
+            </section>
+            <section className="panel__section"><h2 className="panel__title">Grafik kalitesi</h2><label className="field"><span>Etkileşimli görüntü</span><select aria-label="Etkileşimli görüntü" value={renderQuality} onChange={(e) => setRenderQuality(e.target.value as RenderQuality)}><option value="auto">Cihaza göre otomatik</option><option value="low">Hafif (yansıtıcı zemin kapalı)</option><option value="high">Yüksek</option></select></label><p className="muted small">Otomatik seçim ekran, giriş yöntemi, işlemci ve varsa cihaz belleğine göre yapılır. Işık izleme kalitesi ayrı ayarlanır.</p></section>
+            <StudioPanel viewer={viewer} title={title} attribution={attribution} disabled={photoreal || comparing} />
+            <PerformancePanel viewer={viewer} vehicleId={vehicleId} />
             <div className="panel-actions">
               <button className="btn btn--primary" onClick={handleSave}>Kaydet</button>
               <button className="btn" onClick={handleShare}>Bağlantıyı paylaş</button>

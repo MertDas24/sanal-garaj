@@ -1,4 +1,6 @@
-import { useId } from 'react';
+import { useId, useState } from 'react';
+import { readLocalLogo } from '../lib/logo';
+import { radioKeys } from '../lib/radioKeys';
 import { PowertrainPanel } from './PowertrainPanel';
 import type { ModelFeatures } from '../data/models';
 import {
@@ -13,11 +15,13 @@ interface Props {
   features: ModelFeatures;
   notes: string | null;
   onChange(d: Design): void;
+  vehicleId?: string;
 }
 
-export function EditorPanel({ design, base, features: f, notes, onChange }: Props) {
+export function EditorPanel({ design, base, features: f, notes, onChange, vehicleId }: Props) {
   const set = <K extends keyof Design>(k: K, v: Design[K]) => onChange({ ...design, [k]: v });
   const changed = JSON.stringify(design) !== JSON.stringify(base);
+  const [logoStatus, setLogoStatus] = useState('');
 
   return (
     <div className="panel">
@@ -34,7 +38,7 @@ export function EditorPanel({ design, base, features: f, notes, onChange }: Prop
         <p className="muted small">Paketler modelin desteklemediği ayarları atlar; sonra istediğiniz gibi değiştirebilirsiniz.</p>
       </section>
 
-      <PowertrainPanel plan={design.powertrain} onChange={(plan) => set('powertrain', plan)} />
+      <PowertrainPanel vehicleId={vehicleId} plan={design.powertrain} onChange={(plan) => set('powertrain', plan)} />
 
       <Section title="Gövde boyası" disabled={!f.paint} reason="Bu modelde gövde boyası ayrı bir malzeme değil.">
         <Swatches
@@ -59,7 +63,22 @@ export function EditorPanel({ design, base, features: f, notes, onChange }: Prop
         <Segmented<WrapStyle> label="Kaplama tasarımı" value={design.wrap} onPick={(v) => set('wrap', v)}
           options={(Object.keys(WRAP_LABELS) as WrapStyle[]).map((value) => ({ value, label: WRAP_LABELS[value], disabled: value !== 'none' && !!f.wrapStyles && !f.wrapStyles.includes(value) }))} />
         <label className="color-input"><input type="color" value={design.wrapColor} onChange={(e) => set('wrapColor', e.target.value)} /><span>Kaplama rengi</span></label>
+        <Range label="Şerit / kaplama genişliği" min={40} max={180} step={5} value={design.wrapWidth} unit="%" format={(v) => `%${v}`} onValue={(v) => set('wrapWidth', v)} />
+        <Range label="Kaplama yatay konumu" min={-25} max={25} step={1} value={design.wrapOffset} unit="%" format={(v) => `%${v}`} onValue={(v) => set('wrapOffset', v)} />
+        <Range label="Kaplama açısı" min={-30} max={30} step={1} value={design.wrapRotation} unit="°" format={(v) => `${v}°`} onValue={(v) => set('wrapRotation', v)} />
+        <fieldset className="control-group" disabled={f.decalRegions?.length === 0} aria-label="Gövde yazısı ve logo">
+        <label className="field"><span className="field-label">Gövde yazısı</span><input maxLength={32} value={design.decalText} placeholder="Örn. SANAL GARAJ" onChange={(e) => set('decalText', e.target.value)} /></label>
+        <label className="field"><span className="field-label">Yazı bölgesi</span><select aria-label="Yazı bölgesi" value={design.decalRegion} onChange={(e) => set('decalRegion', e.target.value as Design['decalRegion'])}>{([['hood', 'Kaput'], ['roof', 'Tavan'], ['left', 'Sol kapı'], ['right', 'Sağ kapı']] as const).map(([region, label]) => <option key={region} value={region} disabled={!!f.decalRegions && !f.decalRegions.includes(region)}>{label}</option>)}</select></label>
+        <label className="field"><span>Yerel logo yükle (PNG/JPEG/WebP)</span><input type="file" accept="image/png,image/jpeg,image/webp" onChange={async (e) => { const file = e.target.files?.[0]; e.target.value = ''; if (!file) return; try { set('decalLogo', await readLocalLogo(file)); setLogoStatus('Logo cihazınızda işlendi.'); } catch (error) { setLogoStatus(error instanceof Error ? error.message : 'Logo okunamadı.'); } }} /></label>
+        <button className="btn btn--small" disabled={!design.decalLogo} onClick={() => set('decalLogo', '')}>Logoyu kaldır</button><p className="small" role="status">{logoStatus}</p>
+        </fieldset>
+        <p className="muted small">Kapalı bölgelerde uygun boya yüzeyi bulunamadı. Logo 128 px PNG’ye dönüştürülür. Dosya sunucuya gönderilmez; paylaşım bağlantısına küçük görsel verisi eklenir. Bağlantıyı paylaştığınız kişi logoyu görebilir.</p>
         <p className="muted small">Üst gövde yüzeylerine geometrik kaplama; camlar ve trim korunur. Kaput/tavan alanı modelin geometrisine göre yaklaşık belirlenir.</p>
+      </Section>
+
+      <Section title="Gövde kiti" disabled={!f.bodyKit} reason="Bu model için kit yerleşimi doğrulanmadı. İlk kitler AE86, M3 E30 ve C 63 W204 için hazırlanıyor.">
+        {([['skirts', 'Yan etek'], ['diffuser', 'Arka difüzör'], ['exhaustTips', 'Çift egzoz ucu'], ['fenders', 'Çamurluk uzantıları'], ['bumper', 'Ön tampon köşe uzantıları']] as const).map(([key, label]) => <Toggle key={key} label={label} checked={design[key]} onToggle={(v) => set(key, v)} />)}
+        <p className="muted small">Bu modele ölçülen özgün görsel eklentiler; orijinal tampon korunur. OEM kit, üretim ölçüsü veya fiziksel montaj garantisi değildir.</p>
       </Section>
 
       <Section title="Jantlar" disabled={!f.rimColor && !f.rimStyle} reason="Bu modelde jantlar ayrı ve tutarlı bir malzeme olarak ayrılamadı; jant değişikliği desteklenmiyor.">
@@ -164,8 +183,8 @@ export function EditorPanel({ design, base, features: f, notes, onChange }: Prop
         {[
           ['Motor içi 3D görünüm / güç ölçümü', 'Motor ve aktarma planındaki seçimler saklanır; ayrı motor geometrisi ve sürüş fiziği simülasyonu yok.'],
           ['Fren kiti geometrisi', 'Araç bazında fren diski ve bağlantı ölçüleri yok. Kaliper rengi ayrı desteklenir.'],
-          ['Geniş gövde / tampon / yan etek / difüzör', 'Araca özel, lisanslı ve yerleşimi doğrulanmış parça geometrisi gerekiyor.'],
-          ['Egzoz geometrisi / far / stop / ayna / panjur', 'Egzoz seçimi motor planında saklanır; bu parçaların 3D geometrileri tüm modellerde ayrı ve doğrulanmış düğümlere sahip değil.'],
+          ['Diğer araçlar için gövde kiti', 'Kit yalnızca doğrulanan modellerde açılır; her araç için görsel yerleşim kontrolü gerekir.'],
+          ['Komple egzoz / far / stop / ayna / panjur', 'Motor planı egzoz hattını saklar; kit destekleyen üç modelde görsel egzoz uçları eklenir. Komple sistemler ve diğer parçalar ayrı doğrulanmış düğümlere sahip değil.'],
           ['Koltuk / direksiyon / takla kafesi / ses sistemi', 'İç mekân parçaları ve bağlantı noktaları ayrı hazırlanmalı.'],
           ['Lastik deseni / fren diski / hava süspansiyonu', 'Ayrı lastik/diski değiştirme ve hareketli süspansiyon geometrisi gerekiyor.'],
         ].map(([name, reason]) => <div key={name} className="unsupported-item"><button className="btn btn--small" disabled>{name}</button><p className="muted small">{reason}</p></div>)}
@@ -192,13 +211,16 @@ function Section({ title, disabled, reason, children }: { title: string; disable
 }
 
 function Swatches({ label, options, value, onPick }: { label: string; options: { name: string; hex: string }[]; value: string; onPick(hex: string): void }) {
+  const unique = options.filter((item, index) => options.findIndex((other) => other.hex === item.hex) === index);
+  const selected = unique.findIndex((item) => item.hex === value);
   return (
     <div className="swatches" role="radiogroup" aria-label={label} onKeyDown={radioKeys}>
-      {options.map((o) => (
+      {unique.map((o, index) => (
         <button
           key={o.name}
           role="radio"
-          aria-checked={value === o.hex}
+          aria-checked={index === selected}
+          tabIndex={index === Math.max(0, selected) ? 0 : -1}
           className={o.hex ? 'swatch' : 'swatch swatch--original'}
           style={o.hex ? { background: o.hex } : undefined}
           title={o.name}
@@ -216,24 +238,13 @@ function Segmented<T extends string>({ label, options, value, onPick }: { label:
       <span className="field-label">{label}</span>
       <div className="segmented" role="radiogroup" aria-label={label} onKeyDown={radioKeys}>
         {options.map((o) => (
-          <button key={o.value} role="radio" disabled={o.disabled} title={o.disabled ? 'Bu modelde uygun yüzey bulunamadı.' : undefined} aria-checked={value === o.value} onClick={() => onPick(o.value)}>
+          <button key={o.value} role="radio" tabIndex={value === o.value ? 0 : -1} disabled={o.disabled} title={o.disabled ? 'Bu modelde uygun yüzey bulunamadı.' : undefined} aria-checked={value === o.value} onClick={() => onPick(o.value)}>
             {o.label}
           </button>
         ))}
       </div>
     </div>
   );
-}
-
-function radioKeys(e: React.KeyboardEvent<HTMLDivElement>) {
-  if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'].includes(e.key)) return;
-  const buttons = [...e.currentTarget.querySelectorAll<HTMLButtonElement>('button[role="radio"]')].filter((b) => !b.matches(':disabled'));
-  const current = buttons.indexOf(e.target as HTMLButtonElement);
-  if (current < 0 || !buttons.length) return;
-  e.preventDefault();
-  const index = e.key === 'Home' ? 0 : e.key === 'End' ? buttons.length - 1 :
-    (current + (e.key === 'ArrowLeft' || e.key === 'ArrowUp' ? -1 : 1) + buttons.length) % buttons.length;
-  buttons[index].focus(); buttons[index].click();
 }
 
 function Range({ label, min, max, step, value, format, onValue, unit = 'mm', disabled = false }: {

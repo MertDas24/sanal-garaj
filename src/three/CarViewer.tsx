@@ -7,12 +7,17 @@ import type { ModelFeatures } from '../data/models';
 import type { Design } from '../lib/design';
 import { createCarRuntime, type CarRuntime } from './carRuntime';
 import { SHOTS, type ShotId } from './scenes';
+import { renderStudio, recordTurntable } from './studio';
+import { chooseQuality, type RenderQuality } from '../lib/quality';
 
 export interface ViewerHandle {
   resetCamera(): void;
   setShot(shot: ShotId): void;
   /** Mevcut kamera açısından PNG veri adresi */
   capture(): string | null;
+  studio(width: number, height: number): string | null;
+  video(caption: string, attribution: string): Promise<Blob>;
+  metrics(): { geometries: number; textures: number; calls: number; triangles: number } | null;
   /** Işık izleme için aracın o anki nesnesi, kamera ve görüntü boyutu */
   snapshot(): { car: THREE.Object3D; camera: THREE.PerspectiveCamera; width: number; height: number } | null;
 }
@@ -21,6 +26,8 @@ export interface ViewerProps {
   url: string;
   features: ModelFeatures;
   triangles: number;
+  modelId?: string;
+  renderQuality?: RenderQuality;
   /** public/env altındaki HDRI dosyası */
   envFile?: string;
   design: Design;
@@ -33,17 +40,25 @@ export interface ViewerProps {
 const envPath = (file = 'autoshop_01_1k.hdr') => `${import.meta.env.BASE_URL}env/${file}`;
 
 /** Güçlü cihazlarda yansıtıcı zemin; dokunmatik/küçük ekranlarda daha hafif zemin. */
-function highQuality(): boolean {
+function highQuality(mode: RenderQuality): boolean {
   if (typeof window === 'undefined') return false;
-  return !window.matchMedia('(pointer: coarse)').matches && window.innerWidth >= 900;
+  return chooseQuality(mode, navigator.hardwareConcurrency || 4, (navigator as Navigator & { deviceMemory?: number }).deviceMemory ?? 4, window.matchMedia('(pointer: coarse)').matches || window.innerWidth < 900);
 }
 
 export const CarViewer = forwardRef<ViewerHandle, ViewerProps>(function CarViewer(props, ref) {
-  const hq = useMemo(() => highQuality(), []);
+  const hq = highQuality(props.renderQuality ?? 'auto');
   const glRef = useRef<THREE.WebGLRenderer | null>(null);
+  const contextLostRef = useRef<EventListener | null>(null);
+  useEffect(() => {
+    const canvas = glRef.current?.domElement, handler = contextLostRef.current;
+    if (canvas && handler) canvas.addEventListener('webglcontextlost', handler, { once: true });
+    return () => { if (glRef.current && contextLostRef.current) glRef.current.domElement.removeEventListener('webglcontextlost', contextLostRef.current); };
+  }, []);
   const controlsRef = useRef<OrbitControlsImpl | null>(null);
   const invalidateRef = useRef<() => void>(() => {});
   const stateRef = useRef<{ scene: THREE.Scene; camera: THREE.Camera } | null>(null);
+  const recording = useRef(new AbortController());
+  useEffect(() => { recording.current = new AbortController(); return () => recording.current.abort(); }, []);
 
   useImperativeHandle(ref, () => ({
     resetCamera() {
@@ -85,6 +100,23 @@ export const CarViewer = forwardRef<ViewerHandle, ViewerProps>(function CarViewe
         return null;
       }
     },
+    studio(width, height) {
+      const st = stateRef.current, gl = glRef.current;
+      if (!st || !gl) return null;
+      try { return renderStudio(gl, st.scene, st.camera as THREE.PerspectiveCamera, width, height); } finally { invalidateRef.current(); }
+    },
+    async video(caption, attribution) {
+      const st = stateRef.current, gl = glRef.current, controls = controlsRef.current;
+      if (!st || !gl || !controls) throw new Error('Model hazır değil.');
+      controls.dispatchEvent({ type: 'start', target: controls });
+      controls.enabled = false;
+      try { return await recordTurntable(gl, st.scene, st.camera as THREE.PerspectiveCamera, controls.target, caption, attribution, recording.current.signal); }
+      finally { controls.enabled = true; invalidateRef.current(); }
+    },
+    metrics() {
+      const info = glRef.current?.info;
+      return info ? { geometries: info.memory.geometries, textures: info.memory.textures, calls: info.render.calls, triangles: info.render.triangles } : null;
+    },
   }));
 
   return (
@@ -100,6 +132,8 @@ export const CarViewer = forwardRef<ViewerHandle, ViewerProps>(function CarViewe
         stateRef.current = { scene, camera };
         invalidateRef.current = invalidate;
         gl.toneMapping = THREE.ACESFilmicToneMapping;
+        contextLostRef.current = (e) => { if (!gl.domElement.isConnected) return; e.preventDefault(); props.onError(new Error('WebGL bağlamı kaybedildi.')); };
+        gl.domElement.addEventListener('webglcontextlost', contextLostRef.current, { once: true });
       }}
       aria-label="Aracın etkileşimli 3D görünümü. Sürükleyerek döndürün, tekerlek veya iki parmakla yakınlaştırın."
       role="img"
@@ -138,7 +172,7 @@ export const CarViewer = forwardRef<ViewerHandle, ViewerProps>(function CarViewe
         shadow-camera-bottom={-6}
         shadow-bias={-0.0005}
       />
-      <Environment files={envPath(props.envFile)} environmentIntensity={1.1} />
+      <ModelErrorBoundary onError={(error) => props.onError(new Error(`Ortam: ${error.message}`))}><Suspense fallback={null}><Environment files={envPath(props.envFile)} environmentIntensity={1.1} /></Suspense></ModelErrorBoundary>
       <mesh rotation-x={-Math.PI / 2} position-y={-0.002} receiveShadow>
         <circleGeometry args={[14, 64]} />
         {hq ? (
@@ -180,11 +214,11 @@ export const CarViewer = forwardRef<ViewerHandle, ViewerProps>(function CarViewe
 });
 
 function Car({
-  url, features, triangles, design, compare, onReady, controlsRef,
+  url, features, triangles, modelId, design, compare, onReady, controlsRef,
 }: ViewerProps & { controlsRef: React.RefObject<OrbitControlsImpl | null> }) {
   const gltf = useGLTF(url, false, true);
   const { camera, invalidate } = useThree();
-  const runtime = useMemo<CarRuntime>(() => createCarRuntime(gltf.scene, features, triangles), [gltf, features, triangles]);
+  const runtime = useMemo<CarRuntime>(() => createCarRuntime(gltf.scene, features, triangles, modelId, invalidate), [gltf, features, triangles, modelId, invalidate]);
   const introUntil = useRef(0);
 
   // Açılış turu (öncelik 0: çizimden önce kamerayı ilerletir)

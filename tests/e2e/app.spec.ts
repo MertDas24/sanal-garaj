@@ -154,8 +154,12 @@ test.describe('Düzenleyici', () => {
     await expect(page.locator('.pt-host--on canvas')).toBeVisible();
     await expect(page.locator('.pt-status')).toBeVisible();
     if (!process.env.CI) {
-      await expect(page.locator('.pt-status')).toContainText(/Işık izleniyor… [1-9]\d*\//, { timeout: 60_000 });
+      await expect(page.locator('.pt-status')).toContainText(/Işık izleniyor… [1-9]\d*\//, { timeout: 180_000 });
     }
+    await page.locator('.pt-host--on canvas').evaluate((canvas) => { (canvas as HTMLElement).dataset.ptSession = 'korundu'; });
+    await page.getByLabel('ECU / motor yönetimi', { exact: true }).selectOption('remap');
+    await page.evaluate(() => new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve()))));
+    await expect(page.locator('.pt-host--on canvas')).toHaveAttribute('data-pt-session', 'korundu');
     await expect(page.getByRole('button', { name: 'Kamerayı sıfırla' })).toHaveCount(0);
     await page.getByRole('button', { name: 'Etkileşimli görünüme dön' }).click({ timeout: 180_000 });
     await expect(page.locator('.pt-host--on')).toHaveCount(0, { timeout: 60_000 });

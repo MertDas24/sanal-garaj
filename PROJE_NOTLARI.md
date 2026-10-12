@@ -445,3 +445,55 @@ Maliyet: 0 TL.
 - **Canlı tarayıcı doğrulaması:** 26 katalog kartı, Siteyi paylaş ile kalıcı URL kopyalama, V8 + bağımsız ECU + çift turbo planının bağlantıdan açılması ve tekrar paylaşılması doğrulandı. Mobil 390 px görünümde aynı plan geri açıldı; yatay taşma, sayfa hatası ve 4xx/5xx yanıt sayısı **0**. Motor paneli ekran görüntüsü ayrıca incelendi. Yerel kanıtlar: `lab-out/live-verification.json`, `lab-out/live-motor.png` (depoya girmez).
 - Bu yayın sonucunu kaydeden sonraki commit yalnızca bu notu değiştirir; `[skip ci]` ile aynı kodun gereksiz yeniden yayını önlenir.
 - Claude için: gerçek motor 3D görünümü/fizik simülasyonu ve araç bazında parça uyumluluğu ayrı veri/model geliştirmesi olarak kalıyor. Seçenekler kapsamlı bir genel plan kataloğudur; tüm araçlarda fiziksel montaj uygunluğu varsayılmaz.
+
+## 2026-10-12 — Gelişmiş atölye, stüdyo ve portfolyo
+Katkı: Codex. Ana mimari, mevcut model kataloğu/hazırlama hattı ve ilk uygulama: Claude. Oturum başında çalışma ağacı temizdi; kaynak modeller, model kaynak listesi ve önceki notlar korunmuştur.
+
+### Tamamlanan işler ve kararlar
+1. **Gövde kiti:** AE86, BMW M3 E30 ve Mercedes C 63 W204 için proje içinde özgün yan etek, difüzör, çift egzoz ucu, çamurluk ve ön tampon köşe uzantısı üretildi. Tekerlek ölçümleri ve gerçek gövde yüzeyine ışın göndererek bulunan bağlantılar kullanılır. İlk kutu temelli yerleşim görsel kontrolde açıkta kalmıştı; yüzeye bağlama ile düzeltildi. Orijinal tampon/egzoz korunur; eklentiler OEM kit veya fiziksel montaj şablonu değildir. Diğer araçlarda kit kapalı ve gerekçeli görünür.
+2. **Kaplama editörü:** genişlik, yatay konum ve açı; kaput/tavan/sol-sağ kapı yazısı ve yerel logo. Yalnızca CG_paint üçgenleri kullanılır. Logo PNG/JPEG/WebP (girdi 2 MB sınırı) cihazda 128 px PNG'ye çevrilir (işlenmiş veri 16 KB sınırı). Logo dosyası yüklenmez; küçük görsel kayıt, JSON ve paylaşım bağlantısında taşınır. Paylaşılan bağlantı logoyu alıcıya açar ve uzayabilir; arayüzde belirtilmiştir. Geometrisi olmayan bölgeler kapatılır; desteklenmeyen URL bölgesindeki yazı/logo uygulanmaz.
+3. **Kayıt A/B karşılaştırması:** aynı aracın kayıtları sol/sağ görünüme seçilebilir, tek kamera ve ortak ortamla karşılaştırılır. Görsel ve motor planı farkları listelenir; fabrika karşılaştırması korunur. Motor planındaki aynı seçimler artık fark olarak sayılmaz.
+4. **Fotoğraf stüdyosu:** 1280/1920/2560 px gerçek yeniden render; 16:9, kare ve 4:5; dört açı panosu; gerçek sahneden 960×600, alt yazılı 6 saniye WebM tur videosu. Kamera ve render hedefi işlem sonunda geri yüklenir; video akışı/kaynakları kapatılır. Stüdyo etkileşimli sahneyi kullanır; fotogerçekçi çıktı mevcut indirme düğmesindedir. Yüksek DPR ekranlarda render hedefinin viewport'una tekrar DPR uygulanması giderildi; DPR 1/3 karşılaştırması geçti.
+5. **Motor planı tutarlılığı:** turbo/ECU, yakıt, aktarma, elektrikli dönüşüm ve çekiş dönüşümü için eksik veya birlikte incelenmesi gereken seçimler açıklanır. AE86 (Japonya 4A-GEU/1.587 cm³/sıralı 4) ve M3 E30 için üretici kaynaklı temel kayıt eklendi. Motor içi 3D, güç artışı veya parça numarası/montaj uygunluğu sonucu sunulmaz. Toyota kaynağının doğrulamadığı aşırı besleme türü tahmin edilmedi (bilinmiyor).
+6. **Performans ve erişilebilirlik:** otomatik/hafif/yüksek profil; gerçek WebGL bağlamı kaybında yeniden deneme ve tasarımın korunması; model ve ortam 404 için ayrı hata/önbellek temizliği. Radyo gruplarında tek Tab durağı ve ok/Home/End seçimi; anahtarların gerçek tıklama alanı; bölüm kısayollarında Kit/Stüdyo. Bozuk yüzde kodlu URL çökmesi giderildi. Motor planı değişikliği ışık izlemeyi yeniden başlatmaz; ilk tamamlanan ışık örneği hemen bildirilir. Kaplama ve logo önbellekleri sınırlıdır. Runtime kaynak geometrisini sahiplenip silmez; indeksiz float gövde yumuşatmasında da önce sahip olunan kopya kullanılır.
+7. **Portfolyo:** Hakkında sayfasına mimari akışı/teknik kararlar, gerçek demo ve ölçüm tablosu eklendi. İndirme süresi, renderer kaynak adetleri ve destekleyen tarayıcıda yaklaşık JS heap raporu JSON olarak alınabilir. Heap toplam RAM/GPU belleği değildir; tek yerel ölçüm internet/mobil performansı olarak sunulmaz. `npm run benchmark -- http://localhost:4173` ölçümü/demoyu yeniden üretir; ölçülen beş kaynak dosyasının SHA-256 değerleri kayıtlıdır. Yeni bağımlılık kurulmadı.
+
+### Dosyalar
+- Yeni: `src/three/bodyKit.ts`, `studio.ts`; `src/lib/compatibility.ts`, `logo.ts`, `quality.ts`, `radioKeys.ts`, `expansion.test.ts`; `src/components/StudioPanel.tsx`, `PerformancePanel.tsx`, `BenchmarkSummary.tsx`; `scripts/benchmark-workshop.mjs`; `tests/e2e/workshop.spec.ts`; `public/demo/*`, `public/benchmarks/workshop.json`.
+- Güncellenen: `src/three/carRuntime.ts`, `carRuntime.test.ts`, `workshopGeometry.ts`, `CarViewer.tsx`, `pathTrace.ts`; `src/lib/design.ts`, `designFile.ts`, `storage.ts`, `router.ts`; `src/data/models.ts` (yetenek tipi); `src/components/EditorPanel.tsx`, `PowertrainPanel.tsx`, `SceneControls.tsx`, `DesignWorkbench.tsx`; `src/pages/EditorPage.tsx`, `AboutPage.tsx`; `src/styles.css`; `tests/e2e/app.spec.ts`; `package.json`, `README.md`, bu not.
+- Kaynak/reference dosyaları `scripts/model-sources.mjs`, `src/data/models.generated.json`, `src/data/catalog.ts`, `public/models/` ve mevcut lisans kayıtları değiştirilmedi.
+
+### Kontrol kanıtları ve giderilen sorunlar
+- `npm run lint`, `npx tsc -b`, `npm test` (**41 birim testi**) ve `npm run build` geçti. `npm audit --audit-level=high`: **0 açık**. `git diff --check` temiz.
+- Tam E2E paketi genişletme sırasında **36/36** geçti. Son iki senaryo ayrıca geçti: desteklenmeyen yazı bölgeleri (Porsche 930) ve mobil DPR 1/3 stüdyo çıktısı. Son kaynaklarla **38 testlik** tam koşu/yayın sonucu aşağıdaki sonraki kayıtla tamamlanacaktır.
+- İlk E2E koşuları somut sorunlar buldu: anahtar tıklama alanını süs öğesi örtüyordu; seçici etiketleri seçenek metniyle birleşiyordu; sahne kapanışının bağlam kaybı ilk dosya hatasını eziyordu. Düzeltilip tekrar denendi. Ortam hatasında da ilk hata korunur ve HDR önbelleği temizlenir. Işık izleme yazılımsal GPU'da dört örnek aralığı yüzünden uzun süre 0 gösterebiliyordu; ilk gerçek örnek raporlanır ve testin gözlem süresi yazılımsal derlemeye uygun tutulur. Motor planı değişince aynı ışık izleme tuvalinin kaldığı testle doğrulandı.
+- **26/26 model** tarayıcı denetiminde açıldı, sayfa hatası **0**. Corolla E180, Porsche 930, Challenger ve Calibra'da bazı yazı bölgeleri uygun değil; kapalı gösterilir. Kitler yalnızca yukarıdaki üç araçta açılır.
+- Üç kit × ön/yan/arka **dokuz görüntü** incelendi. PNG boyut/içerik ve WebM okunabilirlik kontrolleri geçti. Yerel kanıtlar: `lab-out/kit-contact.png`, `lab-out/workshop/audit.json`, `lab-out/final-studio.png`, `lab-out/final-about.png` (depoya girmez). Fontconfig'in yazılabilir önbellek uyarısı görsel üretimini engellemedi.
+- Yayına giren gerçek demo/poster ve kaynak atıfları `public/demo/README.md`; ölçüm ham verisi `public/benchmarks/workshop.json` içindedir. Örnekler tek yerel oturum ölçümüdür; karşılaştırmalı cihaz testi/tepe GPU belleği ölçümü değildir.
+
+### Kaynaklar, lisans ve maliyet
+- Yeni dış 3D model veya doku indirilmedi. Üretilen eklenti kodu/geometrisi proje **MIT** lisansındadır. Mevcut araç modellerinin **CC BY 4.0** koşulları korunur; kaynak lisansları bu oturumda yeniden sorgulanmadı.
+- Demo/poster aracı: [Toyota AE86 Sprinter Trueno Zenki — Martin Trafas](https://sketchfab.com/3d-models/a5737bf3cc9b4179a6e5ebe173ff70d9), [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Ölçek/yön/sıkıştırma, boya, kaplama/yazı ve kit uyarlamaları belirtilmiştir. Ortam: Poly Haven Autoshop 01, **CC0**, Oliksiy Yakovlyev.
+- Temel motor verileri: [Toyota araç tarihi/AE86](https://www.toyota-global.com/company/history_of_toyota/75years/vehicle_lineage/car/id60009032/), [BMW M3 E30](https://www.bmw-m.com/en/topics/magazine-article-pool/bmw-m3-e30-portraet.html). Üretici sayfaları 2026-10-12'de kontrol edildi; metin/görsel kopyalanmadı, kısa olgusal kayıt ve bağlantı kullanıldı.
+- Yeni servis, hesap, abonelik, alan adı veya satın alma yok; proje için yeni maliyet **0 TL**. Mevcut herkese açık depo ve standart Ubuntu/Pages iş akışı korunuyor. [GitHub Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages) ve [standart public/Pages Actions ücretsiz kullanım koşulları](https://docs.github.com/en/billing/concepts/product-billing/github-actions) kontrol edildi.
+- Depo: https://github.com/MertDas24/sanal-garaj . Mevcut canlı adres: https://mertdas24.github.io/sanal-garaj/ . Güncellemenin yayın sonucu sonraki tarihli kayda eklenecek. Gizli bilgi yazılmadı; dış kişilere mesaj gönderilmedi.
+
+### Devam eden iş
+- Codex: son tam 38 E2E testi, main gönderimi, GitHub Actions/Pages sonucunu izleme ve canlı kontrol. Bu süreçte aynı kaynak dosyalarında eşzamanlı değişiklik yapılmamalı.
+
+### Sonraki adımlar / Claude'un karar alanı
+- Kitleri diğer 23 araca genişletmek için her modelde ayrı yüzey/tekerlek ve ön-yan-arka görsel doğrulama yapın; mevcut üç model desteği tüm kataloğa uygulanmış gibi sunulmasın.
+- Gerçek parça numarası/montaj verisi ve daha fazla üretici kaydı olmadan mekanik uygunluk veya güç kazancı eklemeyin. Motor içi geometri/fizik ve kapsamlı iç mekân değişimleri ayrı veri/model geliştirmesi gerektiriyor.
+- Kaplama bölgeleri geometrik yaklaşımdır; gerçek panel sınırları veya üretime hazır kesim şablonu değildir. Çok ayrıntılı modellerde projeksiyon ve ışık izleme süresini fiziksel mobil cihazlarda ayrıca ölçün.
+## 2026-10-12 — Yerel kontroller tamamlandı, yayın hazırlığı
+Katkı: Codex.
+- Son tam yerel E2E koşusu **38/38 geçti** (5,4 dakika); lint/tip kontrolü/derleme ve **41 birim testi** de geçti. Güvenlik taraması 0 açık verdi.
+- Ek klavye kontrolü mevcut `İçeriğe geç` bağlantısının `#icerik` ile hash yönlendirmesini bozduğunu gösterdi. `src/App.tsx` içinde hash değiştirmeden ana içeriğe odak taşıma ve ana içerik için `tabIndex=-1` eklendi. Ayrı E2E testi geçti; toplam test listesi artık **39 senaryo**. Bu son değişiklikten sonra lint, tip kontrolü, 41 birim testi ve üretim derlemesi tekrar geçti.
+- Son model/geometri/stüdyo düzeltmeleri ile mobil DPR, yüzeyi olmayan yazı bölgesi, kaynak geometri sahipliği, model/ortam yeniden denemesi ve ışık izleme oturumunun motor planı değişince korunması doğrulandı. Yeni sürüm için ücretli bağımlılık/hizmet veya model satın alınmadı.
+- `public/benchmarks/workshop.json` ve gerçek demo güncel kaynaklarla üretildi; ölçüm dosyasındaki beş SHA-256 değeri ölçülen dosyalara aittir. Proje genelinde tek bir commit hash'i yerine ölçülen dosyalar açıkça listelenmiştir.
+
+### Devam eden iş
+- Codex: kontrolü geçmiş değişiklikleri main'e gönderme; GitHub Actions'taki 39 senaryonun ve Pages yayınının bitmesini izleme; canlı siteyi doğrulama.
+
+### Sonraki adımlar
+- Yayın sonucunu aşağıdaki yeni tarihli kayda ekleyin. Sonrasında Claude için veri/model kararları: diğer araç kitlerinin tek tek doğrulanması, üretici kayıtlarının genişletilmesi ve fiziksel mobil cihaz ölçümleri. Mekanik montaj veya güç kazancı bu sürümün kapsamı değildir.
