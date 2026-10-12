@@ -546,3 +546,19 @@ Katkı: Codex. Ana mimari ve mevcut lisanslı model hattı: Claude.
 ### Sonraki adımlar / Claude'un karar alanı
 - Fiziksel mobil cihazlarda uzun kamera/kaplama oturumu, yüksek kalite ve ışık izleme ölçümleri yapılmalı. GPU derlemesi ve örnek üretimi cihaz gücüne bağlıdır; bütün cihazlarda donmasızlık/FPS garantisi verilmez.
 - Önceki kayıtların kit kapsamı ve gerçek motor/parça verisi kararları geçerlidir; bu düzeltme onları genişletmez.
+
+## 2026-10-13 — Donma düzeltmesi yayınlandı ve canlıda doğrulandı
+Katkı: Codex. Ana mimari/model hattı: Claude.
+- Yayınlanan kod commit'i **`71cdbab`**. https://github.com/MertDas24/sanal-garaj/actions/runs/38311832956 güvenlik/lint/tip/derleme, **47 birim testi**, **41/41 bulut E2E** (10,0 dakika) ve GitHub Pages dağıtımı ile başarılı tamamlandı. Test atlanmadı; gerçek ışık izleme örneği ilerlemesi ayrıca yerelde sınandı.
+- **Canlı site:** https://mertdas24.github.io/sanal-garaj/ . **Depo:** https://github.com/MertDas24/sanal-garaj . Yeni ücret/abonelik/satın alma yok; maliyet **0 TL**. Mevcut 26 CC BY 4.0 model ve atıfları korunur; yeni model kaynağı yok.
+- Canlı worker dosyası `/sanal-garaj/assets/generateMeshBVH.worker-HvEtlA-v.js` **200** yanıtıyla yüklendi. Hazırlık sırasında etkileşimli görünüme dönüş bu kontrolde **32 ms**; worker sayısı sıfıra döndü, kamera kontrolü geri geldi, sayfa hatası yok. Bu tek oturum ölçümüdür; bütün cihazlarda süre/FPS garantisi değildir.
+- Canlı ek kontrol: 26 araç, AE86 kit/yazı/motor ayarlarının paylaşım bağlantısından geri açılması, gerçek 1280 px PNG, 960×600 demo ve 390 px görünüm doğrulandı. Yatay taşma, sayfa hatası ve 4xx/5xx yanıtı yok. PNG görsel olarak da incelendi; gerçek model/parçalar görünür.
+- Kanıtlar `lab-out/live-freeze-verification.json`, `lab-out/live-workshop-verification.json` ve `lab-out/live-workshop-studio.png` (depoya girmez). Ölçüm dosyasındaki beş kaynak SHA-256 değeri commit dosyalarıyla eşleşir.
+- Bu son kayıt yalnızca belge değişikliğidir; `[skip ci]` ile aynı kodun gereksiz yeniden yayını önlenir. Canlı uygulama sürümü `71cdbab` kalır. Gizli bilgi yazılmadı; dış kişilere mesaj gönderilmedi.
+
+### Devam eden iş
+- Yok. Donma azaltma düzeltmesi, yerel/bulut testleri ve canlı doğrulama tamamlandı.
+
+### Sonraki adımlar / Claude'un karar alanı
+- Fiziksel mobil cihazlarda uzun kamera/kaplama oturumlarını ve ışık izlemeyi ölçün. Paralel shader uzantısı olmayan sürücülerde ve düşük güçlü GPU'larda hazırlık/render süresi hâlâ yüksek olabilir.
+- Üç doğrulanmış kit dışındaki araç kitlerini görsel kontrolle genişletin; motor/gerçek parça verisini üretici kayıtlarıyla geliştirin. Önceki kapsam ve lisans kuralları geçerlidir.
