@@ -16,9 +16,10 @@ interface Props {
   notes: string | null;
   onChange(d: Design): void;
   vehicleId?: string;
+  onOpenEngine?(): void;
 }
 
-export function EditorPanel({ design, base, features: f, notes, onChange, vehicleId }: Props) {
+export function EditorPanel({ design, base, features: f, notes, onChange, vehicleId, onOpenEngine }: Props) {
   const set = <K extends keyof Design>(k: K, v: Design[K]) => onChange({ ...design, [k]: v });
   const changed = JSON.stringify(design) !== JSON.stringify(base);
   const [logoStatus, setLogoStatus] = useState('');
@@ -38,7 +39,7 @@ export function EditorPanel({ design, base, features: f, notes, onChange, vehicl
         <p className="muted small">Paketler modelin desteklemediği ayarları atlar; sonra istediğiniz gibi değiştirebilirsiniz.</p>
       </section>
 
-      <PowertrainPanel vehicleId={vehicleId} plan={design.powertrain} onChange={(plan) => set('powertrain', plan)} />
+      <PowertrainPanel vehicleId={vehicleId} plan={design.powertrain} onOpen3D={onOpenEngine} onChange={(plan) => set('powertrain', plan)} />
 
       <Section title="Gövde boyası" disabled={!f.paint} reason="Bu modelde gövde boyası ayrı bir malzeme değil.">
         <Swatches
@@ -181,7 +182,7 @@ export function EditorPanel({ design, base, features: f, notes, onChange, vehicl
         <summary>Diğer modifikasyonlar ve model sınırları</summary>
         <p className="muted small">Bu garaj görsel tasarım içindir. Aşağıdaki seçenekler henüz desteklenmiyor:</p>
         {[
-          ['Motor içi 3D görünüm / güç ölçümü', 'Motor ve aktarma planındaki seçimler saklanır; ayrı motor geometrisi ve sürüş fiziği simülasyonu yok.'],
+          ['Araca özgü gerçek motor modeli / güç ölçümü', 'Motor 3D atölyesi genel prosedürel şemadır. Gerçek motor taraması, motor bölmesi uyumluluğu ve güç/sürüş fiziği simülasyonu yok.'],
           ['Fren kiti geometrisi', 'Araç bazında fren diski ve bağlantı ölçüleri yok. Kaliper rengi ayrı desteklenir.'],
           ['Diğer araçlar için gövde kiti', 'Kit yalnızca doğrulanan modellerde açılır; her araç için görsel yerleşim kontrolü gerekir.'],
           ['Komple egzoz / far / stop / ayna / panjur', 'Motor planı egzoz hattını saklar; kit destekleyen üç modelde görsel egzoz uçları eklenir. Komple sistemler ve diğer parçalar ayrı doğrulanmış düğümlere sahip değil.'],

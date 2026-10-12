@@ -177,6 +177,22 @@ a.card__link:hover .card__media img { transform: scale(1.03); }
 .stage__head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
 .stage__title { font-size: clamp(1.3rem, 1.1rem + 1vw, 1.8rem); margin: 0; }
 .stage__sub { margin: 0 0 12px; }
+.stage-actions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; }
+.editor__stage--engine .viewer { flex: none; height: min(52vh, 480px); }
+.engine-workshop { margin-top: 20px; padding: 18px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); scroll-margin-top: calc(var(--header-h) + 12px); min-width: 0; }
+.engine-workshop h2 { margin-top: 0; }
+.engine-toolbar, .engine-groups { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 12px 0; }
+.engine-toolbar .field { margin: 0; min-width: 150px; }
+.engine-canvas { height: clamp(300px, 48vh, 500px); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; touch-action: none; }
+.engine-canvas canvas:focus-visible { outline: 3px solid var(--accent); outline-offset: -4px; }
+.engine-groups button[aria-pressed='true'] { border-color: var(--accent); color: var(--accent); }
+.engine-part-controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr)); gap: 12px; }
+.engine-part-controls select { max-width: 100%; }
+.engine-parts { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr)); gap: 8px; margin: 12px 0; }
+.engine-part { text-align: left; padding: 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface-2); color: var(--text); cursor: pointer; min-width: 0; }
+.engine-part span { display: block; font-size: 0.8rem; color: var(--muted); overflow-wrap: anywhere; }
+.engine-part--changed { border-left: 3px solid #edaf59; }
+.engine-part[aria-pressed='true'] { border-color: #35ddb1; }
 .viewer { position: relative; flex: 1; min-height: 420px; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border); background: #101216; touch-action: none; }
 .viewer-canvas { position: absolute !important; inset: 0; }
 .viewer__overlay { position: absolute; inset: 0; display: grid; place-items: center; background: rgba(16, 18, 22, 0.75); text-align: center; padding: 16px; }

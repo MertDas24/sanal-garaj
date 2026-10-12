@@ -43,7 +43,17 @@ da destekler (“3D model bekleniyor” olarak işaretlenir, düzenleyicide aç�
   turbo/kompresör, emme/intercooler/basınç kontrolü, yakıt/ateşleme/nitro, egzoz, soğutma/yağlama,
   şanzıman/debriyaj/diferansiyel/şaft ve elektrikli dönüşüm seçenekleri. Seçimler geri al, kayıt, paylaşım,
   JSON ve modifikasyon listesinde korunur. Elektrikli planda içten yanmalı parçalar kapatılır.
-  Bu bölüm yapılandırma planıdır; motor içi 3D modeli, güç/tork kazancı veya araç uyumluluğu hesaplamaz.
+  Ayrı Motor 3D atölyesi bu planın prosedürel şemasını canlı gösterir; araca özgü gerçek motor modeli,
+  güç/tork kazancı veya araç uyumluluğu hesaplamaz.
+- **Motor 3D atölyesi:** araç ekranındaki “Motor 3D atölyesi” veya motor panelindeki “Motoru 3D incele”
+  ile açılır. Sıralı/V/rotary/elektrikli düzen, piston-biyel-krank, turbo/kompresör ve motor/batarya sayısı
+  seçime göre değişir. 45 kategorinin şematik parça kartları seçilebilir; altın değişiklik, yeşil seçim,
+  gri fabrika/değişiklik yok durumudur. Parça kartları montaj konumu veya ölçü/üretim şablonu değildir.
+  İç parça/ayrıştırılmış görünüm, üç kamera, klavye kontrolü ve şematik PNG çıktısı bulunur.
+  Animasyon başlangıçta durur, isteğe bağlı çalışır ve sekme gizlenince durur; gösterilen hız gerçek devir değildir.
+  Doğrulanmamış fabrika motoruna düzen uydurulmaz; kullanıcı bir düzen seçebilir. Paylaşım bağlantısındaki
+  `motor3d=1` aynı motor planıyla atölyeyi açar. Kod/geometri proje MIT lisansıyla üretildi; harici motor
+  dosyası veya ücretli hizmet kullanılmaz. Görüntüleyici yalnızca atölye açılınca indirilir.
 - **Siteyi paylaş:** katalog ve Hakkında sayfasındaki düğme kalıcı, halka açık GitHub Pages bağlantısını
   kopyalar veya cihazın paylaşım menüsünü açar. Kullanıcı hesabı ve ücretli hizmet gerekmez.
 - **Kamera:** altı kamera seçeneği etkileşimli ve fotogerçekçi modda kullanılabilir. 3D görünüme odaklanınca

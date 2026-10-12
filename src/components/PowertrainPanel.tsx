@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { checkPowertrain, ENGINE_REFERENCES } from '../lib/compatibility';
 import { POWERTRAIN_FIELDS, POWERTRAIN_GROUPS, POWERTRAIN_KEYS, defaultPowertrain, isPowertrainFieldEnabled, powertrainSummary, sanitizePowertrain, type PowertrainDesign, type PowertrainKey } from '../lib/powertrain';
 
-export function PowertrainPanel({ plan, onChange, vehicleId = '' }: { plan: PowertrainDesign; onChange(plan: PowertrainDesign): void; vehicleId?: string }) {
+export function PowertrainPanel({ plan, onChange, vehicleId = '', onOpen3D }: { plan: PowertrainDesign; onChange(plan: PowertrainDesign): void; vehicleId?: string; onOpen3D?(): void }) {
   const count = powertrainSummary(plan).length;
   const reference = ENGINE_REFERENCES[vehicleId], issues = checkPowertrain(plan, vehicleId);
   const [expanded, setExpanded] = useState(() => new Set(POWERTRAIN_GROUPS.filter((group, index) =>
@@ -11,7 +11,8 @@ export function PowertrainPanel({ plan, onChange, vehicleId = '' }: { plan: Powe
   return <section className="panel__section powertrain-panel" id="mod-motor">
     <h2 className="panel__title" tabIndex={-1}>Motor ve aktarma planı</h2>
     <p className="muted small">{POWERTRAIN_KEYS.length} parça kategorisi · {count} planlanan değişiklik</p>
-    <p className="model-note small">Bu bölüm parça seçim planıdır. Seçimler kayıt, dosya ve paylaşım bağlantısına eklenir. Motor içi 3D görüntü, güç/tork artışı veya araç uyumluluğu hesaplanmaz.</p>
+    <p className="model-note small">Bu bölüm parça seçim planıdır. Seçimler kayıt, dosya ve paylaşım bağlantısına eklenir. Motor 3D atölyesi genel şemayı canlı gösterir; güç/tork artışı veya araç uyumluluğu hesaplanmaz.</p>
+    {onOpen3D && <button className="btn btn--small" onClick={onOpen3D}>Motoru 3D incele</button>}
     <div className="compatibility"><h3>Plan tutarlılığı</h3>{reference ? <p className="small">{reference.label} <a href={reference.url} target="_blank" rel="noopener noreferrer">Üretici kaynağı</a></p> : <p className="small muted">Bu araç için doğrulanmış temel motor kaydı henüz yok.</p>}<p className="small muted">Bu kontrol eksik veya birlikte incelenmesi gereken seçimleri bildirir. Parça numarası ve montaj ölçüsü verisi olmadan “uyumlu” sonucu verilmez.</p>{issues.length ? <ul>{issues.map((issue) => <li key={issue} className="small">{issue}</li>)}</ul> : <p className="small">Tanımlı kurallarda çelişki bulunmadı; mekanik uygunluk bilinmiyor.</p>}</div>
     <label className="field"><span className="field-label">Motor değişimi</span>
       <select aria-label="Motor değişimi" value={plan.layout} onChange={(e) => set('layout', e.target.value)}>

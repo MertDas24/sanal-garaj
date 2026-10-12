@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useEnvironment, useGLTF, useProgress } from '@react-three/drei';
 import { findVehicle } from '../data/catalog';
 import { findModel, LICENSE_LABELS, modelUrl, type ModelFeatures } from '../data/models';
@@ -22,10 +22,12 @@ import { StudioPanel } from '../components/StudioPanel';
 import { PerformancePanel } from '../components/PerformancePanel';
 import { designSummary } from '../lib/designFile';
 import type { RenderQuality } from '../lib/quality';
+const EngineWorkshop = lazy(() => import('../components/EngineWorkshop'));
 
 
-function withEnv(q: URLSearchParams, env: EnvId): URLSearchParams {
+function withEnv(q: URLSearchParams, env: EnvId, engineOpen = false): URLSearchParams {
   if (env !== ENVIRONMENTS[0].id) q.set('env', env);
+  if (engineOpen) q.set('motor3d', '1');
   return q;
 }
 
@@ -62,6 +64,8 @@ function Editor({ vehicleId, title, year, note, modelId, query }: {
   const model = findModel(modelId)!;
   const viewer = useRef<ViewerHandle>(null);
   const [initialQuery] = useState(query);
+  const [engineOpen, setEngineOpen] = useState(() => query.get('motor3d') === '1');
+  const engineHost = useRef<HTMLElement>(null);
   const [base, setBase] = useState<Design | null>(null);
   const { design, setDesign, reset: resetHistory, undo, redo, canUndo, canRedo } = useDesignHistory();
   const lastDesign = useRef<Design | null>(null);
@@ -159,12 +163,12 @@ function Editor({ vehicleId, title, year, note, modelId, query }: {
 
   // Adres çubuğu her zaman paylaşılabilir güncel tasarımı gösterir
   useEffect(() => {
-    if (design && base) replaceHash(editorHash(vehicleId, withEnv(encodeDesign(design, base), envId)));
-  }, [design, base, vehicleId, envId]);
+    if (design && base) replaceHash(editorHash(vehicleId, withEnv(encodeDesign(design, base), envId, engineOpen)));
+  }, [design, base, vehicleId, envId, engineOpen]);
 
   const shareUrl = useMemo(
-    () => (design && base ? absoluteUrl(editorHash(vehicleId, withEnv(encodeDesign(design, base), envId))) : ''),
-    [design, base, vehicleId, envId],
+    () => (design && base ? absoluteUrl(editorHash(vehicleId, withEnv(encodeDesign(design, base), envId, engineOpen))) : ''),
+    [design, base, vehicleId, envId, engineOpen],
   );
 
   const attribution = `3D model: “${model.source.title}” — ${model.source.author}, ${LICENSE_LABELS[model.source.license]} · ${model.source.url}`;
@@ -211,16 +215,22 @@ function Editor({ vehicleId, title, year, note, modelId, query }: {
   };
 
   const ready = !!design && !!base;
+  useEffect(() => {
+    if (!ready || !engineOpen) return;
+    const frame = requestAnimationFrame(() => { engineHost.current?.scrollIntoView({ block: 'start' }); engineHost.current?.querySelector<HTMLElement>('h2')?.focus({ preventScroll: true }); });
+    return () => cancelAnimationFrame(frame);
+  }, [ready, engineOpen]);
+  const openEngine = () => { setPhotoreal(false); setEngineOpen(true); };
 
   return (
     <div className="editor">
-      <div className="editor__stage">
+      <div className={`editor__stage${engineOpen ? ' editor__stage--engine' : ''}`}>
         <div className="stage__head">
           <div>
             <h1 className="stage__title">{title}</h1>
             <p className="muted stage__sub">{year}{note ? ` · ${note}` : ''}</p>
           </div>
-          <a className="btn btn--ghost btn--small" href="#/">← Katalog</a>
+          <div className="stage-actions"><button className="btn btn--small" disabled={!ready} aria-expanded={engineOpen} aria-controls="motor-3d" onClick={() => { if (engineOpen) setEngineOpen(false); else openEngine(); }}>{engineOpen ? 'Motor atölyesini kapat' : 'Motor 3D atölyesi'}</button><a className="btn btn--ghost btn--small" href="#/">← Katalog</a></div>
         </div>
         <div className="viewer">
           {!error && (
@@ -291,7 +301,7 @@ function Editor({ vehicleId, title, year, note, modelId, query }: {
               <button
                 className="btn btn--small"
                 aria-pressed={photoreal}
-                onClick={() => { setPtProgress({ samples: 0, done: false }); setPhotoreal((v) => !v); }}
+                onClick={() => { setEngineOpen(false); setPtProgress({ samples: 0, done: false }); setPhotoreal((v) => !v); }}
                 title="Seçili açıdan ışık izleme ile fotoğraf gerçekliğinde görüntü hesaplar"
               >
                 {photoreal ? 'Etkileşimli görünüme dön' : 'Fotogerçekçi görüntü'}
@@ -304,13 +314,14 @@ function Editor({ vehicleId, title, year, note, modelId, query }: {
           <a href={model.source.licenseUrl} target="_blank" rel="noopener noreferrer license">{LICENSE_LABELS[model.source.license]}</a>.{' '}
           {model.triangles < 30_000 ? 'Düşük poligonlu modeldir; derleme' : 'Derleme'} sırasında ölçeklendi, yönlendirildi ve sıkıştırıldı.
         </p>
+        {ready && engineOpen && <section ref={engineHost} id="motor-3d" className="engine-workshop" aria-label="Motor 3D atölyesi"><div className="stage__head"><h2 tabIndex={-1}>Motor 3D atölyesi</h2><button className="btn btn--small" onClick={() => { setEngineOpen(false); document.querySelector<HTMLButtonElement>('[aria-controls="motor-3d"]')?.focus(); }}>Araç görünümüne dön</button></div><Suspense fallback={<p role="status">Motor atölyesi hazırlanıyor…</p>}><EngineWorkshop plan={design!.powertrain} vehicleId={vehicleId} title={title} onChange={(plan) => setDesign(sanitizeDesign({ ...design!, powertrain: plan }, base!, features))} /></Suspense></section>}
       </div>
 
       <aside className="editor__panel" aria-label="Düzenleme paneli">
         {ready ? (
           <>
             <DesignWorkbench design={design!} base={base!} vehicleId={vehicleId} title={title} environment={envId} undo={undo} redo={redo} canUndo={canUndo} canRedo={canRedo} />
-            <EditorPanel vehicleId={vehicleId} design={design!} base={base!} features={features} notes={model.notes} onChange={(d) => setDesign(sanitizeDesign(d, base!, features))} />
+            <EditorPanel vehicleId={vehicleId} design={design!} base={base!} features={features} notes={model.notes} onOpenEngine={openEngine} onChange={(d) => setDesign(sanitizeDesign(d, base!, features))} />
             <SceneControls
               env={envId} onEnv={setEnvId}
               shot={shot} onShot={setShot}

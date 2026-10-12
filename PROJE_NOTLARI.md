@@ -562,3 +562,18 @@ Katkı: Codex. Ana mimari/model hattı: Claude.
 ### Sonraki adımlar / Claude'un karar alanı
 - Fiziksel mobil cihazlarda uzun kamera/kaplama oturumlarını ve ışık izlemeyi ölçün. Paralel shader uzantısı olmayan sürücülerde ve düşük güçlü GPU'larda hazırlık/render süresi hâlâ yüksek olabilir.
 - Üç doğrulanmış kit dışındaki araç kitlerini görsel kontrolle genişletin; motor/gerçek parça verisini üretici kayıtlarıyla geliştirin. Önceki kapsam ve lisans kuralları geçerlidir.
+
+## 2026-10-13 — Motor 3D atölyesi tamamlandı (Codex'in yarım kalan işi)
+Katkı: Codex (atölye kodu, testler, README) ve Claude (inceleme, doğrulama, küçük görsel düzeltme, kayıt). Codex'in işi commit edilmemiş ve notlara yazılmamış hâlde çalışma ağacında bulundu; Claude kaldığı yerden devam etti.
+- **Yeni özellik:** araç ekranındaki “Motor 3D atölyesi” ve motor panelindeki “Motoru 3D incele” düğmeleri ayrı, tembel yüklenen bir R3F görünümü açar (`src/components/EngineWorkshop.tsx`, `src/three/EngineViewer.tsx`, `src/lib/engineScene.ts`). Sıralı/V/rotary/elektrikli düzen, silindir/motor sayısı, turbo/kompresör ve 45 kategorinin şematik parça kartları mevcut `powertrain` planından üretilir; değişiklikler geri al/kayıt/JSON/paylaşımda korunur. `motor3d=1` paylaşım parametresi atölyeyi açık getirir.
+- **Dürüstlük kararları:** tamamen prosedürel, proje MIT lisanslı geometri; harici motor dosyası yok. Doğrulanmış üretici kaydı olmayan araçta (ör. C 63 W204) fabrika düzeni uydurulmaz, animasyon kapalıdır. Görünüm, PNG altyazısı ve README “gerçek motor modeli, montaj veya güç simülasyonu değildir” uyarısı taşır. Animasyon hızı gerçek devir değildir; animasyon kullanıcı başlatınca çalışır ve sekme gizlenince durur.
+- **Claude düzeltmesi:** V düzeninde turbolar silindir sırasının içine giriyordu; V motorlarda yanlara (x=±1,35) alındı. Ekran görüntüleriyle I4, V8 çift turbo ve üç motorlu elektrikli şema incelendi; sayfa hatası yok.
+- **Kontroller:** `npm run lint`, `npx tsc -b`, **50/50 birim testi**, `npm run build`, **46/46 E2E** (yerel Chrome, 4,5 dk; 5 yeni motor testi: çizim değişimi + paylaşım, animasyon/durma, doğrulanmamış motor + PNG + klavye, WebGL bağlam kaybı, mobil taşma) geçti.
+- Yeni model/kaynak/bağımlılık/hizmet yok; maliyet **0 TL**. Gizli bilgi yazılmadı.
+
+### Devam eden iş
+- Yok.
+
+### Sonraki adımlar / Claude'un karar alanı
+- V düzeninde pistonlar sıra açısı yerine dikey hareket eder ve silindir kapakları sıra açısıyla dönmez; şema için kabul edildi, istenirse düzeltilebilir.
+- Önceki kayıtlardaki adımlar geçerli: fiziksel mobil cihaz ölçümleri, üç doğrulanmış kit dışındaki araçlara kit genişletme, üretici motor kayıtlarının artırılması (motor atölyesi bu kayıtlar arttıkça daha çok araçta fabrika düzenini gösterir).
