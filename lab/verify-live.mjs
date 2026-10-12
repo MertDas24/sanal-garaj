@@ -10,8 +10,9 @@ for (const [label, opts] of [['masaüstü', { viewport: { width: 1400, height: 9
   await pg.goto(BASE);
   const cards = await pg.locator('.grid > li').count();
   const ready = await pg.locator('.card__status--ok').count();
-  await pg.goto(BASE + '#/arac/toyota-ae86?p=1d4fb8&f=x');
-  await pg.waitForSelector('.viewer__overlay', { state: 'detached', timeout: 30000 });
+  await pg.goto(BASE + '#/arac/bmw-m3-e30?p=1d4fb8&f=x');
+  await pg.waitForSelector('.viewer canvas', { timeout: 60000 });
+  await pg.waitForSelector('.viewer__overlay', { state: 'detached', timeout: 60000 });
   await pg.waitForTimeout(800);
   await pg.screenshot({ path: `lab-out/app/live_${label}.png` });
   console.log(label, { cards, ready, errors: errs });

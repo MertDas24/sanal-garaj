@@ -222,3 +222,9 @@ yok). **Çıkarılanlar:** “2000 Audi A4” (açıklamada “Free REUPLOAD” 
    yüksek detaylı CC BY karşılıklarını bul, aynı kurallarla değiştir.
 3. Fotoğraf otomatik seçiminde ön/arka uç kenarlarını iyileştir (maske kenarında renk tabanlı büyütme).
 4. GitHub Actions eylem sürümlerini Node 24 uyumlu sürümlere güncelle.
+
+### Yayın doğrulaması (2. oturum)
+- GitHub Actions: lint/tip/birim/derleme, uçtan uca testler (Chromium) ve Pages yayını başarılı.
+- Canlı sitede masaüstü ve mobil görünümde 35 katalog kartı, 29 “3D model hazır”; sayfa hatası ve 4xx/5xx yok.
+  BMW M3 (E30) paylaşım bağlantısıyla (mavi, metalik) doğru açıldı. Algılama modeli, WASM ve HDRI dosyaları
+  siteden sunuluyor (harici CDN yok).

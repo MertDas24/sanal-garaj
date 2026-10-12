@@ -189,7 +189,7 @@ function Editor({ vehicleId, title, year, note, modelId, query }: {
         </div>
         <p className="attribution small">
           3D model: <a href={model.source.url} target="_blank" rel="noopener noreferrer">“{model.source.title}”</a> — {model.source.author} ({model.source.site}),{' '}
-          <a href={model.source.licenseUrl} target="_blank" rel="noopener noreferrer license">{LICENSE_LABELS[model.source.license]}</a>.
+          <a href={model.source.licenseUrl} target="_blank" rel="noopener noreferrer license">{LICENSE_LABELS[model.source.license]}</a>.{' '}
           {model.triangles < 30_000 ? 'Düşük poligonlu modeldir; derleme' : 'Derleme'} sırasında ölçeklendi, yönlendirildi ve sıkıştırıldı.
         </p>
       </div>
