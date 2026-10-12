@@ -25,7 +25,7 @@ export default defineConfig({
     { name: 'mobil', use: { ...devices['Pixel 7'], channel, launchOptions }, grep: /@mobil/ },
   ],
   webServer: {
-    command: 'npm run build && npx vite preview --port 4173 --strictPort',
+    command: 'node node_modules/vite/bin/vite.js preview --port 4173 --strictPort',
     url: 'http://localhost:4173/',
     reuseExistingServer: !process.env.CI,
     timeout: 180_000,

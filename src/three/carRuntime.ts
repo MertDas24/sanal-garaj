@@ -1,8 +1,9 @@
 import * as THREE from 'three';
 import type { ModelFeatures } from '../data/models';
-import type { Design, Finish, RimStyle, WindowTint } from '../lib/design';
+import { defaultDesign, type Design, type Finish, type RimStyle, type WindowTint, type WrapStyle } from '../lib/design';
 import { toCreasedNormals } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { buildFrontLip, buildRim, buildSpoiler } from './addons';
+import { buildUnderglow, buildWrap } from './workshopGeometry';
 
 /** Bu açıdan küçük kenarlar yumuşatılır; daha keskin kenarlar (panel hatları) korunur. */
 const CREASE = THREE.MathUtils.degToRad(35);
@@ -27,9 +28,11 @@ export interface CarRuntime {
 interface WheelInfo {
   center: THREE.Vector3;
   radius: number;
+  halfWidth: number;
   rimRadius: number;
   outerX: number;
   rimMeshes: THREE.Mesh[];
+  pivot: THREE.Group;
 }
 
 // iridescence: ince film girişimi — açıya göre renk kayması (sedef / "flip" boya etkisi)
@@ -109,6 +112,7 @@ export function createCarRuntime(source: THREE.Object3D, features: ModelFeatures
   const rimMeshes: THREE.Mesh[] = [];
   const wheelObjects: THREE.Object3D[] = [];
   let paintFound = false;
+  const paintMeshes: THREE.Mesh[] = [];
 
   scene.traverse((o) => {
     if (o.name.startsWith('CG_wheel_')) wheelObjects.push(o);
@@ -119,6 +123,7 @@ export function createCarRuntime(source: THREE.Object3D, features: ModelFeatures
     const mat = mesh.material as THREE.MeshStandardMaterial;
     if (Array.isArray(mat)) return;
     if (mat.name === 'CG_paint') {
+      paintMeshes.push(mesh);
       if (!paintFound) {
         originalPaint = `#${mat.color.getHexString()}`;
         paintFound = true;
@@ -170,8 +175,13 @@ export function createCarRuntime(source: THREE.Object3D, features: ModelFeatures
     if (hit) { hit.box.union(box); hit.objs.push(w); } else clusters.push({ box, objs: [w] });
   }
   const wheels: WheelInfo[] = clusters.map(({ box, objs }) => {
-    const center = box.getCenter(new THREE.Vector3());
-    const size = box.getSize(new THREE.Vector3());
+    const tireBox = new THREE.Box3();
+    for (const obj of objs) obj.traverse((o) => {
+      if (o instanceof THREE.Mesh && !Array.isArray(o.material) && o.material.name === 'CG_tire') tireBox.expandByObject(o);
+    });
+    const measured = tireBox.isEmpty() ? box : tireBox;
+    const center = measured.getCenter(new THREE.Vector3());
+    const size = measured.getSize(new THREE.Vector3());
     const myRims = rimMeshes.filter((m) => objs.some((w) => isDescendant(m, w)));
     let rimRadius = Math.max(size.y, size.z) * 0.5 * 0.66;
     if (myRims.length) {
@@ -180,12 +190,20 @@ export function createCarRuntime(source: THREE.Object3D, features: ModelFeatures
       const rs = rb.getSize(new THREE.Vector3());
       rimRadius = Math.min(rimRadius * 1.25, Math.max(rs.y, rs.z) * 0.5);
     }
+    const pivot = new THREE.Group();
+    pivot.name = 'wheel-pivot';
+    pivot.position.copy(center);
+    object.add(pivot);
+    object.updateMatrixWorld(true);
+    for (const obj of objs) pivot.attach(obj);
     return {
       center,
       radius: Math.max(size.y, size.z) / 2,
+      halfWidth: size.x / 2,
       rimRadius,
       outerX: center.x >= 0 ? box.max.x : box.min.x,
       rimMeshes: myRims,
+      pivot,
     };
   });
 
@@ -215,6 +233,29 @@ export function createCarRuntime(source: THREE.Object3D, features: ModelFeatures
   if (!paintFound) f.paint = false;
   if (!glassFound) f.windowTint = false;
   if (!caliperOriginal.size) f.caliperColor = false;
+  const radii = wheels.map((w) => w.radius);
+  f.stance = wheels.length === 4 && Math.max(...radii) / Math.min(...radii) < 1.25 && wheels.every((w) =>
+    w.center.x !== 0 && w.radius > 0.15 && w.radius < 0.65 && Math.abs(w.center.y - w.radius) < 0.08 &&
+    Math.abs(w.outerX - w.center.x) < 0.3);
+  // Bazı kaynaklarda lastik düğümü uzak geometriyi de içerir; bu ölçümle yeni jant üretme.
+  if (!f.stance) f.rimStyle = false;
+  f.wrap = paintFound;
+  f.underglow = !bodyBox.isEmpty() && bodyBox.min.y < 0.7;
+  const wrapMat = track(new THREE.MeshPhysicalMaterial({ name: 'CG_wrap', roughness: 0.4, metalness: 0.15, clearcoat: 0.8 }));
+  const wraps = new Map<WrapStyle, THREE.Group>();
+  for (const style of ['single', 'double', 'hood', 'roof'] as WrapStyle[]) {
+    const wrap = buildWrap(paintMeshes, bodyBox, style, wrapMat);
+    if (wrap.children.length) {
+      wrap.traverse((m) => { if ((m as THREE.Mesh).isMesh) track((m as THREE.Mesh).geometry); });
+      wrap.visible = false; wraps.set(style, wrap); bodyParts.add(wrap);
+    }
+  }
+  f.wrapStyles = [...wraps.keys()];
+  f.wrap = wraps.size > 0;
+  const glowMat = track(new THREE.MeshStandardMaterial({ name: 'CG_glow', emissiveIntensity: 8, toneMapped: false }));
+  const glow = buildUnderglow(bodyBox, glowMat);
+  object.add(glow);
+  glow.traverse((m) => { if ((m as THREE.Mesh).isMesh) track((m as THREE.Mesh).geometry); });
 
   // Jant modelleri tembel üretilir
   const rimSets = new Map<RimStyle, THREE.Group>();
@@ -230,7 +271,10 @@ export function createCarRuntime(source: THREE.Object3D, features: ModelFeatures
         rim.position.set(w.outerX - Math.sign(w.center.x || 1) * Math.max(0.012, w.radius * 0.04), w.center.y, w.center.z);
         if (w.center.x < 0) rim.rotation.y = Math.PI;
         rim.traverse((m) => { if ((m as THREE.Mesh).isMesh) { track((m as THREE.Mesh).geometry); (m as THREE.Mesh).castShadow = true; } });
-        set.add(rim);
+        const mount = new THREE.Group();
+        mount.position.copy(w.center);
+        rim.position.sub(w.center);
+        mount.add(rim); set.add(mount);
       }
       rimSets.set(style, set);
       rimGroup.add(set);
@@ -238,7 +282,10 @@ export function createCarRuntime(source: THREE.Object3D, features: ModelFeatures
     return set;
   };
 
+  const runtimeDefault = defaultDesign(originalPaint, f.spoiler === 'builtin');
   const apply = (d: Design) => {
+    // Eski tasarım dosyaları ve kendi-model görüntüleyicisi yeni alanları içermeyebilir.
+    d = { ...runtimeDefault, ...d };
     if (f.paint) {
       paintMat.color.set(d.paint);
       Object.assign(paintMat, FINISH_PARAMS[d.finish]);
@@ -248,13 +295,32 @@ export function createCarRuntime(source: THREE.Object3D, features: ModelFeatures
     }
     const customRimColor = f.rimColor && d.rimColor ? d.rimColor : null;
     rimMat.color.set(customRimColor ?? originalRim ?? '#c0c0c0');
+    rimMat.roughness = d.rimFinish === 'chrome' ? 0.08 : d.rimFinish === 'matte' ? 0.85 : 0.32;
+    rimMat.metalness = d.rimFinish === 'chrome' ? 1 : 0.7;
 
     const style: RimStyle = f.rimStyle ? d.rimStyle : 'original';
     for (const w of wheels) for (const m of w.rimMeshes) m.visible = style === 'original';
     if (style !== 'original') getRimSet(style);
     rimSets.forEach((set, k) => { set.visible = k === style; });
+    for (let i = 0; i < wheels.length; i++) {
+      const w = wheels[i];
+      const side = Math.sign(w.center.x);
+      w.pivot.position.copy(w.center);
+      w.pivot.position.x += f.stance ? side * d.offsetMm / 1000 : 0;
+      w.pivot.rotation.z = f.stance ? THREE.MathUtils.degToRad((w.center.z > 0 ? d.frontCamber : d.rearCamber) * -side) : 0;
+      w.pivot.scale.x = f.stance ? d.wheelWidth / 100 : 1;
+      // Kamber sonrası lastik yere batmasın: yuvarlak tekerleğin düşey izdüşümünü koru.
+      w.pivot.position.y += w.radius * (Math.cos(w.pivot.rotation.z) - 1) + w.halfWidth * w.pivot.scale.x * Math.abs(Math.sin(w.pivot.rotation.z));
+      rimSets.forEach((set) => {
+        const mount = set.children[i];
+        mount.position.copy(w.pivot.position); mount.rotation.copy(w.pivot.rotation); mount.scale.copy(w.pivot.scale);
+        const rim = mount.children[0];
+        const scale = Math.min(d.rimScale / 100, w.radius * 0.9 / w.rimRadius);
+        rim.scale.set(1, scale, scale);
+      });
+    }
     // Orijinal jant: renk seçilmediyse modelin kendi (dokulu olabilir) malzemesi, seçildiyse jant rengi
-    for (const m of rimMeshes) m.material = customRimColor ? rimMat : rimOriginal.get(m)!;
+    for (const m of rimMeshes) m.material = customRimColor || d.rimFinish !== 'satin' ? rimMat : rimOriginal.get(m)!;
 
     const tint = TINT_PARAMS[f.windowTint ? d.tint : 'stock'];
     glassMat.opacity = tint.opacity;
@@ -271,6 +337,28 @@ export function createCarRuntime(source: THREE.Object3D, features: ModelFeatures
     if (builtinSpoiler) builtinSpoiler.visible = f.spoiler === 'builtin' ? d.spoiler : true;
     if (spoiler) spoiler.visible = f.spoiler === 'addon' && d.spoiler;
     if (lip) lip.visible = f.frontLip === 'addon' && d.lip;
+    if (spoiler) {
+      // Parça kökeni zeminde: yükseklik ölçeği yerine geometriye ait yerel konumları kullan.
+      for (const child of spoiler.children) child.userData.originalY ??= child.position.y;
+      const deckY = spoiler.children[1].userData.originalY - 0.05;
+      for (const child of spoiler.children) {
+        const k = d.spoilerStyle === 'gt' ? 1.8 : d.spoilerStyle === 'ducktail' ? 0.35 : 1;
+        child.position.y = deckY + (child.userData.originalY - deckY) * k;
+        child.scale.y = k;
+      }
+    }
+    if (lip) {
+      lip.children.forEach((child) => {
+        child.userData.originalZ ??= child.position.z;
+        child.scale.z = d.lipExtension / 100;
+        child.position.z = child.userData.originalZ + (d.lipExtension / 100 - 1) * 0.04;
+      });
+    }
+    wrapMat.color.set(d.wrapColor);
+    wraps.forEach((wrap, key) => { wrap.visible = key === d.wrap && !!f.wrap; });
+    glow.visible = !!f.underglow && d.underglow;
+    glowMat.color.set(d.glowColor); glowMat.emissive.set(d.glowColor);
+    glow.traverse((o) => { if (o instanceof THREE.PointLight) o.color.set(d.glowColor); });
 
     if (d.partColor === 'carbon') {
       partMat.color.copy(CARBON);

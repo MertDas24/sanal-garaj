@@ -23,6 +23,45 @@
   -webkit-font-smoothing: antialiased;
 }
 
+/* Tasarım atölyesi */
+.workbench { padding: 20px; border-bottom: 1px solid var(--border); background: linear-gradient(135deg, #172431, #171a21); }
+.workbench__head { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 12px; }
+.eyebrow { font-size: 0.72rem; font-weight: 800; letter-spacing: 0.15em; color: var(--accent); }
+.build-sheet { margin: 16px 0; }
+.build-sheet summary, .capability-notes summary { cursor: pointer; font-weight: 650; padding: 10px 0; }
+.build-sheet dl { margin: 12px 0; }
+.build-sheet dl > div { display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
+.build-sheet dt { color: var(--muted); }
+.build-sheet dd { margin: 0; text-align: right; overflow-wrap: anywhere; }
+.workbench__files { margin-bottom: 12px; }
+.workbench__files .btn { flex: 1 1 140px; font-size: 0.8rem; }
+.tuning-range { margin: 16px 0; }
+.tuning-range input { width: 100%; accent-color: var(--accent); min-height: 32px; }
+.tuning-range input:disabled { opacity: 0.4; }
+.segmented button:disabled { opacity: 0.4; cursor: not-allowed; }
+.unsupported-item { margin: 14px 0; }
+.unsupported-item button { width: 100%; text-align: left; justify-content: flex-start; }
+.unsupported-item p { margin: 6px 0 0; }
+.control-group { border: 0; padding: 0; margin: 0; min-width: 0; }
+.workshop-nav { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 14px; }
+.workshop-nav .chip { font-size: 0.8rem; }
+.powertrain-group { border-top: 1px solid var(--border); margin: 14px 0; padding-top: 10px; }
+.powertrain-group summary { cursor: pointer; font-weight: 650; padding: 10px 0; }
+.powertrain-group summary span { float: right; font-weight: 400; }
+.powertrain-group .field { margin: 12px 0; }
+.powertrain-panel select { width: 100%; min-width: 0; }
+.panel__section[id] { scroll-margin-top: 76px; }
+.control-group:disabled .swatches, .control-group:disabled .segmented, .control-group:disabled .switch, .control-group:disabled .color-input, .control-group:disabled input { opacity: 0.45; }
+.garage-intro { display: flex; align-items: center; gap: 28px; padding: 28px; margin: 24px 0; border: 1px solid var(--border); border-radius: 16px; background: linear-gradient(120deg, #182634, #16181e); }
+.garage-intro > div { flex: 1; }
+.garage-intro h2 { margin-top: 8px; font-size: clamp(1.2rem, 2vw, 1.7rem); }
+.garage-intro p { margin: 0; max-width: 650px; }
+.portfolio-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin: 24px 0; }
+.portfolio-grid article { padding: 22px; border: 1px solid var(--border); border-radius: 14px; background: var(--surface); }
+.portfolio-grid h3 { margin-top: 12px; }
+.portfolio-grid p { color: var(--muted); font-size: 0.9rem; margin: 0; }
+@media (max-width: 720px) { .garage-intro { flex-direction: column; align-items: flex-start; padding: 20px; } .portfolio-grid { grid-template-columns: 1fr; } }
+
 * { box-sizing: border-box; }
 html, body { margin: 0; }
 body { min-height: 100vh; background: radial-gradient(1200px 600px at 70% -10%, #1a2130 0%, transparent 60%), var(--bg); }

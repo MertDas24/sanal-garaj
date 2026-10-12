@@ -1,6 +1,7 @@
 import { CATALOG } from '../data/catalog';
 import { MODELS } from '../data/models';
 import { ENVIRONMENTS } from '../three/scenes';
+import { ProjectShare } from '../components/ProjectShare';
 
 const REPO = 'https://github.com/MertDas24/sanal-garaj';
 
@@ -25,6 +26,11 @@ export function AboutPage() {
       </div>
 
       <h2>Öne çıkan teknikler</h2>
+      <div className="portfolio-grid">
+        <article><span className="eyebrow">GEOMETRİ</span><h3>Modeli anlayan modifikasyonlar</h3><p>Kaplamalar yalnızca gövde yüzeylerine projekte edilir. Tekerlekler kendi merkezlerinde kamber alır; üretilen jantlar aynı dönüşümü izler. Uygun geometri bulunmadığında seçenek kapatılır.</p></article>
+        <article><span className="eyebrow">ÜRÜN DENEYİMİ</span><h3>Tasarımın her adımı sende</h3><p>50 adımlık geri al/ileri al, modifikasyon listesi, sürümlü JSON dosyaları ve paylaşım bağlantıları. Tasarımı kaydetmek için hesap gerekmez.</p></article>
+        <article><span className="eyebrow">GİZLİLİK</span><h3>Cihaz içinde çalışan garaj</h3><p>Fotoğraflar, yerel modeller ve tasarım dosyaları tarayıcıda işlenir. Sunucu, kullanıcı hesabı ve ücretli API bulunmaz.</p></article>
+      </div>
       <ul>
         <li>
           <strong>Işık izleme (path tracing):</strong> “Fotogerçekçi görüntü”, seçilen açıyı fiziksel ışık yollarını
@@ -59,11 +65,16 @@ export function AboutPage() {
       </ul>
 
       <h2>Teknoloji</h2>
+      <h3>Motor ve aktarma planı</h3>
+      <p>Motor değişimi, iç aksam, turbo/kompresör, ECU, yakıt, egzoz, soğutma ve aktarma seçenekleri tasarımın
+        parça planına eklenir; kayıt, dosya ve bağlantı üzerinden taşınır. Bu bölüm güç ölçümü, fizik simülasyonu
+        veya motorun 3D görselleştirmesi sunmaz.</p>
       <p className="tags">
         {['React 19', 'TypeScript', 'Vite', 'Three.js', 'React Three Fiber', 'three-gpu-pathtracer', 'glTF-Transform', 'meshoptimizer', 'MediaPipe', 'Vitest', 'Playwright', 'GitHub Actions'].map((t) => (
           <span key={t} className="chip chip--static">{t}</span>
         ))}
       </p>
+      <ProjectShare />
 
       <h2>Kaynaklar</h2>
       <p>

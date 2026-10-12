@@ -335,3 +335,111 @@ Maliyet: 0 TL.
 - Canlı sitede: 26 araç, CSP etiketi mevcut, Open Graph kapak görseli erişilebilir (200, image/jpeg),
   gün batımı + koyu cam + sarı kaliper + sedef boyalı Gallardo için fotogerçekçi görüntü tamamlandı,
   Hakkında sayfası açılıyor; konsolda CSP ihlali, hata veya 4xx/5xx yanıt yok.
+
+---
+
+## 2026-10-12 — Codex: kayıtlı tasarımların doğrulanması
+
+**Katkı: Codex.** Özel görev verilmediğinden mevcut kaydetme/paylaşma akışı dar kapsamda incelendi. Başlangıçta çalışma ağacı temizdi; son Claude notunda eş zamanlı devam eden iş belirtilmiyordu.
+
+### Tamamlanan işler ve kanıt
+- `loadSaved` yalnızca boya rengini doğrulayıp diğer tasarım alanlarını olduğu gibi kabul ediyordu. Örneğin `rimColor: 42` içeren kayıt, `encodeDesignFull` içindeki `.slice(1)` çağrısını bozabiliyordu. Artık kayıtlar bağlantı üretilmeden önce mevcut `sanitizeDesign` ile tamamlanıyor ve doğrulanıyor; geçerli renkler küçük harfe çevriliyor.
+- Yükseklik doğrulamasında `Number` yalnızca sayı veya metin için çağrılıyor. `{ toString: null, valueOf: null }` gibi JSON nesneleri istisna üretmiyor; boolean/null değerler sayıya çevrilmiyor.
+- Üç regresyon testi: bozuk kayıtların bağlantı üretmesi, geçerli tüm tasarım ayarlarının kayıt → bağlantı → açılış boyunca korunması ve geçersiz yükseklik türlerinin reddedilmesi.
+- Mimari korunarak mevcut doğrulayıcı kullanıldı. Model desteği düzenleyicide tekrar doğrulanıyor; kayıt okuma özgün depolamaya yazmıyor.
+
+### Kontroller
+- `npm run lint`: başarılı çıkış; `EditorPage.tsx` içinde önceden var olan iki React memoization uyarısı devam ediyor.
+- `npx tsc -b`, `npm test` (21 test), `npm run build`, `git diff --check`: geçti.
+- `$env:PW_CHANNEL='chrome'; npm run e2e`: son derlemeyle 21/21 test geçti (masaüstü ve mobil; ışık izleme ilerlemesi, kaydet/aç/sil, paylaşım, WebGL yokluğu, fotoğraf gizliliği ve yerel GLB dahil).
+- Test çıktısında 21 kontrolün tamamı `ok` oldu; ancak çalıştırıcı testlerden sonra kapanmadı ve sonuç özeti/başarılı çıkış kodu vermedi. Bekleme sonrası Ctrl+C ile durduruldu. Dolayısıyla E2E komutunun temiz çıkışı doğrulanmış sayılmaz; Windows süreç kapanışı ayrıca incelenmeli, gönderim/yayın öncesi komutun normal tamamlanması sağlanmalı.
+- Varsayılan Playwright Chromium sürümü 1248 gerekiyor, bilgisayarda 1243 mevcut; kurulu Chrome için `PW_CHANNEL=chrome` kullanıldı. İlk Chrome denemesinde önceki test süreci kapatılırken ortak önizleme sunucusu da durdu ve kalan testlerde `ERR_CONNECTION_REFUSED` oluştu; paket son derlemeyle tek süreçte yeniden çalıştırıldı.
+
+### Kaynaklar, maliyet ve yayın
+- Yeni 3D model eklenmedi; kaynak ve lisans kayıtları değiştirilmedi, bu oturumda lisanslar internetten yeniden doğrulanmadı. Maliyet: 0 TL.
+- Commit, gönderim veya yayın yapılmadı. Mevcut depo: https://github.com/MertDas24/sanal-garaj ; mevcut site: https://mertdas24.github.io/sanal-garaj/ .
+
+### Eksikler ve sonraki adımlar
+- Bu çalışma tüm araçların boya bölgelerini görsel olarak yeniden doğrulamaz; GPU bellek/FPS ölçümü ve tüm katalog araçları için yükleme testi ayrıca yapılabilir.
+- Claude için: mevcut memoization uyarıları ayrı dar kapsamlı incelemede değerlendirilebilir. Önceki model çeşitliliği hedefi korunuyor.
+
+---
+
+## 2026-10-12 — Codex: kapsamlı görsel modifikasyon atölyesi ve portfolyo geliştirmesi
+
+**Katkı: Codex.** Kullanıcı görsel modifikasyon kapsamının ve portfolyo değerinin genişletilmesini istedi. Claude'un React/R3F/statik site mimarisi korundu; önceki Codex değişiklikleri silinmedi. Yeni bağımlılık veya servis eklenmedi.
+
+### Tamamlanan işler
+- Jant: petek, türbin, çift 6 kollu ile toplam altı eklenti tasarım; krom/saten/mat yüzey; eklenti jant yüzünün %85–115 çap ayarı (lastik iç çapına göre sınırlanır). Orijinal jantın çapı değiştirilmez.
+- Duruş: dört güvenilir tekerlekte %90–115 genişlik, 0–25 mm dışa açılma, ayrı ön/arka −8°–0° kamber. Dönme merkezleri lastik geometrisinden ölçülür; eklenti jant aynı merkezi, eğimi ve genişliği izler. Lastiğin düşey izdüşümü dikkate alınır; çamurluk çakışması/fizik simülasyonu yapılmaz.
+- Kaplama: tek/çift şerit, kaput/tavan kaplama ve özel renk. Three.js `DecalGeometry` ile yalnızca `CG_paint` üst yüzeylerine projeksiyon yapılır; cam/lastik/trim seçilmez. Geometrisi boş çıkan seçenekler kapalıdır. Kaput/tavan bölgesi yaklaşık geometrik sınırdır, panel bazlı elle hazırlanmış maske değildir.
+- Aero: uygulamanın ürettiği kanatta Spor/GT/alçak kanat biçimi, splitter uzantısı %80–150. Modelin kendi spoiler geometrisi değiştirilmez.
+- LED: gövde altına ışık yayan şerit geometrisi ve özel renk. Etkileşimli görünümde noktasal ışık, ışık izlemede emissive geometri kullanılır.
+- Üç yeni hazır paket (Uzun Yol, Gösteri, Kulüp Sporu); toplam yedi paket. Paket seçimi fabrika tasarımından başlar, önceki paketin artık ayarları taşınmaz.
+- 50 adımlık geri al/ileri al ve klavye kısayolları; bölümlere hızlı geçiş; etkin modifikasyon listesi ve TXT indirme.
+- Sürüm/katalog doğrulamalı, 128 KB sınırlandırılmış JSON tasarım dosyası indirme/açma. Dosyada tasarım, ortam ve model atfı bulunur; dosya tarayıcıdan dışarı gönderilmez. Kaydedilen tasarımlar artık HDRI ortamını da korur; eski kayıtlarda garaj varsayılanı kullanılır.
+- Kamera önayarları etkileşimli sahnede de çalışır; 3D görünüme odaklanınca ok tuşları, +/− ve Home kullanılabilir. Renk/jant/kaplama gruplarında ok tuşları ve Home/End seçimi desteklenir.
+- Desteklenmeyen kontroller gizlenmek yerine native disabled fieldset içinde gerekçeleriyle gösterilir. Motor/turbo/ECU, mekanik aktarma, araca özel gövde parçaları ve iç mekân kitleri için eksik veri/geometri açıklandı; güç, fiyat veya uyumluluk sonucu uydurulmadı.
+- Katalogda gerçek bir örnek tasarım bağlantısı; Hakkında sayfasında geometri, ürün deneyimi ve gizlilik anlatımı. README güncellendi.
+
+### Bulunan sorunlar, kararlar ve kanıt
+- İlk görsel taramada Prius/Passat/Centenario gibi kaynaklarda tekerlek sınırları tutarsızdı; örneğin Centenario'nun arka lastik yarıçapı yaklaşık 0,519 m iken merkez yüksekliği 0,373 m görünüyordu. Dört tekerlek, yarıçap tutarlılığı, dış sınır ve zemine oturma kontrolleriyle eklenti jant/duruş desteği sınırlandı. Jant rengi için mevcut ayrı malzeme desteği korunur.
+- Final geometri denetiminde 26 araç yüklendi, sayfa hatası 0; duruş 18 araçta, eklenti jant tasarımı 13 araçta açıldı. Üç temas sayfasındaki 26 ön ¾ görüntü görsel olarak incelendi. Yerel kanıtlar: `lab-out/workshop/audit.json`, `contact-0.png`, `contact-1.png`, `contact-2.png`; bunlar geliştirme çıktısıdır, depoya girmez. Her kombinasyon ve kamera açısı için kapsamlı görsel doğrulama yapılmadı.
+- GLTF yükleme hatası önbellekte kalabildiğinden “Tekrar dene” öncesinde `useGLTF.clear` çağrılıyor. 404 → gerçek yeniden indirme testi eklendi.
+- Görüntüleyicinin gerektirdiği WebGL 2 kontrol ediliyor; yalnızca WebGL 1 bulunması yanlış başarı sayılmıyor. Işık izleme başlatılırken senkron hatalar da kullanıcı mesajına dönüyor.
+- Jant birleştirmesinde geçici non-indexed geometriler de dispose ediliyor. Kaplama geometrileri bir kez hazırlanıp yeniden kullanılıyor; her karede oluşturulmuyor. Yeni parça geometrileri/malzemeleri runtime temizliğine kayıtlı. FPS/GPU bellek için sayısal performans ölçümü yapılmadı.
+- Playwright derlemesi `pree2e` aşamasına taşındı; test sunucusu doğrudan Vite ile açılıyor. Kısıtlı Windows ortamında Playwright'ın sahip olduğu sunucuyu kapatma aşaması hâlâ takılabildiğinden ayrı terminalde açılan önizleme sunucusu yeniden kullanıldı; bu yöntemle çalıştırıcı normal sonuç özeti ve çıkış kodu verdi. README'de yöntem yazıldı.
+
+### Değişen dosyalar
+- Arayüz: `src/components/EditorPanel.tsx`, `DesignWorkbench.tsx`, `SceneControls.tsx`, `NoWebGL.tsx`; `src/pages/EditorPage.tsx`, `SavedPage.tsx`, `CatalogPage.tsx`, `AboutPage.tsx`; `src/styles.css`.
+- Durum/veri: `src/lib/design.ts`, `designFile.ts`, `useDesignHistory.ts`, `storage.ts`, `webgl.ts`; `src/data/models.ts`.
+- 3D: `src/three/carRuntime.ts`, `addons.ts`, `workshopGeometry.ts`, `CarViewer.tsx`.
+- Test/altyapı: `src/lib/workshop.test.ts`, `src/three/carRuntime.test.ts`, `tests/e2e/app.spec.ts`, `package.json`, `playwright.config.ts`. Önceki oturumun `design.test.ts` ve `storage.test.ts` değişiklikleri korundu.
+- Belgeler: `README.md`, `PROJE_NOTLARI.md`.
+
+### Kontroller
+- Lint: uyarısız geçti. Tip kontrolü, 30 birim testi, üretim derlemesi geçti. Diff boşluk kontrolü geçti.
+- Final E2E: `$env:PW_CHANNEL='chrome'; npm run e2e` ile son derleme üzerinde **27/27 test geçti**, çalıştırıcı **çıkış kodu 0** ile normal tamamlandı (4,3 dakika). Kaplama + LED + kamber içeren ışık izleme, paylaşım, geri al/ileri al, JSON ve kayıt ortamı, 404 yeniden deneme, WebGL 2 ve mobil akışlar dahil. Önceki denemede kalan test özel anahtarın dekoratif katmanına takılıyordu; görünen etiket üzerinden etkileşimle düzeltildi.
+- Masaüstü, panel ve mobil ekran görüntüleri ayrıca incelendi: `lab-out/workshop/desktop.png`, `panel.png`, `mobile.png`. Yerel inceleme için geliştirme sunucusu `http://localhost:5199/` adresinde açık bırakıldı; test önizleme sunucusu testler tamamlanınca kapatıldı.
+
+### Kaynak, lisans, maliyet ve yayın
+- Yeni model/harici görsel alınmadı. Mevcut Sketchfab CC BY 4.0 modelleri ve Poly Haven CC0 HDRI kaynakları korunuyor; lisanslar bu oturumda API üzerinden yeniden sorgulanmadı. Yeni parçalar proje kodunun ürettiği genel geometridir (proje kodu MIT). Maliyet: 0 TL.
+- Commit/push/yayın yapılmadı. Depo: https://github.com/MertDas24/sanal-garaj ; mevcut canlı site: https://mertdas24.github.io/sanal-garaj/ . Bu oturumun değişiklikleri henüz canlı sitede değildir.
+
+### Eksikler ve Claude için sonraki adımlar
+- “Bir araçta olabilecek her modifikasyon” için araç bazında panel/bağlantı noktası, iç mekân ve kit geometrisi hazırlanmalı. Lisanslı tampon/geniş gövde/yan etek/difüzör/egzoz kitleri ayrı model hattı işi olarak ele alınmalı; mevcut 26 modelin her birine evrensel parça uygunluğu varsayılmamalı.
+- Motor/turbo/ECU ve mekanik değişikliklerde önce fizik/uyumluluk veri kapsamı belirlenmeli; mevcut ürün görsel tasarım olarak kalıyor.
+- Kaput/tavan için elle doğrulanmış panel maskeleri, hassas lastik geometrisi hatalarının model hattında giderilmesi, tüm açı/kombinasyonlar için görsel test ve ölçülmüş GPU/FPS profili sonraki kalite adımlarıdır.
+- Serbest kamera açısı ve geri al geçmişi tasarım dosyasında saklanmaz; dosya tasarım ayarlarını ve ortamı taşır. Ortam değişikliği tasarım geri al geçmişine dahil değildir.
+- Bu oturumun son E2E çıkışı doğrulandı. Windows'ta otomatik sunucu kapatma sınırı hâlâ mevcut; ayrı terminalde önizleme sunucusu kullanma yöntemi belgede anlatılıyor. Sonraki gönderim/yayın öncesinde yeni değişiklikler için kontroller tekrar geçmeli.
+
+---
+
+## 2026-10-12 — Codex: motor/aktarma planı ve ücretsiz halka açık yayın
+
+**Katkı: Codex.** Kullanıcı motor modifikasyonlarının eklenmesini ve projenin başkalarıyla paylaşılabilir bir bağlantıyla ücretsiz yayınlanmasını istedi. Bu talep önceki oturumların yerel değişikliklerinin de mevcut GitHub Pages sitesine gönderilmesini kapsıyor.
+
+### Tamamlanan işler ve kararlar
+- Motor/aktarma parça planında **45 kategori**: motor değişimi; ECU; hacim, piston, biyel, krank, eksantrik, silindir kapağı, supap, conta/saplama, takoz; turbo/kompresör, emme, manifold, kelebek, intercooler, basınç/tahliye kontrolü; yakıt dönüşümü, enjektör, pompa, hat/regülatör, ateşleme, nitro, su/metanol; radyatör, fan/pompa, yağlama, karter havalandırma; manifold/downpipe/katalizör/egzoz; şanzıman, debriyaj, volan, diferansiyel, son dişli, şaft/aks, çekiş; elektrik motoru, inverter, batarya/soğutma ve rejenerasyon.
+- Seçimler düzenlenebilir, geri alınabilir, kaydedilebilir, JSON ve modifikasyon listesine aktarılabilir ve `engine` paylaşım parametresiyle geri açılabilir. Her kategori/seçenek için enum doğrulaması, bilinmeyen alanların atılması ve bozuk/aşırı uzun parametre koruması var.
+- Elektrikli dönüşümde içten yanmalı parçalar devre dışı bırakılır ve plandan temizlenir. Elektrikli parça seçenekleri yalnızca elektrikli dönüşüm planında açılır.
+- **Dürüst kapsam:** modeller ayrı motor içi geometrisi veya doğrulanmış motor/uyumluluk verisi sunmuyor. Bu yüzden motor bölümü açıkça parça planıdır; 3D motor dönüşümü, gerçek ECU yazılımı, güç/tork/ivmelenme kazancı ve mekanik uygunluk sonucu üretilmez. Seçimlerin işe yarayan sonucu kaydedilebilir/paylaşılabilir yapılandırmadır.
+- Katalog ve Hakkında sayfalarına **Siteyi paylaş** eklendi. Kalıcı Pages adresi kopyalanır veya kullanıcı isterse cihazın paylaşım menüsü açılır; panoya erişim yoksa bağlantı elle kopyalanabilir.
+- Motor planı render varsayılanlarının her karede yeniden üretilmemesi için runtime varsayılanı bir kez hazırlanır. Önceki görsel atölye ve doğrulama düzeltmeleri korundu.
+- E2E motor testi geri al sırasında açık kategorinin kapanmasını yakaladı; kategori açıklığı parça seçimlerinden bağımsız state ile korunacak şekilde düzeltildi.
+
+### Dosyalar
+- Yeni: `src/lib/powertrain.ts`, `src/lib/powertrain.test.ts`, `src/components/PowertrainPanel.tsx`, `src/components/ProjectShare.tsx`.
+- Güncellenen: `src/lib/design.ts`, `designFile.ts`; `src/components/EditorPanel.tsx`, `DesignWorkbench.tsx`; `src/pages/CatalogPage.tsx`, `AboutPage.tsx`; `src/three/carRuntime.ts`; `src/styles.css`; `tests/e2e/app.spec.ts`; `README.md`, `PROJE_NOTLARI.md`. Önceki oturumun yayınlanmamış dosyaları da korunup bu yayın kapsamına alındı.
+
+### Kontroller
+- `npm run lint`: uyarısız geçti. `npx tsc -b`, `npm test` (**34 test**) ve üretim derlemesi geçti.
+- `npm audit --audit-level=high`: **0 güvenlik açığı**. Yeni bağımlılık kurulmadı.
+- E2E: motor kategorisi açıklık düzeltmesinden sonra **29/29 test geçti**, çıkış kodu 0 (4,1 dakika). İlk çalıştırmada 28 geçti; kalan test yukarıdaki geri al/kategori kapanışı sorununu gösterdi ve düzeltildi. Motor planı paylaşım/reload/kaydet/aç/geri al/elektrikli dönüşüm/sıfırlama ile site bağlantısı kopyalama doğrulandı.
+- İlk yayın kontrolünde mevcut Pages adresi HTTP 200 döndü. Depo herkese açık, Pages yayın yöntemi GitHub Actions; mevcut GitHub oturumu kullanılabiliyor.
+
+### Ücretsiz yayın, kaynaklar ve eksikler
+- Depo: https://github.com/MertDas24/sanal-garaj . Kalıcı paylaşım adresi: https://mertdas24.github.io/sanal-garaj/ . Yeni servis/hesap, ücretli barındırma, alan adı, abonelik veya model satın alma yok; **maliyet 0 TL**.
+- Kaynak modeller ve lisans kayıtları değiştirilmedi; yeni model indirilmedi. Mevcut Sketchfab CC BY 4.0 ve Poly Haven CC0 kaynakları korunuyor; bu oturumda lisanslar tekrar sorgulanmadı.
+- Yayın sonucu: yerel kontroller ve GitHub Actions tamamlandıktan sonra kaydedilecek. Anahtar/şifre bu nota yazılmadı; dış kişilere mesaj gönderilmedi.
+- Claude için: gerçek motor 3D görünümü/fizik simülasyonu ve araç bazında parça uyumluluğu ayrı veri/model geliştirmesi olarak kalıyor. Seçenekler kapsamlı bir genel plan kataloğudur; tüm araçlarda fiziksel montaj uygunluğu varsayılmaz.

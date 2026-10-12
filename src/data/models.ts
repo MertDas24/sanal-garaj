@@ -23,6 +23,11 @@ export interface ModelFeatures {
   windowTint: boolean;
   /** Fren kaliperi rengi (kaliper ayrı malzeme ise) */
   caliperColor: boolean;
+  /** Çalışma zamanında geometri üzerinden doğrulanan ek yetenekler. */
+  stance?: boolean;
+  wrap?: boolean;
+  wrapStyles?: string[];
+  underglow?: boolean;
 }
 
 export interface ModelAsset {

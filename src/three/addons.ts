@@ -132,6 +132,17 @@ export function buildRim(style: RimStyle, r: number, mat: THREE.Material): THREE
   } else if (style === 'multi') {
     spoke(10, r * 0.07);
     spoke(10, r * 0.07, Math.PI / 10 + 0.06);
+  } else if (style === 'mesh') {
+    spoke(12, r * 0.055, 0.16);
+    spoke(12, r * 0.055, -0.16);
+  } else if (style === 'turbine') {
+    for (let i = 0; i < 12; i++) {
+      const blade = new THREE.BoxGeometry(faceDepth, r * 0.72, r * 0.16);
+      blade.rotateX(0.32); blade.translate(0, r * 0.53, 0);
+      blade.rotateX(i * Math.PI / 6); parts.push(blade);
+    }
+  } else if (style === 'split6') {
+    spoke(6, r * 0.08, 0.1); spoke(6, r * 0.08, -0.1);
   } else if (style === 'dish') {
     const disc = new THREE.CylinderGeometry(r * 0.9, r * 0.9, faceDepth * 0.6, 40);
     disc.rotateZ(Math.PI / 2);
@@ -146,7 +157,9 @@ export function buildRim(style: RimStyle, r: number, mat: THREE.Material): THREE
     }
   }
 
-  const merged = mergeGeometries(parts.map((p) => p.toNonIndexed()), false);
+  const flat = parts.map((p) => p.toNonIndexed());
+  const merged = mergeGeometries(flat, false);
+  flat.forEach((p) => p.dispose());
   parts.forEach((p) => p.dispose());
   if (merged) {
     merged.computeVertexNormals();

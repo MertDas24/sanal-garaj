@@ -27,7 +27,27 @@ da destekler (“3D model bekleniyor” olarak işaretlenir, düzenleyicide aç�
 - **3D düzenleyici:** döndürme, yakınlaştırma, kamerayı sıfırlama; yükleme ilerlemesi ve hata/yeniden deneme.
 - **Boya:** hazır renkler + özel renk, parlak/mat/metalik yüzey. Boya yalnızca gövde malzemesine uygulanır;
   cam, lastik, far vb. etkilenmez (her modelde görsel olarak doğrulandı).
-- **Jantlar:** jant rengi ve 3 jant tasarımı (5 kollu, çok kollu, çanak) — jantı ayrı malzeme olan modellerde.
+- **Jantlar:** jant rengi, yüzeyi ve tasarımı — jantı ayrı malzeme olan modellerde.
+- **Tasarım atölyesi:** orijinal + 6 eklenti jant tasarımı (5 kollu, çok kollu, çanak, petek, türbin, çift 6 kollu),
+  saten/krom/mat jant yüzeyi ve eklenti jant çapı (%85–115; lastik içine sığacak şekilde sınırlanır).
+- **Tekerlek duruşu:** uygun dört tekerlek bulunan modellerde genişlik (%90–115), dışa açılma (0–25 mm), ön/arka
+  kamber (−8°–0°). Merkezler lastik geometrisinden ölçülür; tekerlek ve eklenti jant aynı dönüşümü izler.
+- **Kaplama:** tek/çift yarış şeridi, kaput/tavan kaplama ve özel kaplama rengi. Geometri yalnızca `CG_paint`
+  yüzeylerine projekte edilir; cam/trim kaplanmaz. Uygun yüzey bulunmayan seçenekler gerekçesiyle kapalıdır.
+- **Aero ve ışık:** eklenti kanatta Spor/GT/alçak tasarım, splitter uzantısı (%80–150), özel renkli LED alt
+  aydınlatma. Işık izlemede LED şeritleri ışık yayan geometri olarak hesaplanır.
+- **Çalışma akışı:** 50 adım geri al/ileri al (Ctrl/Cmd+Z, Shift+Z veya Ctrl/Cmd+Y), modifikasyon listesi ve TXT
+  indirme, sürümlü JSON tasarım dosyası dışa/içe aktarma (128 KB sınırı; yalnızca cihazda işlenir).
+  Kaydedilen tasarımlar seçilen HDRI ortamını da geri açar. Yedi hazır paket fabrika ayarlarından başlar.
+- **Motor ve aktarma parça planı:** 45 kategoride motor değişimi, ECU, piston/biyel/krank/eksantrik/supap,
+  turbo/kompresör, emme/intercooler/basınç kontrolü, yakıt/ateşleme/nitro, egzoz, soğutma/yağlama,
+  şanzıman/debriyaj/diferansiyel/şaft ve elektrikli dönüşüm seçenekleri. Seçimler geri al, kayıt, paylaşım,
+  JSON ve modifikasyon listesinde korunur. Elektrikli planda içten yanmalı parçalar kapatılır.
+  Bu bölüm yapılandırma planıdır; motor içi 3D modeli, güç/tork kazancı veya araç uyumluluğu hesaplamaz.
+- **Siteyi paylaş:** katalog ve Hakkında sayfasındaki düğme kalıcı, halka açık GitHub Pages bağlantısını
+  kopyalar veya cihazın paylaşım menüsünü açar. Kullanıcı hesabı ve ücretli hizmet gerekmez.
+- **Kamera:** altı kamera seçeneği etkileşimli ve fotogerçekçi modda kullanılabilir. 3D görünüme odaklanınca
+  ok tuşları döndürür, +/− yakınlaştırır, Home sıfırlar. Renk/jant seçimlerinde ok tuşları ve Home/End desteklenir.
 - **Sürüş yüksekliği:** −40 mm … +40 mm — tekerlekleri ayrı parça olan modellerde.
 - **Aero parçalar:** arka kanat spoiler ve ön lip (uygulamanın ürettiği genel parçalar; yerleşimi her modelde
   gövdeye ışın atılarak bulunur ve görsel olarak doğrulandı). Chevrolet Camaro’nun kendi spoileri açılıp kapatılabilir.
@@ -160,6 +180,21 @@ Pages üzerinde tutulur. Git LFS veya ücretli CDN gerekmez. Ham kaynak dosyalar
 
 ## Bilinen sınırlamalar
 
+- Proje görsel kişiselleştirme ve parça planlama aracıdır. Motor/aktarma seçenekleri plan olarak saklanır;
+  motor içi 3D görünüm, sürüş fiziği, iç mekân kitleri, egzoz/far geometrisi değişimi
+  ve araca özel geniş gövde/tampon/yan etek/difüzör parçaları henüz uygulanmaz; gerekçeleri arayüzde görünür.
+  Bunlar için ayrı hazırlanmış, lisansı doğrulanmış parça geometrisi ve/veya fizik/uyumluluk verisi gerekir.
+- Kamber ve dışa açılma mekanik uygunluk ya da çamurluk çakışmasını hesaplamaz. Kaput/tavan kaplaması yaklaşık
+  geometrik bölgeyi kullanır; modeldeki bütün panel sınırları semantik olarak tanımlı değildir.
+- Prius ve Passat dahil güvenilir olmayan tekerlek ölçümlerinde eklenti jant tasarımı ve duruş ayarları kapanır;
+  desteklenen jant rengi korunur. Aynı dosyadaki dokulu dekor (ör. Hudson) boya/kaplama altında korunabilir.
 - Fotoğrafta otomatik seçim deneyseldir: aracı bulur ve baskın boya rengini seçer; ön/arka uçlarda eksik kalan
   bölgeler fırçayla tamamlanabilir. Çok renkli (ör. iki tonlu) araçlarda yalnızca baskın renk seçilir.
-- Tasarımlar yalnızca o tarayıcıda saklanır; cihazlar arası eşitleme yoktur (paylaşım bağlantısı kullanılabilir).
+- Tasarımlar yalnızca o tarayıcıda saklanır; cihazlar arası eşitleme yoktur (paylaşım bağlantısı ve JSON dosyası kullanılabilir).
+
+### Windows üzerinde uçtan uca test
+
+Playwright'ın istediği Chromium sürümü kurulu değilse PowerShell'de `$env:PW_CHANNEL='chrome'; npm run e2e`
+ile yerel Chrome kullanılabilir. Derleme `pree2e` aşamasında yapılır, önizleme sunucusu doğrudan Vite ile açılır.
+Kısıtlı bir ortamda test sunucusunun kapanışı takılırsa `npm run build` sonrasında ayrı terminalde
+`node node_modules/vite/bin/vite.js preview --port 4173 --strictPort` çalıştırın; testler mevcut sunucuyu kullanır.

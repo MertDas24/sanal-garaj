@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { CATALOG, CATEGORY_LABELS, type Category } from '../data/catalog';
 import { findModel, thumbUrl } from '../data/models';
 import { editorHash } from '../lib/router';
+import { ProjectShare } from '../components/ProjectShare';
 
 const ALL = 'all' as const;
 
@@ -36,6 +37,11 @@ export function CatalogPage() {
           {available < CATALOG.length && ' Diğerleri uygun model bulunana kadar düzenlenemez.'}{' '}
           <a href="#/kaynaklar">Model kaynakları ve lisanslar</a>
         </p>
+      </div>
+
+      <div className="garage-intro" aria-label="Garajda neler yapabilirsiniz">
+        <div><span className="eyebrow">SENİN ARACIN. SENİN İMZAN.</span><h2>Fabrika çıkışından kendi tasarımına.</h2><p className="muted">Boya ve kaplama, jant ve duruş, aero parçalar, LED ışık; motor ve aktarma parça planı. Tasarla, karşılaştır, dosya olarak sakla ve paylaş.</p></div>
+        <div className="row"><a className="btn btn--primary" href="#/arac/toyota-ae86?p=f2f2f0&rs=split6&w=double&wc=%23b3121b&s=1&ss=gt&l=1&pc=c&h=-20&cf=-2&cr=-1.5">Örnek tasarımı keşfet</a><ProjectShare /></div>
       </div>
 
       <div className="filters" role="search">

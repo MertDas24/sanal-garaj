@@ -7,6 +7,12 @@ async function waitForModel(page: Page) {
 }
 
 test.describe('Katalog', () => {
+  test('siteyi paylaş düğmesi kalıcı halka açık bağlantıyı kopyalar', async ({ page }) => {
+    await page.goto('/');
+    await page.getByRole('button', { name: 'Siteyi paylaş', exact: true }).click();
+    await expect(page.getByText('Sitenin bağlantısı panoya kopyalandı.')).toBeVisible();
+    expect(await page.evaluate(() => navigator.clipboard.readText())).toBe('https://mertdas24.github.io/sanal-garaj/');
+  });
   test('en az 25 araç, gerçek model sayısı ve arama/filtre', async ({ page }) => {
     await page.goto('/');
     await expect(page.getByRole('heading', { level: 1 })).toContainText('Aracını seç');
@@ -74,7 +80,7 @@ test.describe('Düzenleyici', () => {
     await waitForModel(page);
     await expect(page.getByText('jantlar ayrı ve tutarlı bir malzeme olarak ayrılamadı')).toBeVisible();
     await expect(page.getByText('yükseklik ayarlanamaz')).toBeVisible();
-    await expect(page.getByRole('radio', { name: '5 kollu' })).toHaveCount(0);
+    await expect(page.getByRole('radio', { name: '5 kollu', exact: true })).toBeDisabled();
   });
 
   test('paylaşım bağlantısındaki geçersiz değerler güvenli sınırlarla uygulanır', async ({ page }) => {
@@ -142,7 +148,7 @@ test.describe('Düzenleyici', () => {
   test('fotogerçekçi görüntü: ışık izleme başlar, ilerler ve kapatılabilir', async ({ page }) => {
     // Ekran kartı olmayan CI ortamında (yazılımsal WebGL) gölgelendirici derlemesi dakikalar sürebilir
     test.setTimeout(240_000);
-    await page.goto('/#/arac/bmw-m3-e30');
+    await page.goto('/#/arac/bmw-m3-e30?w=double&ug=true&cf=-2');
     await waitForModel(page);
     await page.getByRole('button', { name: 'Fotogerçekçi görüntü' }).click();
     await expect(page.locator('.pt-host--on canvas')).toBeVisible();
@@ -293,5 +299,127 @@ test.describe('Mobil', () => {
     await waitForModel(page);
     await page.getByRole('radiogroup', { name: 'Gövde rengi' }).getByRole('radio', { name: 'Turuncu' }).tap();
     await expect(page).toHaveURL(/p=e8650f/);
+  });
+});
+
+test.describe('Tasarım atölyesi', () => {
+  test('motor planı seçimleri paylaşım, kayıt ve geri al içinde korunur', async ({ page }) => {
+    test.setTimeout(120_000);
+    await page.goto('/#/arac/toyota-ae86'); await waitForModel(page);
+    await page.getByRole('combobox', { name: 'Motor değişimi', exact: true }).selectOption('v8');
+    await page.getByRole('combobox', { name: 'ECU / motor yönetimi', exact: true }).selectOption('standalone');
+    await page.locator('.powertrain-group summary').filter({ hasText: 'Hava ve aşırı besleme' }).click();
+    await page.getByRole('combobox', { name: 'Turbo / kompresör', exact: true }).selectOption('twin');
+    await page.getByRole('button', { name: 'Geri al', exact: true }).click();
+    await expect(page.getByRole('combobox', { name: 'Turbo / kompresör', exact: true })).toHaveValue('stock');
+    await page.getByRole('button', { name: 'İleri al', exact: true }).click();
+    const link = page.url(); expect(link).toContain('engine=');
+    await page.reload(); await waitForModel(page);
+    await expect(page.getByRole('combobox', { name: 'Motor değişimi', exact: true })).toHaveValue('v8');
+    await expect(page.getByRole('combobox', { name: 'Turbo / kompresör', exact: true })).toHaveValue('twin');
+    await page.getByRole('button', { name: 'Kaydet', exact: true }).click();
+    await expect(page.getByText('Tasarım bu cihaza kaydedildi.')).toBeVisible();
+    await page.goto('/#/tasarimlarim'); await page.getByRole('link', { name: 'Aç', exact: true }).first().click(); await waitForModel(page);
+    await expect(page.getByRole('combobox', { name: 'ECU / motor yönetimi', exact: true })).toHaveValue('standalone');
+    await expect(page.getByRole('combobox', { name: 'Turbo / kompresör', exact: true })).toHaveValue('twin');
+    await page.getByRole('combobox', { name: 'Motor değişimi', exact: true }).selectOption('electric');
+    await page.locator('.powertrain-group summary').filter({ hasText: 'Elektrikli dönüşüm' }).click();
+    await page.getByRole('combobox', { name: 'Elektrik motoru', exact: true }).selectOption('dual');
+    await expect(page.getByRole('combobox', { name: 'ECU / motor yönetimi', exact: true })).toBeDisabled();
+    await page.getByRole('button', { name: 'Motor planını sıfırla', exact: true }).click();
+    await expect(page.getByRole('combobox', { name: 'Motor değişimi', exact: true })).toHaveValue('stock');
+    expect(page.url()).not.toContain('engine=');
+  });
+  test('yeni modifikasyonlar, klavye ve geri al/ileri al paylaşımda korunur', async ({ page }) => {
+    test.setTimeout(120_000);
+    await page.goto('/#/arac/toyota-ae86');
+    await waitForModel(page);
+    const wrap = page.getByRole('radiogroup', { name: 'Kaplama tasarımı' });
+    await page.getByRole('combobox', { name: 'Kamera açısı', exact: true }).selectOption('side');
+    const view = page.getByRole('img', { name: /Aracın etkileşimli 3D görünümü/ });
+    await view.focus(); await page.keyboard.press('ArrowRight'); await page.keyboard.press('+'); await page.keyboard.press('Home');
+    await wrap.getByRole('radio', { name: 'Tek şerit', exact: true }).focus();
+    await page.keyboard.press('ArrowRight');
+    await expect(wrap.getByRole('radio', { name: 'Çift şerit', exact: true })).toHaveAttribute('aria-checked', 'true');
+    await page.getByRole('radiogroup', { name: 'Jant modeli' }).getByRole('radio', { name: 'Petek', exact: true }).click();
+    await page.getByRole('radiogroup', { name: 'Jant yüzeyi' }).getByRole('radio', { name: 'Krom', exact: true }).click();
+    await page.getByLabel('Ön kamber', { exact: true }).fill('-3');
+    await page.getByLabel('Dışa açılma', { exact: true }).fill('15');
+    await page.getByText('LED alt aydınlatma', { exact: true }).click();
+    await expect(page).toHaveURL(/ug=true/);
+    await page.getByRole('button', { name: 'Geri al', exact: true }).click();
+    await expect(page.getByRole('switch', { name: 'LED alt aydınlatma' })).not.toBeChecked();
+    await page.getByRole('button', { name: 'İleri al', exact: true }).click();
+    await expect(page.getByRole('switch', { name: 'LED alt aydınlatma' })).toBeChecked();
+    const url = page.url();
+    for (const code of ['w=double', 'rs=mesh', 'rf=chrome', 'cf=-3', 'of=15', 'ug=true']) expect(url).toContain(code);
+    await page.reload(); await waitForModel(page);
+    await expect(page.getByLabel('Ön kamber', { exact: true })).toHaveValue('-3');
+    await expect(page.getByRole('radio', { name: 'Petek', exact: true })).toHaveAttribute('aria-checked', 'true');
+    await page.getByRole('button', { name: 'Tüm değişiklikleri sıfırla' }).click();
+    await expect(page.getByLabel('Ön kamber', { exact: true })).toHaveValue('0');
+    await expect(page.getByRole('switch', { name: 'LED alt aydınlatma' })).not.toBeChecked();
+  });
+
+  test('tasarım JSON dosyası ve kayıt ortamı aynı görünümü geri açar', async ({ page }) => {
+    await page.goto('/#/arac/toyota-ae86?p=1d4fb8&w=double&cf=-2&ug=true&env=sunset');
+    await waitForModel(page);
+    const [download] = await Promise.all([
+      page.waitForEvent('download'), page.getByRole('button', { name: 'Tasarım dosyasını indir', exact: true }).click(),
+    ]);
+    const buffer = fs.readFileSync((await download.path())!);
+    expect(JSON.parse(buffer.toString())).toMatchObject({ format: 'sanal-garaj', version: 1, vehicleId: 'toyota-ae86', environment: 'sunset', design: { wrap: 'double', frontCamber: -2, underglow: true } });
+    await page.getByRole('button', { name: 'Tüm değişiklikleri sıfırla' }).click();
+    await page.getByLabel('Tasarım dosyası', { exact: true }).setInputFiles({ name: 'tasarim.json', mimeType: 'application/json', buffer });
+    await expect(page).toHaveURL(/cf=-2/); await waitForModel(page);
+    await expect(page.getByLabel('Ön kamber', { exact: true })).toHaveValue('-2');
+    await expect(page.getByRole('combobox', { name: 'Ortam ışığı', exact: true })).toHaveValue('sunset');
+    await page.getByRole('button', { name: 'Kaydet', exact: true }).click();
+    await expect(page.getByText('Tasarım bu cihaza kaydedildi.')).toBeVisible();
+    await page.goto('/#/tasarimlarim');
+    await page.getByRole('link', { name: 'Aç', exact: true }).first().click(); await waitForModel(page);
+    await expect(page.getByRole('combobox', { name: 'Ortam ışığı', exact: true })).toHaveValue('sunset');
+    await expect(page.getByLabel('Ön kamber', { exact: true })).toHaveValue('-2');
+  });
+
+  test('bozuk tasarım dosyası açık hata verir ve tasarımı değiştirmez', async ({ page }) => {
+    await page.goto('/#/arac/toyota-ae86?p=1d4fb8'); await waitForModel(page);
+    await page.getByLabel('Tasarım dosyası', { exact: true }).setInputFiles({ name: 'bozuk.json', mimeType: 'application/json', buffer: Buffer.from('{bozuk') });
+    await expect(page.getByRole('alert')).toContainText('geçerli JSON');
+    await expect(page).toHaveURL(/p=1d4fb8/);
+  });
+
+  test('model 404 hatasından sonra yeniden deneme modeli gerçekten indirir', async ({ page }) => {
+    let attempts = 0;
+    await page.route('**/models/volkswagen-passat-b55.glb', async (route) => {
+      attempts++;
+      if (attempts === 1) await route.fulfill({ status: 404, body: 'Not found' }); else await route.continue();
+    });
+    await page.goto('/#/arac/volkswagen-passat-b55');
+    await expect(page.getByRole('alert')).toContainText('3D model yüklenemedi');
+    await page.getByRole('button', { name: 'Tekrar dene' }).click();
+    await waitForModel(page); expect(attempts).toBe(2);
+  });
+
+  test('yalnızca WebGL 1 olan cihazda düzenleyici destek mesajı verir', async ({ page }) => {
+    await page.addInitScript(() => {
+      const original = HTMLCanvasElement.prototype.getContext;
+      HTMLCanvasElement.prototype.getContext = function (type: string, ...args: unknown[]) {
+        if (type === 'webgl2') return null;
+        return (original as (...a: unknown[]) => unknown).call(this, type, ...args);
+      } as typeof original;
+    });
+    await page.goto('/#/arac/toyota-ae86');
+    await expect(page.getByRole('alert')).toContainText('WebGL 2');
+    await expect(page.locator('.viewer canvas')).toHaveCount(0);
+  });
+
+  test('mobil atölyede yeni kontroller kullanılabilir ve taşma yok @mobil', async ({ page }) => {
+    await page.goto('/#/arac/toyota-ae86'); await waitForModel(page);
+    await page.getByRole('radio', { name: 'Çift şerit', exact: true }).tap();
+    await page.getByLabel('Ön kamber', { exact: true }).fill('-2');
+    await page.getByRole('button', { name: 'Geri al', exact: true }).tap();
+    await expect(page.getByLabel('Ön kamber', { exact: true })).toHaveValue('0');
+    expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(0);
   });
 });

@@ -11,6 +11,7 @@
     "models": "node scripts/build-models.mjs",
     "test": "vitest run",
     "e2e": "playwright test",
+    "pree2e": "npm run build",
     "predev": "node scripts/copy-ml.mjs",
     "prebuild": "node scripts/copy-ml.mjs"
   },

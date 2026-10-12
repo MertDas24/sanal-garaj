@@ -24,11 +24,12 @@ export function SceneControls(p: Props) {
         </select>
       </label>
       <label className="field">
-        <span className="field-label">Fotoğraf açısı (fotogerçekçi mod)</span>
+        <span className="field-label">Kamera açısı</span>
         <select value={p.shot} onChange={(e) => p.onShot(e.target.value as ShotId)}>
           {SHOTS.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
         </select>
       </label>
+      <p className="muted small">3D görünümü klavyeyle de kullanabilirsiniz: ok tuşlarıyla döndürün, +/− ile yakınlaşın, Home ile sıfırlayın.</p>
       <div className="segmented-wrap">
         <span className="field-label">Kalite</span>
         <div className="segmented" role="radiogroup" aria-label="Fotogerçekçi kalite">

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useProgress } from '@react-three/drei';
+import { useGLTF, useProgress } from '@react-three/drei';
 import { findVehicle } from '../data/catalog';
 import { findModel, LICENSE_LABELS, modelUrl, type ModelFeatures } from '../data/models';
 import {
@@ -16,6 +16,8 @@ import { SceneControls } from '../components/SceneControls';
 import { EditorPanel } from '../components/EditorPanel';
 import { NoWebGL } from '../components/NoWebGL';
 import { useToast } from '../components/useToast';
+import { useDesignHistory } from '../lib/useDesignHistory';
+import { DesignWorkbench } from '../components/DesignWorkbench';
 
 
 function withEnv(q: URLSearchParams, env: EnvId): URLSearchParams {
@@ -57,7 +59,7 @@ function Editor({ vehicleId, title, year, note, modelId, query }: {
   const viewer = useRef<ViewerHandle>(null);
   const [initialQuery] = useState(query);
   const [base, setBase] = useState<Design | null>(null);
-  const [design, setDesign] = useState<Design | null>(null);
+  const { design, setDesign, reset: resetHistory, undo, redo, canUndo, canRedo } = useDesignHistory();
   const [features, setFeatures] = useState<ModelFeatures>(model.features);
   const [error, setError] = useState<string | null>(null);
   const [comparing, setComparing] = useState(false);
@@ -73,6 +75,11 @@ function Editor({ vehicleId, title, year, note, modelId, query }: {
   const [denoise, setDenoise] = useState(true);
   const PT_SAMPLES = PT_QUALITY[quality].samples;
   const env = findEnv(envId);
+  const modelReady = !!design;
+  useEffect(() => {
+    if (modelReady && !photoreal) viewer.current?.setShot(shot);
+    // Tasarım değişikliklerinde kullanıcının serbest kamerayı kaybetmemesi için yalnızca hazır olma durumu izlenir.
+  }, [shot, photoreal, modelReady]);
 
   // Fotogerçekçi mod: ayrı bir WebGL bağlamında ışık izleme; tasarım değişince baştan hesaplanır
   useEffect(() => {
@@ -83,17 +90,21 @@ function Editor({ vehicleId, title, year, note, modelId, query }: {
       const host = ptHost.current;
       if (!snap || !host) return;
       setPtProgress({ samples: 0, done: false });
-      const session = startPathTrace({
-        ...snap,
-        maxSamples: PT_SAMPLES,
-        env,
-        shot,
-        denoise,
-        onProgress: (samples, done) => setPtProgress({ samples, done }),
-        onError: () => { setPhotoreal(false); show('Fotogerçekçi görüntü başlatılamadı.', 'error'); },
-      });
-      host.appendChild(session.canvas);
-      ptSession.current = session;
+      try {
+        const session = startPathTrace({
+          ...snap,
+          maxSamples: PT_SAMPLES,
+          env,
+          shot,
+          denoise,
+          onProgress: (samples, done) => setPtProgress({ samples, done }),
+          onError: () => { setPhotoreal(false); show('Fotogerçekçi görüntü başlatılamadı.', 'error'); },
+        });
+        host.appendChild(session.canvas);
+        ptSession.current = session;
+      } catch {
+        setPhotoreal(false); show('Fotogerçekçi görüntü başlatılamadı.', 'error');
+      }
     });
     return () => {
       cancelAnimationFrame(id);
@@ -111,13 +122,24 @@ function Editor({ vehicleId, title, year, note, modelId, query }: {
     if (import.meta.env.DEV) (window as unknown as { __features?: ModelFeatures }).__features = info.features;
     setFeatures(info.features);
     setBase(b);
-    setDesign(sanitizeDesign(decodeDesign(initialQuery), b, info.features));
-  }, [initialQuery]);
+    resetHistory(sanitizeDesign(decodeDesign(initialQuery), b, info.features));
+  }, [initialQuery, resetHistory]);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (target?.isContentEditable || target?.matches('textarea, input:not([type="range"]):not([type="color"])')) return;
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); if (e.shiftKey) redo(); else undo(); }
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y') { e.preventDefault(); redo(); }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [undo, redo]);
 
   const onError = useCallback((e: Error) => {
     console.error(e);
     setError('3D model yüklenemedi. İnternet bağlantınızı kontrol edip tekrar deneyin.');
-  }, []);
+  }, [setError]);
 
   // Adres çubuğu her zaman paylaşılabilir güncel tasarımı gösterir
   useEffect(() => {
@@ -167,7 +189,7 @@ function Editor({ vehicleId, title, year, note, modelId, query }: {
     const data = viewer.current?.capture();
     const thumb = data ? await makeThumb(data) : null;
     const date = new Date().toLocaleDateString('tr-TR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
-    const r = saveDesign({ vehicleId, name: `${title} · ${date}`, design, thumb });
+    const r = saveDesign({ vehicleId, name: `${title} · ${date}`, design, thumb, environment: envId });
     if (r.ok) show('Tasarım bu cihaza kaydedildi.', 'ok', { href: '#/tasarimlarim', label: 'Tasarımlarım' });
     else show(r.reason === 'full' ? 'Kayıt sınırına ulaşıldı (30). Eski tasarımlardan silin.' : 'Tarayıcı depolaması kullanılamıyor (gizli mod olabilir).', 'error');
   };
@@ -212,7 +234,7 @@ function Editor({ vehicleId, title, year, note, modelId, query }: {
             <div className="viewer__overlay" role="alert">
               <div className="loader">
                 <p>{error}</p>
-                <button className="btn btn--primary" onClick={() => { setError(null); setRetry((n) => n + 1); }}>Tekrar dene</button>
+                <button className="btn btn--primary" onClick={() => { useGLTF.clear(modelUrl(model)); setError(null); setRetry((n) => n + 1); }}>Tekrar dene</button>
               </div>
             </div>
           )}
@@ -269,7 +291,8 @@ function Editor({ vehicleId, title, year, note, modelId, query }: {
       <aside className="editor__panel" aria-label="Düzenleme paneli">
         {ready ? (
           <>
-            <EditorPanel design={design!} base={base!} features={features} notes={model.notes} onChange={setDesign} />
+            <DesignWorkbench design={design!} base={base!} vehicleId={vehicleId} title={title} environment={envId} undo={undo} redo={redo} canUndo={canUndo} canRedo={canRedo} />
+            <EditorPanel design={design!} base={base!} features={features} notes={model.notes} onChange={(d) => setDesign(sanitizeDesign(d, base!, features))} />
             <SceneControls
               env={envId} onEnv={setEnvId}
               shot={shot} onShot={setShot}

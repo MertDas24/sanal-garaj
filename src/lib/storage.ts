@@ -1,4 +1,5 @@
-import type { Design } from './design';
+import { defaultDesign, sanitizeDesign, type Design } from './design';
+import { findEnv, type EnvId } from '../three/scenes';
 
 // Tasarımlar yalnızca bu cihazdaki tarayıcı depolamasında tutulur (hesap/sunucu yok).
 // Depolama kapalı veya dolu olabilir; tüm erişimler hata yakalar.
@@ -11,6 +12,7 @@ export interface SavedDesign {
   design: Design;
   /** Küçük JPEG önizleme (data URL) */
   thumb: string | null;
+  environment?: EnvId;
 }
 
 const KEY = 'sanal-garaj:tasarimlar:v1';
@@ -32,6 +34,14 @@ export function loadSaved(): SavedDesign[] {
         !!s.design && typeof s.design === 'object' && typeof s.design.paint === 'string' && /^#[0-9a-f]{6}$/i.test(s.design.paint),
     ).map((s) => ({
       ...s,
+      environment: findEnv(s.environment).id,
+      // Bağlantı üretilmeden önce eksik/eski alanları tamamla ve bozuk değerleri temizle.
+      // Modelin gerçek desteği düzenleyicide ayrıca kontrol edilir.
+      design: sanitizeDesign(s.design, defaultDesign(s.design.paint.toLowerCase(), false), {
+        paint: true, rimColor: true, rimStyle: true, rideHeight: true,
+        spoiler: 'addon', frontLip: 'addon', windowTint: true, caliperColor: true,
+        stance: true, wrap: true, underglow: true,
+      }),
       // Önizleme yalnızca kendi ürettiğimiz JPEG veri adresi olabilir
       thumb: typeof s.thumb === 'string' && /^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/.test(s.thumb) ? s.thumb : null,
     }));

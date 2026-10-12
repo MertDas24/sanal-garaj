@@ -6,9 +6,11 @@ import * as THREE from 'three';
 import type { ModelFeatures } from '../data/models';
 import type { Design } from '../lib/design';
 import { createCarRuntime, type CarRuntime } from './carRuntime';
+import { SHOTS, type ShotId } from './scenes';
 
 export interface ViewerHandle {
   resetCamera(): void;
+  setShot(shot: ShotId): void;
   /** Mevcut kamera açısından PNG veri adresi */
   capture(): string | null;
   /** Işık izleme için aracın o anki nesnesi, kamera ve görüntü boyutu */
@@ -45,8 +47,29 @@ export const CarViewer = forwardRef<ViewerHandle, ViewerProps>(function CarViewe
 
   useImperativeHandle(ref, () => ({
     resetCamera() {
+      controlsRef.current?.dispatchEvent({ type: 'start', target: controlsRef.current });
       controlsRef.current?.reset();
+      if (stateRef.current) {
+        const camera = stateRef.current.camera as THREE.PerspectiveCamera;
+        camera.fov = 35; camera.updateProjectionMatrix();
+      }
       invalidateRef.current();
+    },
+    setShot(shot) {
+      const st = stateRef.current, controls = controlsRef.current;
+      const car = st?.scene.getObjectByName('car');
+      const preset = SHOTS.find((s) => s.id === shot);
+      if (!st || !controls || !car || !preset || shot === 'free') return;
+      const camera = st.camera as THREE.PerspectiveCamera;
+      const size = new THREE.Box3().setFromObject(car).getSize(new THREE.Vector3());
+      const len = Math.max(size.x, size.z);
+      const target = new THREE.Vector3(0, size.y * 0.42, 0);
+      const distance = len * preset.dist * 32 / preset.fov / Math.min(1, camera.aspect / 1.4);
+      const az = THREE.MathUtils.degToRad(preset.az), el = THREE.MathUtils.degToRad(preset.el);
+      controls.dispatchEvent({ type: 'start', target: controls });
+      controls.target.copy(target); camera.fov = preset.fov;
+      camera.position.set(Math.sin(az) * Math.cos(el) * distance, target.y + Math.sin(el) * distance, Math.cos(az) * Math.cos(el) * distance);
+      camera.lookAt(target); camera.updateProjectionMatrix(); controls.update(); invalidateRef.current();
     },
     snapshot() {
       const st = stateRef.current;
@@ -80,6 +103,27 @@ export const CarViewer = forwardRef<ViewerHandle, ViewerProps>(function CarViewe
       }}
       aria-label="Aracın etkileşimli 3D görünümü. Sürükleyerek döndürün, tekerlek veya iki parmakla yakınlaştırın."
       role="img"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        const st = stateRef.current, controls = controlsRef.current;
+        if (!st || !controls || !['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', '+', '-', '=', 'Home'].includes(e.key)) return;
+        e.preventDefault(); controls.dispatchEvent({ type: 'start', target: controls });
+        if (e.key === 'Home') {
+          controls.reset(); const camera = st.camera as THREE.PerspectiveCamera;
+          camera.fov = 35; camera.updateProjectionMatrix(); invalidateRef.current(); return;
+        }
+        const spherical = new THREE.Spherical().setFromVector3(st.camera.position.clone().sub(controls.target));
+        if (e.key === 'ArrowLeft') spherical.theta -= 0.12;
+        if (e.key === 'ArrowRight') spherical.theta += 0.12;
+        if (e.key === 'ArrowUp') spherical.phi -= 0.08;
+        if (e.key === 'ArrowDown') spherical.phi += 0.08;
+        if (e.key === '+' || e.key === '=') spherical.radius *= 0.9;
+        if (e.key === '-') spherical.radius *= 1.1;
+        spherical.phi = THREE.MathUtils.clamp(spherical.phi, controls.minPolarAngle, controls.maxPolarAngle);
+        spherical.radius = THREE.MathUtils.clamp(spherical.radius, controls.minDistance, controls.maxDistance);
+        st.camera.position.setFromSpherical(spherical).add(controls.target);
+        controls.update(); invalidateRef.current();
+      }}
     >
       <color attach="background" args={['#101216']} />
       <fog attach="fog" args={['#101216', 14, 30]} />

@@ -27,6 +27,12 @@ describe('sanitizeDesign', () => {
     const d = sanitizeDesign({ paint: 'kırmızı', finish: 'chrome', rimStyle: '<script>', partColor: 'gold' }, base, ALL);
     expect(d).toEqual(base);
   });
+  it('yükseklik için nesne, boolean ve null değerlerini dönüştürmez', () => {
+    const raised = { ...base, heightMm: 20 };
+    for (const heightMm of [null, true, [], {}, { toString: null, valueOf: null }]) {
+      expect(sanitizeDesign({ heightMm }, raised, ALL).heightMm).toBe(20);
+    }
+  });
   it('modelin desteklemediği seçenekleri kapatır', () => {
     const d = sanitizeDesign({ rimColor: 'ff0000', rimStyle: 'dish', heightMm: 30, spoiler: true, lip: true, tint: 'dark', caliper: 'ff0000' }, base, NONE);
     expect(d.tint).toBe('stock');

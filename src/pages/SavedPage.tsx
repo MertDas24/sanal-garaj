@@ -3,9 +3,14 @@ import { findVehicle } from '../data/catalog';
 import { encodeDesignFull } from '../lib/design';
 import { editorHash } from '../lib/router';
 import { deleteSaved, loadSaved, renameSaved, type SavedDesign } from '../lib/storage';
+import { findEnv } from '../three/scenes';
 
 // Düzenleyici açılınca ayarlar modelin desteklediği seçeneklere göre yeniden doğrulanır.
-const openHash = (s: SavedDesign) => editorHash(s.vehicleId, encodeDesignFull(s.design));
+const openHash = (s: SavedDesign) => {
+  const q = encodeDesignFull(s.design);
+  q.set('env', findEnv(s.environment).id);
+  return editorHash(s.vehicleId, q);
+};
 
 export function SavedPage() {
   const [items, setItems] = useState(loadSaved);
