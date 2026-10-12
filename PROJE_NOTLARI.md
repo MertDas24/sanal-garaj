@@ -509,3 +509,18 @@ Katkı: Codex.
 
 ### Sonraki adımlar
 - Başarılı yayın ve canlı kontrol sonucunu yeni tarihli kayda ekleyin. Üç araç kitinin kapsamı, diğer motor verileri ve fiziksel cihaz ölçümleri için önceki kayıttaki Claude karar alanları geçerlidir.
+## 2026-10-13 00:14 — Yayın ve canlı doğrulama tamamlandı
+Katkı: Codex. Mevcut ana mimari ve lisanslı model hazırlama katkısı: Claude.
+- Kod/atölye commit'i `f1c314b`; test bekleme düzeltmesi ve başarılı yayın commit'i `7d8cc2e`. https://github.com/MertDas24/sanal-garaj/actions/runs/38307574237 güvenlik/lint/tip/derleme, **41 birim testi**, **39/39 bulut E2E testi** ve GitHub Pages yayını ile başarılı tamamlandı. E2E 12,1 dakika sürdü; hiçbir test/doğrulama atlanmadı.
+- **Canlı site:** https://mertdas24.github.io/sanal-garaj/ . **Depo:** https://github.com/MertDas24/sanal-garaj . Yeni servis/abonelik/satın alma yok; yeni proje maliyeti **0 TL**.
+- Canlı tarayıcı kontrolü: **26 katalog aracı**; AE86 kitinin/kaplamasının/yazısının ve V8/ECU planının bağlantıdan açılması; paylaşım bağlantısının aynı ayarları taşıması; gerçek yeniden render ile PNG indirme; portfolyo ölçüm tablosu; **960×600 WebM demo** okunabilirliği doğrulandı. 390 px görünümde yazı/ayarlar geri açıldı; yatay taşma **yok**. Sayfa hataları ve 4xx/5xx yanıtları **0**.
+- Canlı kanıt: `lab-out/live-workshop-verification.json`, `lab-out/live-workshop-studio.png` (depoya girmez). Canlı PNG ayrıca görsel olarak incelendi. Ölçüm kaydındaki beş kaynak SHA-256 değeri commit dosyalarıyla eşleşiyor.
+- Bu sonuç kaydı yalnızca belgeyi değiştirir; `[skip ci]` ile aynı uygulamanın gereksiz yeniden yayını önlenir. Canlı uygulama sürümü `7d8cc2e` olarak kalır. Şifre/anahtar yazılmadı; dış kişilere mesaj gönderilmedi.
+
+### Devam eden iş
+- Yok. Bu oturumun yedi geliştirme başlığı ve yayın doğrulaması tamamlandı.
+
+### Sonraki adımlar / Claude'un karar alanı
+- Üç doğrulanmış kit (AE86, M3 E30, C 63 W204) dışındaki araçları tek tek görsel doğrulama ile genişletin; kit desteği tüm 26 araçta varmış gibi sunulmasın.
+- Üretici kayıtlarını ve gerçek parça/montaj verisini genişletin. Mevcut motor bölümü tutarlılık kontrolü olan parça planıdır; güç kazancı, mekanik montaj ve motor içi 3D/fizik sonucu sunulmaz.
+- Yaklaşık kaplama bölgeleri kesim/üretim şablonu değildir. Fiziksel mobil cihazlarda büyük model/kaplama ve ışık izleme performansını ayrıca ölçün. Mevcut ölçümler tek yerel oturumun süre/JS heap/kaynak adetleridir.
