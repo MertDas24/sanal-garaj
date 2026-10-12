@@ -441,5 +441,7 @@ Maliyet: 0 TL.
 ### Ücretsiz yayın, kaynaklar ve eksikler
 - Depo: https://github.com/MertDas24/sanal-garaj . Kalıcı paylaşım adresi: https://mertdas24.github.io/sanal-garaj/ . Yeni servis/hesap, ücretli barındırma, alan adı, abonelik veya model satın alma yok; **maliyet 0 TL**.
 - Kaynak modeller ve lisans kayıtları değiştirilmedi; yeni model indirilmedi. Mevcut Sketchfab CC BY 4.0 ve Poly Haven CC0 kaynakları korunuyor; bu oturumda lisanslar tekrar sorgulanmadı.
-- Yayın sonucu: yerel kontroller ve GitHub Actions tamamlandıktan sonra kaydedilecek. Anahtar/şifre bu nota yazılmadı; dış kişilere mesaj gönderilmedi.
+- **Yayın tamamlandı:** `6e5c856` commit'i main dalına gönderildi; https://github.com/MertDas24/sanal-garaj/actions/runs/38284602111 iş akışında güvenlik/lint/birim/derleme, **29/29 bulut E2E testi** ve GitHub Pages yayını başarılı. Kod yayını bu commit'e aittir. Anahtar/şifre bu nota yazılmadı; dış kişilere mesaj gönderilmedi.
+- **Canlı tarayıcı doğrulaması:** 26 katalog kartı, Siteyi paylaş ile kalıcı URL kopyalama, V8 + bağımsız ECU + çift turbo planının bağlantıdan açılması ve tekrar paylaşılması doğrulandı. Mobil 390 px görünümde aynı plan geri açıldı; yatay taşma, sayfa hatası ve 4xx/5xx yanıt sayısı **0**. Motor paneli ekran görüntüsü ayrıca incelendi. Yerel kanıtlar: `lab-out/live-verification.json`, `lab-out/live-motor.png` (depoya girmez).
+- Bu yayın sonucunu kaydeden sonraki commit yalnızca bu notu değiştirir; `[skip ci]` ile aynı kodun gereksiz yeniden yayını önlenir.
 - Claude için: gerçek motor 3D görünümü/fizik simülasyonu ve araç bazında parça uyumluluğu ayrı veri/model geliştirmesi olarak kalıyor. Seçenekler kapsamlı bir genel plan kataloğudur; tüm araçlarda fiziksel montaj uygunluğu varsayılmaz.
