@@ -1026,5 +1026,42 @@
       "wheels": 12
     },
     "notes": null
+  },
+  {
+    "id": "volkswagen-passat-b55",
+    "file": "models/volkswagen-passat-b55.glb",
+    "bytes": 423644,
+    "triangles": 32833,
+    "sourceTriangles": 32833,
+    "size": [
+      1.887,
+      1.45,
+      4.7
+    ],
+    "source": {
+      "title": "Volkswagen Passat",
+      "author": "I3D",
+      "site": "Sketchfab",
+      "url": "https://sketchfab.com/3d-models/480c0793f02b43d78b0d0c4a0eb6acb6",
+      "license": "CC-BY-4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "mirror": "https://raw.githubusercontent.com/krisAndreev/MyMiniCar/bd2763216f78d734ad7fef4f13df08993c6bde0d/src/MyMiniCar.Web/wwwroot/models/vw-passat/scene.gltf"
+    },
+    "features": {
+      "paint": true,
+      "rimColor": true,
+      "rimStyle": true,
+      "rideHeight": true,
+      "spoiler": false,
+      "frontLip": "addon"
+    },
+    "materials": {
+      "glass": true,
+      "paint": true,
+      "tire": true,
+      "rim": true,
+      "wheels": 8
+    },
+    "notes": null
   }
 ]

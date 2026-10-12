@@ -12,13 +12,13 @@ bağlantı olarak paylaşın veya PNG olarak indirin.
 
 | | |
 |---|---|
-| Katalogdaki araç | **35** (sedan, hatchback, coupe, SUV, spor, pick-up) |
-| Gerçek, lisansı doğrulanmış 3D modeli olan | **29** — 11’i yüksek detaylı (Sketchfab, CC BY 4.0), 18’i düşük poligonlu (Poly Pizza, CC BY 3.0) |
-| 3D modeli olmayan (düzenleyicide açılmaz) | 6 — Toyota Corolla Sedan (2019–), BMW 3 Serisi (G20), Mercedes-Benz C-Serisi (W206), Volkswagen Passat (B8), Fiat Egea Sedan, Volkswagen Golf (1. nesil) |
+| Katalogdaki araç | **30** (sedan, hatchback, coupe, SUV, spor, pick-up) |
+| Gerçek, lisansı doğrulanmış 3D modeli olan | **30 (tamamı)** — 12’si yüksek detaylı (Sketchfab, CC BY 4.0), 18’i düşük poligonlu (Poly Pizza, CC BY 3.0) |
+| 3D modeli olmayan | Yok — ücretsiz ve lisansı doğrulanabilir modeli bulunamayan 5 araç (Corolla 2019, BMW G20, Mercedes W206, Fiat Egea, Golf Mk1) katalogdan çıkarıldı |
 | Model boyutu | 18 KB – 4,3 MB (toplam ≈ 26 MB; yalnızca seçilen araç indirilir) |
 
-Her araç kendi modelini kullanır; aynı model başka bir araç için gösterilmez. Modeli olmayan araçlar katalogda
-“3D model bekleniyor” olarak işaretlidir. Modifikasyonlar yalnızca modelin gerçekten desteklediği yerde açıktır
+Her araç kendi modelini kullanır; aynı model başka bir araç için gösterilmez. Katalog veri yapısı modelsiz araçları
+da destekler (“3D model bekleniyor” olarak işaretlenir, düzenleyicide açılmaz); şu an böyle bir araç yok. Modifikasyonlar yalnızca modelin gerçekten desteklediği yerde açıktır
 (ör. tekerlekleri gövdeyle tek parça olan modellerde yükseklik ve jant ayarı kapalıdır ve nedeni yazılır).
 
 ## Özellikler
@@ -159,7 +159,6 @@ Pages üzerinde tutulur. Git LFS veya ücretli CDN gerekmez. Ham kaynak dosyalar
 
 - 18 araç hâlâ düşük poligonlu modelle gösterilir (görüntü iyileştirmeleriyle); yüksek detaylı CC BY karşılıkları
   bulundukça değiştirilecek (bkz. `PROJE_NOTLARI.md`).
-- 6 katalog aracının uygun modeli yoktur.
 - Fotoğrafta otomatik seçim deneyseldir: aracı bulur ve baskın boya rengini seçer; ön/arka uçlarda eksik kalan
   bölgeler fırçayla tamamlanabilir. Çok renkli (ör. iki tonlu) araçlarda yalnızca baskın renk seçilir.
 - Tasarımlar yalnızca o tarayıcıda saklanır; cihazlar arası eşitleme yoktur (paylaşım bağlantısı kullanılabilir).

@@ -108,4 +108,13 @@ export const SKETCHFAB_SOURCES = [
     materials: { paint: ['Color.002'], glass: ['Windows.002'], tire: ['Wheel0021Mtl.002', 'Wheel1Mtl'], rim: ['Rims.002'] },
     wheelQuadrants: ['Object_23', 'Object_24', 'Object_25'],
   },
+  {
+    id: 'volkswagen-passat-b55',
+    download: `${GH}krisAndreev/MyMiniCar/bd2763216f78d734ad7fef4f13df08993c6bde0d/src/MyMiniCar.Web/wwwroot/models/vw-passat/scene.gltf`,
+    source: { title: 'Volkswagen Passat', author: 'I3D', site: 'Sketchfab', url: SF('480c0793f02b43d78b0d0c4a0eb6acb6'), ...CCBY4 },
+    rotateY: 0, lengthM: 4.7,
+    materials: { paint: ['paint'], glass: ['glass'], tire: ['tyre'], rim: ['material'] },
+    wheelQuadrants: ['Object_24', 'Object_19'],
+    mods: { spoiler: false, frontLip: true },
+  },
 ];

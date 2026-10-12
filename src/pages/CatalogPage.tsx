@@ -32,7 +32,8 @@ export function CatalogPage() {
         <h1>Aracını seç, garajda kişiselleştir</h1>
         <p className="muted">
           Katalogda {CATALOG.length} araç var; bunların <strong>{available}</strong> tanesi için lisansı doğrulanmış
-          gerçek 3D model mevcut. Diğerleri uygun model bulunana kadar düzenlenemez.{' '}
+          gerçek 3D model mevcut.
+          {available < CATALOG.length && ' Diğerleri uygun model bulunana kadar düzenlenemez.'}{' '}
           <a href="#/kaynaklar">Model kaynakları ve lisanslar</a>
         </p>
       </div>
@@ -55,10 +56,12 @@ export function CatalogPage() {
             </button>
           ))}
         </div>
-        <label className="toggle">
-          <input type="checkbox" checked={onlyAvailable} onChange={(e) => setOnlyAvailable(e.target.checked)} />
-          <span>Yalnızca 3D modeli olanlar</span>
-        </label>
+        {available < CATALOG.length && (
+          <label className="toggle">
+            <input type="checkbox" checked={onlyAvailable} onChange={(e) => setOnlyAvailable(e.target.checked)} />
+            <span>Yalnızca 3D modeli olanlar</span>
+          </label>
+        )}
       </div>
 
       <p className="muted results-count" aria-live="polite">{results.length} araç listeleniyor</p>

@@ -23,15 +23,19 @@ test.describe('Katalog', () => {
     await search.fill('');
     await page.getByRole('button', { name: 'Sedan', exact: true }).click();
     await expect(page.locator('.grid > li .badge').first()).toHaveText('Sedan');
-    await page.getByLabel('Yalnızca 3D modeli olanlar').check();
-    await expect(page.locator('.card__status--missing')).toHaveCount(0);
+    // Modelsiz araç varsa filtre görünür ve onları gizler
+    const filter = page.getByLabel('Yalnızca 3D modeli olanlar');
+    if (await filter.count()) {
+      await filter.check();
+      await expect(page.locator('.card__status--missing')).toHaveCount(0);
+    }
   });
 
-  test('modeli olmayan araç düzenleyicide açılmaz', async ({ page }) => {
+  test('modelsiz kartlar bağlantı içermez; bilinmeyen araç bağlantısı anlaşılır mesaj verir', async ({ page }) => {
     await page.goto('/');
     await expect(page.locator('.card--disabled a')).toHaveCount(0);
-    await page.goto('/#/arac/bmw-3-serisi-g20');
-    await expect(page.getByText('lisansı doğrulanmış bir 3D model henüz yok')).toBeVisible();
+    await page.goto('/#/arac/olmayan-arac');
+    await expect(page.getByRole('heading', { name: 'Araç bulunamadı' })).toBeVisible();
     await expect(page.locator('canvas')).toHaveCount(0);
   });
 

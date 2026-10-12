@@ -228,3 +228,33 @@ yok). **Çıkarılanlar:** “2000 Audi A4” (açıklamada “Free REUPLOAD” 
 - Canlı sitede masaüstü ve mobil görünümde 35 katalog kartı, 29 “3D model hazır”; sayfa hatası ve 4xx/5xx yok.
   BMW M3 (E30) paylaşım bağlantısıyla (mavi, metalik) doğru açıldı. Algılama modeli, WASM ve HDRI dosyaları
   siteden sunuluyor (harici CDN yok).
+
+
+---
+
+## 2026-10-12 — 3. oturum: “3D model bekleniyor” kartlarının giderilmesi
+
+**Katkı:** Claude.
+
+**Kullanıcı isteği:** “Bazı araçlar hâlâ bekleniyor diyor, düzeltebilirsen düzelt.”
+
+### Yapılanlar
+- GitHub’da bu 6 araç için özel arama yapıldı (passat, golf, egea, tipo, g20, m340i, 330i, w206, c-class, corolla 2019/2020/e210).
+- **Volkswagen Passat:** “Volkswagen Passat” (I3D, Sketchfab, CC BY 4.0) bulundu ve eklendi. Açıklamada özgün çalışma
+  (“One of my first car models”). Model bir 2004 Passat (B5.5) olduğu için katalog kaydı **Passat (B5.5), 2001–2005**
+  olarak düzeltildi (B8 değil). Boya ve jant ayrıştırması görsel olarak doğrulandı.
+- **Reddedilen:** “VW Golf 2” (glebchik20): tek araç değil, direğe çarpmış hasarlı araçlardan oluşan kaza sahnesi.
+  “Wv Golf”: Sketchfab’da kaldırılmış (404).
+- **Katalogdan çıkarılanlar:** Toyota Corolla Sedan (2019–), BMW 3 Serisi (G20), Mercedes-Benz C-Serisi (W206),
+  Fiat Egea Sedan, Volkswagen Golf (1. nesil). Hesap gerektirmeyen, lisansı doğrulanabilir ücretsiz model yok;
+  sahte veya başka aracın modeli gösterilmez, bu yüzden “bekleniyor” kartı yerine katalogdan çıkarıldılar.
+  Uygun model bulunursa `src/data/catalog.ts` içine geri eklenebilir (veri yapısı modelsiz araçları hâlâ destekler).
+- Modelsiz araç kalmadığında “Yalnızca 3D modeli olanlar” filtresi ve ilgili metinler otomatik gizlenir.
+
+### Durum
+- Katalog **30 araç, 30’unda gerçek 3D model** (12 yüksek detaylı, 18 düşük poligonlu). Maliyet: 0 TL.
+
+### Bu araçlar için gelecekte ücretsiz seçenek
+- Kullanıcı ücretsiz bir Sketchfab hesabı açıp API anahtarını yalnızca kendi bilgisayarında `.env.local` içinde
+  tutarsa, daha önce bulunan CC BY adaylar indirilebilir: “low-poly Volkswagen Passat B8” (D_U), “Fiat Egea”
+  (SuperScriptDEV2), “2020_bmw_m340i_xdrive” (007). Her biri yine aynı kaynak/açıklama kontrolünden geçmeli.

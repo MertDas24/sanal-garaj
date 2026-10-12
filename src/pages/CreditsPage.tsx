@@ -63,6 +63,7 @@ export function CreditsPage() {
         </li>
       </ul>
 
+      {missing.length > 0 && <>
       <h2>3D modeli olmayan araçlar</h2>
       <p>
         Aşağıdaki araçlar katalogda yer alır ancak lisansı doğrulanmış, indirilebilir bir 3D model henüz bulunamadı.
@@ -71,6 +72,7 @@ export function CreditsPage() {
       <ul>
         {missing.map((v) => <li key={v.id}>{v.make} {v.model} ({v.year})</li>)}
       </ul>
+      </>}
 
       <h2>Marka uyarısı</h2>
       <p>

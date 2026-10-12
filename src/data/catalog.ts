@@ -28,10 +28,6 @@ export interface Vehicle {
 export const CATALOG: Vehicle[] = [
   { id: 'dodge-challenger-srt', make: 'Dodge', model: 'Challenger SRT', year: '2015', category: 'coupe', modelId: 'dodge-challenger-2015' },
   { id: 'delorean-dmc-12', make: 'DeLorean', model: 'DMC-12', year: '1981–1983', category: 'spor', modelId: 'delorean-dmc12' },
-  {
-    id: 'volkswagen-golf-mk1', make: 'Volkswagen', model: 'Golf (1. nesil)', year: '1974–1983', category: 'hatchback', modelId: null,
-    note: 'Bulunan açık lisanslı model aşırı stilize olduğu (gerçek oranlara uymadığı) için kullanılmadı.',
-  },
   { id: 'mini-klasik', make: 'Mini', model: 'Cooper (klasik)', year: '1959–2000', category: 'hatchback', modelId: 'mini-classic' },
   {
     id: 'rolls-royce-klasik', make: 'Rolls-Royce', model: 'Klasik coupe', year: 'Belirtilmemiş', category: 'coupe', modelId: 'rolls-royce-classic',
@@ -65,12 +61,7 @@ export const CATALOG: Vehicle[] = [
   { id: 'porsche-911-turbo-930', make: 'Porsche', model: '911 Turbo (930)', year: '1975–1989', category: 'spor', modelId: 'porsche-911-930-turbo' },
   { id: 'mercedes-300-sl-gullwing', make: 'Mercedes-Benz', model: '300 SL Gullwing (W198)', year: '1954–1957', category: 'spor', modelId: 'mercedes-300sl-gullwing' },
 
-  // Lisansı doğrulanmış uygun bir 3D model henüz bulunamayan araçlar
-  { id: 'toyota-corolla-sedan', make: 'Toyota', model: 'Corolla Sedan', year: '2019–', category: 'sedan', modelId: null },
-  { id: 'bmw-3-serisi-g20', make: 'BMW', model: '3 Serisi (G20)', year: '2019–', category: 'sedan', modelId: null },
-  { id: 'mercedes-c-serisi-w206', make: 'Mercedes-Benz', model: 'C-Serisi (W206)', year: '2021–', category: 'sedan', modelId: null },
-  { id: 'volkswagen-passat-b8', make: 'Volkswagen', model: 'Passat (B8)', year: '2015–2023', category: 'sedan', modelId: null },
-  { id: 'fiat-egea-sedan', make: 'Fiat', model: 'Egea Sedan', year: '2015–', category: 'sedan', modelId: null },
+  { id: 'volkswagen-passat-b55', make: 'Volkswagen', model: 'Passat (B5.5)', year: '2001–2005', category: 'sedan', modelId: 'volkswagen-passat-b55' },
 ];
 
 export function findVehicle(id: string): Vehicle | undefined {
