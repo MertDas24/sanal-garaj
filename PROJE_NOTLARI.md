@@ -258,3 +258,67 @@ yok). **Çıkarılanlar:** “2000 Audi A4” (açıklamada “Free REUPLOAD” 
 - Kullanıcı ücretsiz bir Sketchfab hesabı açıp API anahtarını yalnızca kendi bilgisayarında `.env.local` içinde
   tutarsa, daha önce bulunan CC BY adaylar indirilebilir: “low-poly Volkswagen Passat B8” (D_U), “Fiat Egea”
   (SuperScriptDEV2), “2020_bmw_m340i_xdrive” (007). Her biri yine aynı kaynak/açıklama kontrolünden geçmeli.
+
+
+---
+
+## 2026-10-12 — 4. oturum: “gerçek gibi duran” modeller ve fotogerçekçi görüntü
+
+**Katkı:** Claude.
+
+**Kullanıcı isteği:** Modeller “gerçek gibi durmuyor”; ücretsiz yollarla gerçekçi hale getirilmesi.
+
+### Yapılanlar
+1. **Katalog tamamen yüksek detaylı modellere geçirildi.** Düşük poligonlu (kil maket gibi duran) 18 Poly Pizza
+   modeli katalogdan ve depodan kaldırıldı; yerine lisansı doğrulanmış 15 yeni Sketchfab modeli eklendi.
+   Katalog: **26 araç, tamamı yüksek detaylı** (8 sedan, 3 hatchback, 6 coupe, 2 SUV/arazi, 7 spor).
+2. **Fotogerçekçi görüntü modu:** three-gpu-pathtracer (MIT) ile ışık izleme. Stüdyo fonu (zeminden duvara
+   kıvrılan cyclorama, kameranın karşısına döner), tepe ışığı (softbox), HDRI. Ayrı WebGL bağlamında çalışır;
+   300 örnek, görüntü adım adım netleşir; “Görüntü indir” bu modda ışık izlenmiş kareyi indirir.
+3. Model hattına **otomatik tekerlek ayırma** (lastik malzemesinden 4 tekerlek kümesi + silindir içi üçgenler),
+   **dokulu gövde boyama** (paintKeepMap) ve **dokulu gövdeyi düz boyaya çevirme** (paintColor) eklendi.
+4. Testler: 15 birim + 18 uçtan uca (yeni: fotogerçekçi mod) geçiyor.
+
+### Sorunlar ve çözümleri
+- Işık izlemede örnek sayısı artsa da kaybolmayan labirent desenli gürültü: düşük sekme ayarından (6/4)
+  kaynaklanıyordu; kütüphane varsayılanlarına dönüldü.
+- Sıkıştırılmış (quantize) köşe verileri ışık izleyicinin BVH’sini bozuyordu: çalışma zamanında float32’ye açılıyor.
+- drei’nin ortam dokusu ışık izleyicide bozuk piksel üretiyordu: HDRI ayrıca yükleniyor.
+
+### Yeni modeller (Sketchfab, CC BY 4.0, ücretsiz)
+| Araç | Kaynak başlık | Yazar |
+|---|---|---|
+| Dodge Challenger SRT | ( FREE ) Dodge Challenger SRT | SDC PERFORMANCE™️ |
+| Jaguar XJ (X350) | 2005 Jaguar XJ6 TDVi (X350) | Fishboe |
+| Aston Martin DB11 V12 | 2017 Aston Martin DB11 | Hari Prasath R |
+| Lamborghini Gallardo | Lamborghini Gallardo 2010 | Artem P (fren parçaları: Velstyde) |
+| Chevrolet Corvette Stingray (C7) | Chevrolet Corvette (C7) | Martin Trafas |
+| Fiat Uno | Fiat Uno 2001 | B.M.A |
+| Hyundai Accent (LC) | Hyundai Accent (TaGAZ) 2004 | panderlaike_design |
+| Ferrari 488 Pista (geniş gövde) | Ferrari 488 Pista Widebody | Dev365TH |
+| Hudson Hornet | 800 Follower Special Hudson Hornet Downloadable | Libau Media |
+| Chevrolet Malibu 1965 | '65 Chevy Malibu | Joko_P |
+| Willys MB Jeep | Willy Jeep | AnilG |
+| Lamborghini Centenario | ( FREE ) Lamborghini Centenario LP-770 | SDC PERFORMANCE™️ |
+| Nissan GT-R (R35) | Nissan GTR R35 | Ciasny |
+| Honda Civic Type R (FL5) | Custom Honda Civic Type-R (2024) | Jumping Jax |
+| Opel Calibra | Opel Calibra 1990 | Luquita |
+Maliyet: 0 TL.
+
+### Elenenler (neden)
+- Mercedes 300 SL (vecarz): vecarz hesabı başka yazarların modellerini yeniden yayımladığını açıklamalarında
+  belirtiyor; bu modelde özgün yazar belirsiz → çıkarıldı.
+- 1967 Ford Mustang (Mark Peters): gövde rengi siyah tabanlı dokuya işlenmiş, boya değiştirilemiyor.
+- David_Holiday “Dodge Challenger SRT”: SDC modelinin birebir kopyası. Lamborghini Urus (Kapi9526): açıklama
+  başka siteden kopya. Kia Sportage (xnova360): kaynak belirsiz. Ayrıca açıklamasız ve aktarma şüphesi olan
+  hesaplar (Lexyc16, Black Snow, Mona x Supercars, DisneyCars, Nieve5677) kullanılmadı.
+
+### Bilinen sınırlamalar
+- Fotogerçekçi mod ekran kartına göre 10 saniye – 2 dakika sürer (tümleşik Intel GPU’da ~2,5 dk/500 örnek ölçüldü).
+- DB11, Fiat Uno, Malibu, Willys, GT-R ve birkaç modelde jant rengi/modeli kapalı (jantlar ayrı malzeme değil).
+- Willys’in haki dokusu üzerine uygulanan renkler koyu çıkar; Hudson yarış dekoru boyanın üzerinde kalır.
+
+### Sonraki adımlar
+- Kalan adaylardan (Corvette C8, BMW M4, Tesla Model 3/Roadster vb.) açıklaması temiz olanları ekleyerek SUV ve
+  hatchback sayısını artırmak.
+- Fotogerçekçi mod için kamera açısı önayarları (ön 3/4, yan, arka 3/4).

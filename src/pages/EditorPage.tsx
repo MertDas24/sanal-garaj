@@ -10,9 +10,13 @@ import { hasWebGL } from '../lib/webgl';
 import { captionImage, downloadBlob, makeThumb, slugify } from '../lib/image';
 import { saveDesign } from '../lib/storage';
 import { CarViewer, type ViewerHandle } from '../three/CarViewer';
+import { startPathTrace, type PathTraceSession } from '../three/pathTrace';
 import { EditorPanel } from '../components/EditorPanel';
 import { NoWebGL } from '../components/NoWebGL';
 import { useToast } from '../components/useToast';
+
+/** Fotogerçekçi modda hesaplanacak örnek sayısı */
+const PT_SAMPLES = 300;
 
 export default function EditorPage({ vehicleId, query }: { vehicleId: string; query: URLSearchParams }) {
   const vehicle = findVehicle(vehicleId);
@@ -53,9 +57,39 @@ function Editor({ vehicleId, title, year, note, modelId, query }: {
   const [error, setError] = useState<string | null>(null);
   const [comparing, setComparing] = useState(false);
   const [split, setSplit] = useState(0.5);
+  const { toast, show } = useToast();
+  const [photoreal, setPhotoreal] = useState(false);
+  const [ptProgress, setPtProgress] = useState({ samples: 0, done: false });
+  const ptHost = useRef<HTMLDivElement>(null);
+  const ptSession = useRef<PathTraceSession | null>(null);
+
+  // Fotogerçekçi mod: ayrı bir WebGL bağlamında ışık izleme; tasarım değişince baştan hesaplanır
+  useEffect(() => {
+    if (!photoreal || !design) return;
+    // Tasarımın etkileşimli sahneye uygulanması için bir kare bekle
+    const id = requestAnimationFrame(() => {
+      const snap = viewer.current?.snapshot();
+      const host = ptHost.current;
+      if (!snap || !host) return;
+      setPtProgress({ samples: 0, done: false });
+      const session = startPathTrace({
+        ...snap,
+        maxSamples: PT_SAMPLES,
+        onProgress: (samples, done) => setPtProgress({ samples, done }),
+        onError: () => { setPhotoreal(false); show('Fotogerçekçi görüntü başlatılamadı.', 'error'); },
+      });
+      host.appendChild(session.canvas);
+      ptSession.current = session;
+    });
+    return () => {
+      cancelAnimationFrame(id);
+      ptSession.current?.canvas.remove();
+      ptSession.current?.stop();
+      ptSession.current = null;
+    };
+  }, [photoreal, design, show]);
   const [busy, setBusy] = useState(false);
   const [retry, setRetry] = useState(0);
-  const { toast, show } = useToast();
   const { progress } = useProgress();
 
   const onReady = useCallback((info: { features: ModelFeatures; originalPaint: string; originalRim: string | null }) => {
@@ -84,7 +118,7 @@ function Editor({ vehicleId, title, year, note, modelId, query }: {
   const attribution = `3D model: “${model.source.title}” — ${model.source.author} (${model.source.site}), ${LICENSE_LABELS[model.source.license]}`;
 
   const handleDownload = async () => {
-    const data = viewer.current?.capture();
+    const data = photoreal && ptSession.current ? ptSession.current.canvas.toDataURL('image/png') : viewer.current?.capture();
     if (!data) { show('Görüntü alınamadı.', 'error'); return; }
     setBusy(true);
     try {
@@ -145,7 +179,7 @@ function Editor({ vehicleId, title, year, note, modelId, query }: {
               features={model.features}
               triangles={model.triangles}
               design={design ?? base ?? defaultDesign('#cccccc', false)}
-              compare={comparing && base ? { before: base, split } : null}
+              compare={comparing && base && !photoreal ? { before: base, split } : null}
               onReady={onReady}
               onError={onError}
             />
@@ -167,7 +201,18 @@ function Editor({ vehicleId, title, year, note, modelId, query }: {
               </div>
             </div>
           )}
-          {ready && comparing && (
+          <div ref={ptHost} className={photoreal ? 'pt-host pt-host--on' : 'pt-host'} aria-hidden={!photoreal} />
+          {ready && photoreal && (
+            <div className="pt-status" role="status" aria-live="polite">
+              <div className="loader__bar"><span style={{ width: `${Math.round((ptProgress.samples / PT_SAMPLES) * 100)}%` }} /></div>
+              <p className="small">
+                {ptProgress.done
+                  ? 'Fotogerçekçi görüntü hazır.'
+                  : `Işık izleniyor… ${ptProgress.samples}/${PT_SAMPLES} örnek (görüntü giderek netleşir)`}
+              </p>
+            </div>
+          )}
+          {ready && comparing && !photoreal && (
             <div className="compare">
               <span className="compare__label compare__label--left">Önce</span>
               <span className="compare__label compare__label--right">Sonra</span>
@@ -180,9 +225,21 @@ function Editor({ vehicleId, title, year, note, modelId, query }: {
           )}
           {ready && (
             <div className="viewer__tools">
-              <button className="btn btn--small" onClick={() => viewer.current?.resetCamera()}>Kamerayı sıfırla</button>
-              <button className="btn btn--small" aria-pressed={comparing} onClick={() => setComparing((v) => !v)}>
-                {comparing ? 'Karşılaştırmayı kapat' : 'Önce / Sonra'}
+              {!photoreal && (
+                <>
+                  <button className="btn btn--small" onClick={() => viewer.current?.resetCamera()}>Kamerayı sıfırla</button>
+                  <button className="btn btn--small" aria-pressed={comparing} onClick={() => setComparing((v) => !v)}>
+                    {comparing ? 'Karşılaştırmayı kapat' : 'Önce / Sonra'}
+                  </button>
+                </>
+              )}
+              <button
+                className="btn btn--small"
+                aria-pressed={photoreal}
+                onClick={() => { setPtProgress({ samples: 0, done: false }); setPhotoreal((v) => !v); }}
+                title="Seçili açıdan ışık izleme ile fotoğraf gerçekliğinde görüntü hesaplar"
+              >
+                {photoreal ? 'Etkileşimli görünüme dön' : 'Fotogerçekçi görüntü'}
               </button>
             </div>
           )}

@@ -40,6 +40,29 @@ const FINISH_PARAMS: Record<Finish, Partial<THREE.MeshPhysicalMaterialParameters
 
 const CARBON = new THREE.Color('#16171a');
 
+/**
+ * Sıkıştırılmış (KHR_mesh_quantization: normalize int8/int16) köşe verilerini float32'ye açar.
+ * Işık izleyicinin hızlandırma yapısı (BVH) yalnızca düz float verilerle güvenilir çalışır.
+ */
+function dequantize(geom: THREE.BufferGeometry): THREE.BufferGeometry {
+  const needs = Object.values(geom.attributes).some(
+    (a) => a.normalized || (a as THREE.InterleavedBufferAttribute).isInterleavedBufferAttribute || !(a.array instanceof Float32Array),
+  );
+  if (!needs) return geom;
+  const out = new THREE.BufferGeometry();
+  for (const [name, attr] of Object.entries(geom.attributes)) {
+    const n = attr.count, size = attr.itemSize;
+    const arr = new Float32Array(n * size);
+    for (let i = 0; i < n; i++) for (let k = 0; k < size; k++) arr[i * size + k] = attr.getComponent(i, k);
+    out.setAttribute(name, new THREE.BufferAttribute(arr, size));
+  }
+  if (geom.index) out.setIndex(new THREE.BufferAttribute(new Uint32Array(geom.index.array), 1));
+  for (const g of geom.groups) out.addGroup(g.start, g.count, g.materialIndex);
+  out.boundingBox = geom.boundingBox;
+  out.boundingSphere = geom.boundingSphere;
+  return out;
+}
+
 export function createCarRuntime(source: THREE.Object3D, features: ModelFeatures, triangles = 0): CarRuntime {
   const object = new THREE.Group();
   object.name = 'car';
@@ -78,14 +101,17 @@ export function createCarRuntime(source: THREE.Object3D, features: ModelFeatures
     const mesh = o as THREE.Mesh;
     if (!mesh.isMesh) return;
     mesh.castShadow = true;
+    mesh.geometry = track(dequantize(mesh.geometry));
     const mat = mesh.material as THREE.MeshStandardMaterial;
     if (Array.isArray(mat)) return;
     if (mat.name === 'CG_paint') {
       if (!paintFound) {
         originalPaint = `#${mat.color.getHexString()}`;
         paintFound = true;
-        // Yüzey ayrıntısı veren dokular korunur; renk dokusu (map) boya rengini bozacağı için alınmaz
+        // Yüzey ayrıntısı veren dokular korunur. Renk dokusu (map) normalde alınmaz; model "keepMap" ile
+        // işaretlendiyse (açık tabanlı gövde dokusu) korunur ve seçilen renk dokuyla çarpılır.
         if (mat.normalMap) { paintMat.normalMap = mat.normalMap; paintMat.normalScale.copy(mat.normalScale); }
+        if (mat.userData?.keepMap && mat.map) { paintMat.map = mat.map; originalPaint = '#ffffff'; }
         if (mat.aoMap) paintMat.aoMap = mat.aoMap;
       }
       mesh.material = paintMat;

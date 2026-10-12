@@ -20,7 +20,10 @@
     "@react-three/fiber": "^9.8.1",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
-    "three": "^0.186.1"
+    "three": "^0.186.1",
+    "three-gpu-pathtracer": "^0.0.27",
+    "three-mesh-bvh": "^0.9.16",
+    "xatlas-web": "^0.1.0"
   },
   "devDependencies": {
     "@gltf-transform/cli": "^4.5.1",
@@ -39,5 +42,8 @@
     "typescript": "~6.0.2",
     "vite": "^8.3.0",
     "vitest": "^5.0.3"
+  },
+  "overrides": {
+    "three-mesh-bvh": "$three-mesh-bvh"
   }
 }

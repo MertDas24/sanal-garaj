@@ -33,6 +33,11 @@ Teslim öncesi şunların hepsi geçmeli: `npm run lint`, `npx tsc -b`, `npm tes
 - Statik site (Vite + React + TypeScript + React Three Fiber). Sunucu/veritabanı/hesap yok. GitHub Pages’e
   `.github/workflows/deploy.yml` ile yayınlanır (testler geçmezse yayın yapılmaz).
 - `src/data/catalog.ts` (marka/model/yıl) ile model dosyaları (`scripts/model-sources.mjs`) **ayrıdır**.
+- Fotogerçekçi mod: `src/three/pathTrace.ts` (three-gpu-pathtracer). Ayrı bir WebGL bağlamında, stüdyo fonu +
+  tepe ışığı + HDRI ile çalışır. Uyarı: `bounces`/`transmissiveBounces` kütüphane varsayılanlarında kalmalı;
+  düşük değerler örnek sayısı artsa da kaybolmayan labirent desenli gürültü üretir. Etkileşimli sahnedeki drei
+  ortam dokusu da ışık izleyicide bozuk piksel üretir; HDRI ayrıca yüklenir.
+- Katalogda yalnızca gerçekçi (yüksek detaylı) modeller kullanılır; düşük poligonlu modeller 2026-10-12’de kaldırıldı.
 - Model hattı her modele kanonik adlar verir: düğümler `CG_root > CG_body, CG_wheel_<n>, CG_part_<tür>`;
   malzemeler `CG_paint`, `CG_glass`, `CG_tire`, `CG_rim`. Uygulama (`src/three/carRuntime.ts`) yalnızca bu adlara
   güvenir; boya yalnızca `CG_paint`e uygulanır.
@@ -42,7 +47,10 @@ Teslim öncesi şunların hepsi geçmeli: `npm run lint`, `npx tsc -b`, `npm tes
 
 ## Yeni model ekleme (özet; ayrıntı README’de)
 1. Lisansı doğrula → `scripts/model-sources.mjs` kaydı (indirme adresi, kaynak, `rotateY`, `lengthM`,
-   malzeme rolleri, tekerlek düğümleri, gerekirse `simplify`/`textureSize`).
+   malzeme rolleri, tekerlekler için çoğunlukla `autoWheels: [lastik malzemesi]`, gerekirse `simplify`).
+   Aday arama: GitHub kod aramasında `"sketchfab.com/3d-models" "CC-BY-4.0" <marka> filename:scene.gltf`;
+   her adayın lisansı ve açıklaması `https://api.sketchfab.com/v3/models/<uid>` ile kontrol edilir (yavaş tempo;
+   429 yanıtında bekleyin).
 2. `npm run models -- <id>`.
 3. **Görsel doğrulama zorunlu:** `npx vite --port 5199` açıkken
    `node lab/shoot.mjs lab-out /models/<id>.glb:CG_paint` → macenta alan yalnızca gövde olmalı (cam, lastik,

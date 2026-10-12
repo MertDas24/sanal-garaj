@@ -13,10 +13,7 @@ import sharp from 'sharp';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { MODEL_SOURCES as BASE_SOURCES } from './model-sources.mjs';
-import { SKETCHFAB_SOURCES } from './model-sources-sketchfab.mjs';
-
-const MODEL_SOURCES = [...BASE_SOURCES, ...SKETCHFAB_SOURCES];
+import { MODEL_SOURCES } from './model-sources.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const CACHE = path.join(ROOT, '.model-cache');
@@ -166,7 +163,10 @@ async function buildOne(src) {
     byName(name).traverse((n) => { if (n.getMesh()) meshNodes.push(n); });
     return meshNodes.flatMap((n) => splitByQuadrant(doc, scene, n));
   });
-  const wheelNodeList = [...(src.wheelNodes ?? []).map(byName), ...quadrantWheels, ...wheelsByMaterial(root, src.wheelMaterials ?? [])];
+  const wheelNodeList = [
+    ...(src.wheelNodes ?? []).map(byName), ...quadrantWheels, ...wheelsByMaterial(root, src.wheelMaterials ?? []),
+    ...(src.autoWheels ? autoWheels(doc, scene, src.autoWheels, src.autoWheelRadius ?? 1.02) : []),
+  ];
 
   // Kanonik malzeme adları.
   // Jant ve lastik rolleri yalnızca tekerlek düğümlerindeki kullanıma uygulanır: aynı malzeme gövdede de
@@ -195,6 +195,13 @@ async function buildOne(src) {
       }
     }
   }
+  // Gövde rengi dokudaysa ve doku boyaya uygun değilse (ör. karbon desen): düz boya + verilen başlangıç rengi
+  if (src.paintColor) for (const m of root.listMaterials()) if (m.getName() === ROLE_NAMES.paint) {
+    const lin = [1, 3, 5].map((i) => { const c = parseInt(src.paintColor.slice(i, i + 2), 16) / 255; return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4; });
+    m.setBaseColorTexture(null).setBaseColorFactor([...lin, 1]);
+  }
+  // Gövde dokusu korunacaksa (ör. beyaz tabanlı doku üzerinde logo/ayrıntı) çalışma zamanına işaret bırak
+  if (src.paintKeepMap) for (const m of root.listMaterials()) if (m.getName() === ROLE_NAMES.paint) m.setExtras({ ...m.getExtras(), keepMap: true });
   for (const m of root.listMaterials()) {
     const role = Object.entries(ROLE_NAMES).find(([, v]) => v === m.getName())?.[0];
     if (role && m.listParents().some((p) => p.propertyType === PropertyType.PRIMITIVE)) roles[role] = true;
@@ -392,4 +399,111 @@ function wheelsByMaterial(root, names) {
   if (clusters.length < 4) throw new Error(`tekerlek malzemelerinden yalnızca ${clusters.length} tekerlek bulundu`);
   clusters.sort((a, b) => a.c[1] - b.c[1]);
   return clusters.slice(0, 4).flatMap((k) => k.nodes);
+}
+
+/**
+ * Otomatik tekerlek ayırma.
+ * 1) Lastik malzemesindeki üçgenlerin merkezleri 5 cm'lik ızgarada bağlantılı kümelere ayrılır; en alçakta duran
+ *    4 büyük küme tekerlek kabul edilir (stepne gibi yüksekteki lastikler dışarıda kalır).
+ * 2) Her tekerlek için yatay eksenli bir silindir hesaplanır (merkez, yarıçap, genişlik).
+ * 3) Sahnedeki tüm üçgenlerden merkezi bu silindirlerden birinin içinde kalanlar (lastik, jant, disk, kaliper...)
+ *    o tekerleğin düğümüne taşınır. Kaynak düğümün dünya dönüşümü korunur.
+ */
+function autoWheels(doc, scene, tireNames, radiusScale) {
+  const root = doc.getRoot();
+  const buffer = root.listBuffers()[0];
+  const meshNodes = root.listNodes().filter((n) => n.getMesh());
+  const p = [];
+  const world = (wm, a, i) => { a.getElement(i, p); return [
+    wm[0] * p[0] + wm[4] * p[1] + wm[8] * p[2] + wm[12],
+    wm[1] * p[0] + wm[5] * p[1] + wm[9] * p[2] + wm[13],
+    wm[2] * p[0] + wm[6] * p[1] + wm[10] * p[2] + wm[14]]; };
+  const triCentroids = (node, prim) => {
+    const wm = node.getWorldMatrix(); const pos = prim.getAttribute('POSITION'); const idx = prim.getIndices();
+    const count = idx ? idx.getCount() : pos.getCount(); const out = [];
+    for (let i = 0; i < count; i += 3) {
+      const v = [0, 1, 2].map((k) => world(wm, pos, idx ? idx.getScalar(i + k) : i + k));
+      out.push([(v[0][0] + v[1][0] + v[2][0]) / 3, (v[0][1] + v[1][1] + v[2][1]) / 3, (v[0][2] + v[1][2] + v[2][2]) / 3, v]);
+    }
+    return out;
+  };
+
+  // 1) lastik üçgenleri
+  const tirePts = [];
+  for (const n of meshNodes) for (const pr of n.getMesh().listPrimitives()) {
+    if (!tireNames.includes(pr.getMaterial()?.getName())) continue;
+    for (const c of triCentroids(n, pr)) tirePts.push(c);
+  }
+  if (tirePts.length < 40) throw new Error(`otomatik tekerlek: lastik malzemesi bulunamadı (${tireNames.join(', ')})`);
+  const sb = getBounds(scene);
+  const cell = Math.max(sb.max[0] - sb.min[0], sb.max[2] - sb.min[2]) / 60;
+  const key = (x, y, z) => `${Math.floor(x / cell)},${Math.floor(y / cell)},${Math.floor(z / cell)}`;
+  const cells = new Map();
+  for (const t of tirePts) { const k = key(t[0], t[1], t[2]); (cells.get(k) ?? cells.set(k, []).get(k)).push(t); }
+  const seen = new Set(); const comps = [];
+  for (const k of cells.keys()) {
+    if (seen.has(k)) continue;
+    const stack = [k]; seen.add(k); const pts = [];
+    while (stack.length) {
+      const c = stack.pop(); pts.push(...cells.get(c));
+      const [x, y, z] = c.split(',').map(Number);
+      for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) for (let dz = -1; dz <= 1; dz++) {
+        const nk = `${x + dx},${y + dy},${z + dz}`;
+        if (cells.has(nk) && !seen.has(nk)) { seen.add(nk); stack.push(nk); }
+      }
+    }
+    comps.push(pts);
+  }
+  const big = comps.filter((c) => c.length >= tirePts.length * 0.05);
+  const boxes = big.map((pts) => {
+    const mn = [Infinity, Infinity, Infinity], mx = [-Infinity, -Infinity, -Infinity];
+    for (const t of pts) for (const v of t[3]) for (let i = 0; i < 3; i++) { mn[i] = Math.min(mn[i], v[i]); mx[i] = Math.max(mx[i], v[i]); }
+    return { mn, mx };
+  }).sort((a, b) => a.mn[1] - b.mn[1]).slice(0, 4);
+  if (boxes.length !== 4) throw new Error(`otomatik tekerlek: 4 yerine ${boxes.length} lastik kümesi bulundu`);
+
+  // 2) silindirler (eksen: dünya X; model bu aşamada henüz döndürülmedi, bu yüzden en dar boyut eksen kabul edilir)
+  const cyl = boxes.map(({ mn, mx }) => {
+    const size = mx.map((v, i) => v - mn[i]);
+    const axis = size[0] <= size[2] ? 0 : 2;
+    const other = axis === 0 ? 2 : 0;
+    return { axis, other, c: mn.map((v, i) => (v + mx[i]) / 2), r: Math.max(size[1], size[other]) / 2 * radiusScale, half: size[axis] / 2 * 1.6 };
+  });
+  const inWheel = (x, y, z) => cyl.findIndex((w) => {
+    const pt = [x, y, z];
+    return Math.abs(pt[w.axis] - w.c[w.axis]) <= w.half && Math.hypot(pt[1] - w.c[1], pt[w.other] - w.c[w.other]) <= w.r;
+  });
+
+  // 3) üçgenleri tekerlek düğümlerine taşı
+  const groups = cyl.map((_, i) => { const g = doc.createNode(`autoWheel_${i}`); scene.addChild(g); return g; });
+  for (const n of meshNodes) {
+    const mesh = n.getMesh();
+    const per = cyl.map(() => doc.createMesh());
+    for (const prim of [...mesh.listPrimitives()]) {
+      const pos = prim.getAttribute('POSITION'); const idx = prim.getIndices();
+      const count = idx ? idx.getCount() : pos.getCount();
+      const wm = n.getWorldMatrix();
+      const keep = []; const take = cyl.map(() => []);
+      for (let i = 0; i < count; i += 3) {
+        const tri = [idx ? idx.getScalar(i) : i, idx ? idx.getScalar(i + 1) : i + 1, idx ? idx.getScalar(i + 2) : i + 2];
+        const v = tri.map((vi) => world(wm, pos, vi));
+        const w = inWheel((v[0][0] + v[1][0] + v[2][0]) / 3, (v[0][1] + v[1][1] + v[2][1]) / 3, (v[0][2] + v[1][2] + v[2][2]) / 3);
+        (w >= 0 ? take[w] : keep).push(...tri);
+      }
+      if (take.every((t) => !t.length)) continue;
+      const mk = (arr) => doc.createAccessor().setType('SCALAR').setArray(new Uint32Array(arr)).setBuffer(buffer);
+      take.forEach((list, w) => {
+        if (!list.length) return;
+        const np = doc.createPrimitive().setMaterial(prim.getMaterial()).setMode(prim.getMode()).setIndices(mk(list));
+        for (const sem of prim.listSemantics()) np.setAttribute(sem, prim.getAttribute(sem));
+        per[w].addPrimitive(np);
+      });
+      if (keep.length) prim.setIndices(mk(keep)); else prim.dispose();
+    }
+    per.forEach((m, w) => {
+      if (!m.listPrimitives().length) { m.dispose(); return; }
+      groups[w].addChild(doc.createNode(`${n.getName()}_w${w}`).setMesh(m).setMatrix(n.getWorldMatrix()));
+    });
+  }
+  return groups;
 }

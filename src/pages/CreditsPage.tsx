@@ -83,7 +83,7 @@ export function CreditsPage() {
 
       <h2>Yazılım</h2>
       <p>
-        Three.js, React Three Fiber, drei (MIT), React (MIT), glTF-Transform ve meshoptimizer (MIT), MediaPipe Tasks
+        Three.js, React Three Fiber, drei (MIT), React (MIT), glTF-Transform, meshoptimizer ve three-gpu-pathtracer (MIT), MediaPipe Tasks
         Vision (Apache 2.0) kullanılmıştır.
       </p>
     </section>

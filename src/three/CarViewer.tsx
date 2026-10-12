@@ -11,6 +11,8 @@ export interface ViewerHandle {
   resetCamera(): void;
   /** Mevcut kamera açısından PNG veri adresi */
   capture(): string | null;
+  /** Işık izleme için aracın o anki nesnesi, kamera ve görüntü boyutu */
+  snapshot(): { car: THREE.Object3D; camera: THREE.PerspectiveCamera; width: number; height: number } | null;
 }
 
 export interface ViewerProps {
@@ -37,11 +39,19 @@ export const CarViewer = forwardRef<ViewerHandle, ViewerProps>(function CarViewe
   const glRef = useRef<THREE.WebGLRenderer | null>(null);
   const controlsRef = useRef<OrbitControlsImpl | null>(null);
   const invalidateRef = useRef<() => void>(() => {});
+  const stateRef = useRef<{ scene: THREE.Scene; camera: THREE.Camera } | null>(null);
 
   useImperativeHandle(ref, () => ({
     resetCamera() {
       controlsRef.current?.reset();
       invalidateRef.current();
+    },
+    snapshot() {
+      const st = stateRef.current;
+      const car = st?.scene.getObjectByName('car');
+      const canvas = glRef.current?.domElement;
+      if (!st || !car || !canvas) return null;
+      return { car, camera: st.camera as THREE.PerspectiveCamera, width: canvas.clientWidth, height: canvas.clientHeight };
     },
     capture() {
       try {
@@ -58,10 +68,11 @@ export const CarViewer = forwardRef<ViewerHandle, ViewerProps>(function CarViewe
       shadows
       dpr={hq ? [1, 2] : [1, 1.5]}
       frameloop="demand"
-      gl={{ preserveDrawingBuffer: true, antialias: true }}
+      gl={{ preserveDrawingBuffer: true, antialias: true, alpha: false }}
       camera={{ fov: 35, near: 0.1, far: 100, position: [5, 2, 5] }}
-      onCreated={({ gl, invalidate }) => {
+      onCreated={({ gl, invalidate, scene, camera }) => {
         glRef.current = gl;
+        stateRef.current = { scene, camera };
         invalidateRef.current = invalidate;
         gl.toneMapping = THREE.ACESFilmicToneMapping;
       }}

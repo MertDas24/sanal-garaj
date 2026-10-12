@@ -1,635 +1,5 @@
 [
   {
-    "id": "dodge-challenger-2015",
-    "file": "models/dodge-challenger-2015.glb",
-    "bytes": 195536,
-    "triangles": 11129,
-    "sourceTriangles": 11129,
-    "size": [
-      2.208,
-      1.49,
-      5.03
-    ],
-    "source": {
-      "title": "2015 Dodge Challenger",
-      "author": "Grzybek",
-      "site": "Poly Pizza",
-      "url": "https://poly.pizza/m/1jB8I4t5w4",
-      "license": "CC-BY-3.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/"
-    },
-    "features": {
-      "paint": true,
-      "rimColor": true,
-      "rimStyle": true,
-      "rideHeight": true,
-      "spoiler": "addon",
-      "frontLip": "addon"
-    },
-    "materials": {
-      "paint": true,
-      "glass": true,
-      "rim": true,
-      "tire": true,
-      "wheels": 4
-    },
-    "notes": null
-  },
-  {
-    "id": "delorean-dmc12",
-    "file": "models/delorean-dmc12.glb",
-    "bytes": 94020,
-    "triangles": 6248,
-    "sourceTriangles": 6248,
-    "size": [
-      1.922,
-      1.249,
-      4.27
-    ],
-    "source": {
-      "title": "DeLorean DMC-12",
-      "author": "David Sirera",
-      "site": "Poly Pizza",
-      "url": "https://poly.pizza/m/1uZKezeldGG",
-      "license": "CC-BY-3.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/"
-    },
-    "features": {
-      "paint": true,
-      "rimColor": true,
-      "rimStyle": true,
-      "rideHeight": true,
-      "spoiler": "addon",
-      "frontLip": "addon"
-    },
-    "materials": {
-      "paint": true,
-      "glass": true,
-      "tire": true,
-      "rim": true,
-      "wheels": 4
-    },
-    "notes": null
-  },
-  {
-    "id": "mini-classic",
-    "file": "models/mini-classic.glb",
-    "bytes": 40884,
-    "triangles": 3510,
-    "sourceTriangles": 3510,
-    "size": [
-      1.604,
-      1.329,
-      3.05
-    ],
-    "source": {
-      "title": "Low Poly Mini Cooper",
-      "author": "Gilang Romadhan",
-      "site": "Poly Pizza",
-      "url": "https://poly.pizza/m/2whNujq5rNd",
-      "license": "CC-BY-3.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/"
-    },
-    "features": {
-      "paint": true,
-      "rimColor": false,
-      "rimStyle": false,
-      "rideHeight": false,
-      "spoiler": false,
-      "frontLip": false
-    },
-    "materials": {
-      "paint": true,
-      "glass": true,
-      "wheels": 0
-    },
-    "notes": "Tekerlekler gövdeyle tek parça; jant rengi, jant modeli ve yükseklik ayarı desteklenmez. Kaynak dosyadaki sergi platformu kaldırıldı."
-  },
-  {
-    "id": "rolls-royce-classic",
-    "file": "models/rolls-royce-classic.glb",
-    "bytes": 111184,
-    "triangles": 8540,
-    "sourceTriangles": 8540,
-    "size": [
-      1.824,
-      1.491,
-      5.17
-    ],
-    "source": {
-      "title": "Rolls Royce",
-      "author": "David Sirera",
-      "site": "Poly Pizza",
-      "url": "https://poly.pizza/m/3DtJTlxgO_U",
-      "license": "CC-BY-3.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/"
-    },
-    "features": {
-      "paint": true,
-      "rimColor": true,
-      "rimStyle": true,
-      "rideHeight": true,
-      "spoiler": false,
-      "frontLip": false
-    },
-    "materials": {
-      "rim": true,
-      "tire": true,
-      "paint": true,
-      "glass": true,
-      "wheels": 4
-    },
-    "notes": "Kaynak, modelin hangi Rolls-Royce olduğunu belirtmiyor; katalogda “klasik coupe” olarak gösterilir."
-  },
-  {
-    "id": "dodge-charger-1969",
-    "file": "models/dodge-charger-1969.glb",
-    "bytes": 154128,
-    "triangles": 9648,
-    "sourceTriangles": 9648,
-    "size": [
-      2.083,
-      1.44,
-      5.28
-    ],
-    "source": {
-      "title": "Dodge Charger",
-      "author": "David Sirera",
-      "site": "Poly Pizza",
-      "url": "https://poly.pizza/m/4b80hRVxqvv",
-      "license": "CC-BY-3.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/"
-    },
-    "features": {
-      "paint": true,
-      "rimColor": true,
-      "rimStyle": true,
-      "rideHeight": true,
-      "spoiler": "addon",
-      "frontLip": "addon"
-    },
-    "materials": {
-      "rim": true,
-      "tire": true,
-      "paint": true,
-      "glass": true,
-      "wheels": 4
-    },
-    "notes": null
-  },
-  {
-    "id": "mitsubishi-l200",
-    "file": "models/mitsubishi-l200.glb",
-    "bytes": 61568,
-    "triangles": 2899,
-    "sourceTriangles": 2899,
-    "size": [
-      1.938,
-      1.817,
-      5
-    ],
-    "source": {
-      "title": "Mitsubishi L200",
-      "author": "Muhammad Reyhan",
-      "site": "Poly Pizza",
-      "url": "https://poly.pizza/m/4qjS9tFhsJg",
-      "license": "CC-BY-3.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/"
-    },
-    "features": {
-      "paint": true,
-      "rimColor": true,
-      "rimStyle": true,
-      "rideHeight": true,
-      "spoiler": false,
-      "frontLip": false
-    },
-    "materials": {
-      "paint": true,
-      "tire": true,
-      "rim": true,
-      "wheels": 4
-    },
-    "notes": null
-  },
-  {
-    "id": "chevrolet-camaro-zl1-2017",
-    "file": "models/chevrolet-camaro-zl1-2017.glb",
-    "bytes": 72644,
-    "triangles": 4500,
-    "sourceTriangles": 4500,
-    "size": [
-      3.549,
-      1.361,
-      4.79
-    ],
-    "source": {
-      "title": "Camaro ZL1 2017",
-      "author": "Kris Tong",
-      "site": "Poly Pizza",
-      "url": "https://poly.pizza/m/7bF7UVAoYRG",
-      "license": "CC-BY-3.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/"
-    },
-    "features": {
-      "paint": true,
-      "rimColor": false,
-      "rimStyle": false,
-      "rideHeight": false,
-      "spoiler": false,
-      "frontLip": false
-    },
-    "materials": {
-      "paint": true,
-      "wheels": 0
-    },
-    "notes": "Tek parça model; cam, lastik ve jant ayrı düğüm değil. Yalnızca gövde boyası desteklenir."
-  },
-  {
-    "id": "toyota-hilux-1997",
-    "file": "models/toyota-hilux-1997.glb",
-    "bytes": 39360,
-    "triangles": 1908,
-    "sourceTriangles": 1908,
-    "size": [
-      2.019,
-      1.802,
-      4.9
-    ],
-    "source": {
-      "title": "Toyota Hilux 97",
-      "author": "Muhammad Reyhan",
-      "site": "Poly Pizza",
-      "url": "https://poly.pizza/m/8-0nFArehjd",
-      "license": "CC-BY-3.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/"
-    },
-    "features": {
-      "paint": true,
-      "rimColor": true,
-      "rimStyle": true,
-      "rideHeight": true,
-      "spoiler": false,
-      "frontLip": false
-    },
-    "materials": {
-      "glass": true,
-      "paint": true,
-      "tire": true,
-      "rim": true,
-      "wheels": 4
-    },
-    "notes": null
-  },
-  {
-    "id": "range-rover-classic",
-    "file": "models/range-rover-classic.glb",
-    "bytes": 558536,
-    "triangles": 31418,
-    "sourceTriangles": 31418,
-    "size": [
-      1.752,
-      1.999,
-      4.45
-    ],
-    "source": {
-      "title": "Range Rover",
-      "author": "IvOfficial",
-      "site": "Poly Pizza",
-      "url": "https://poly.pizza/m/8zk4o6nALW",
-      "license": "CC-BY-3.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/"
-    },
-    "features": {
-      "paint": true,
-      "rimColor": false,
-      "rimStyle": false,
-      "rideHeight": true,
-      "spoiler": false,
-      "frontLip": false
-    },
-    "materials": {
-      "glass": true,
-      "paint": true,
-      "wheels": 4
-    },
-    "notes": null
-  },
-  {
-    "id": "mazda3-hatchback-2019",
-    "file": "models/mazda3-hatchback-2019.glb",
-    "bytes": 352600,
-    "triangles": 33706,
-    "sourceTriangles": 33706,
-    "size": [
-      2.087,
-      1.488,
-      4.46
-    ],
-    "source": {
-      "title": "Sports Hatchback",
-      "author": "ReppenThe303",
-      "site": "Poly Pizza",
-      "url": "https://poly.pizza/m/DobtD8JyoW",
-      "license": "CC-BY-3.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/"
-    },
-    "features": {
-      "paint": true,
-      "rimColor": true,
-      "rimStyle": true,
-      "rideHeight": true,
-      "spoiler": false,
-      "frontLip": "addon"
-    },
-    "materials": {
-      "paint": true,
-      "glass": true,
-      "rim": true,
-      "tire": true,
-      "wheels": 8
-    },
-    "notes": "Kaynak başlığı “Sports Hatchback”; dosyadaki düğüm ve malzeme adları (Mazda3Hatchback, Mat_M3Body) modelin Mazda3 Hatchback olduğunu gösterir."
-  },
-  {
-    "id": "tesla-cybertruck",
-    "file": "models/tesla-cybertruck.glb",
-    "bytes": 271324,
-    "triangles": 19268,
-    "sourceTriangles": 19268,
-    "size": [
-      3.356,
-      2.105,
-      5.68
-    ],
-    "source": {
-      "title": "Cybertruck",
-      "author": "Mobolaji",
-      "site": "Poly Pizza",
-      "url": "https://poly.pizza/m/Jpar3f32mt",
-      "license": "CC-BY-3.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/"
-    },
-    "features": {
-      "paint": true,
-      "rimColor": true,
-      "rimStyle": true,
-      "rideHeight": true,
-      "spoiler": false,
-      "frontLip": false
-    },
-    "materials": {
-      "paint": true,
-      "glass": true,
-      "rim": true,
-      "tire": true,
-      "wheels": 4
-    },
-    "notes": null
-  },
-  {
-    "id": "mazda-rx7-fc",
-    "file": "models/mazda-rx7-fc.glb",
-    "bytes": 274040,
-    "triangles": 19720,
-    "sourceTriangles": 19720,
-    "size": [
-      1.781,
-      1.265,
-      4.29
-    ],
-    "source": {
-      "title": "Mazda RX-7",
-      "author": "IvOfficial",
-      "site": "Poly Pizza",
-      "url": "https://poly.pizza/m/SnIoWlh7S2",
-      "license": "CC-BY-3.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/"
-    },
-    "features": {
-      "paint": true,
-      "rimColor": true,
-      "rimStyle": true,
-      "rideHeight": true,
-      "spoiler": "addon",
-      "frontLip": "addon"
-    },
-    "materials": {
-      "paint": true,
-      "glass": true,
-      "rim": true,
-      "wheels": 4
-    },
-    "notes": null
-  },
-  {
-    "id": "ford-model-t",
-    "file": "models/ford-model-t.glb",
-    "bytes": 18592,
-    "triangles": 2748,
-    "sourceTriangles": 2748,
-    "size": [
-      1.41,
-      2.296,
-      3.4
-    ],
-    "source": {
-      "title": "Ford Model T",
-      "author": "Bruno Oliveira",
-      "site": "Poly Pizza",
-      "url": "https://poly.pizza/m/aJVM4rmsGIb",
-      "license": "CC-BY-3.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/"
-    },
-    "features": {
-      "paint": true,
-      "rimColor": false,
-      "rimStyle": false,
-      "rideHeight": false,
-      "spoiler": false,
-      "frontLip": false
-    },
-    "materials": {
-      "paint": true,
-      "wheels": 0
-    },
-    "notes": "Tek parça model; yalnızca gövde boyası desteklenir."
-  },
-  {
-    "id": "nissan-skyline-gtr-r34",
-    "file": "models/nissan-skyline-gtr-r34.glb",
-    "bytes": 216080,
-    "triangles": 14772,
-    "sourceTriangles": 14772,
-    "size": [
-      1.796,
-      1.365,
-      4.6
-    ],
-    "source": {
-      "title": "Nissan GTR",
-      "author": "David Sirera",
-      "site": "Poly Pizza",
-      "url": "https://poly.pizza/m/a_HKCtYAv2W",
-      "license": "CC-BY-3.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/"
-    },
-    "features": {
-      "paint": true,
-      "rimColor": true,
-      "rimStyle": true,
-      "rideHeight": true,
-      "spoiler": false,
-      "frontLip": "addon"
-    },
-    "materials": {
-      "tire": true,
-      "rim": true,
-      "paint": true,
-      "glass": true,
-      "wheels": 4
-    },
-    "notes": "Kaynak başlığı “Nissan GTR”; görünüm R34 Skyline GT-R ile uyumludur. Model kendi arka kanadıyla gelir."
-  },
-  {
-    "id": "nissan-180sx",
-    "file": "models/nissan-180sx.glb",
-    "bytes": 101672,
-    "triangles": 4965,
-    "sourceTriangles": 4965,
-    "size": [
-      1.988,
-      1.299,
-      4.52
-    ],
-    "source": {
-      "title": "1994 Nissan 180MX",
-      "author": "Grzybek",
-      "site": "Poly Pizza",
-      "url": "https://poly.pizza/m/c7vlPQ8dlt",
-      "license": "CC-BY-3.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/"
-    },
-    "features": {
-      "paint": true,
-      "rimColor": true,
-      "rimStyle": true,
-      "rideHeight": true,
-      "spoiler": "addon",
-      "frontLip": "addon"
-    },
-    "materials": {
-      "tire": true,
-      "rim": true,
-      "paint": true,
-      "glass": true,
-      "wheels": 4
-    },
-    "notes": "Kaynak başlığı “1994 Nissan 180MX”; görünüm Nissan 180SX ile uyumludur."
-  },
-  {
-    "id": "jeep-wrangler-unlimited",
-    "file": "models/jeep-wrangler-unlimited.glb",
-    "bytes": 53928,
-    "triangles": 13498,
-    "sourceTriangles": 13498,
-    "size": [
-      2.181,
-      1.696,
-      4.75
-    ],
-    "source": {
-      "title": "Mom's Wrangler",
-      "author": "Anonim (Poly by Google arşivi)",
-      "site": "Poly Pizza",
-      "url": "https://poly.pizza/m/dWwNyqBmMvU",
-      "license": "CC-BY-3.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/"
-    },
-    "features": {
-      "paint": true,
-      "rimColor": false,
-      "rimStyle": false,
-      "rideHeight": false,
-      "spoiler": false,
-      "frontLip": false
-    },
-    "materials": {
-      "paint": true,
-      "wheels": 0
-    },
-    "notes": "Tek parça model; yalnızca gövde boyası desteklenir. Yazar Poly Pizza'da “Anonymous” olarak listelenir."
-  },
-  {
-    "id": "nissan-terrano",
-    "file": "models/nissan-terrano.glb",
-    "bytes": 53032,
-    "triangles": 2950,
-    "sourceTriangles": 2950,
-    "size": [
-      1.792,
-      1.506,
-      4.37
-    ],
-    "source": {
-      "title": "Terrano",
-      "author": "Muhammad Reyhan",
-      "site": "Poly Pizza",
-      "url": "https://poly.pizza/m/fWGNi96ckzn",
-      "license": "CC-BY-3.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/"
-    },
-    "features": {
-      "paint": true,
-      "rimColor": false,
-      "rimStyle": false,
-      "rideHeight": true,
-      "spoiler": false,
-      "frontLip": false
-    },
-    "materials": {
-      "paint": true,
-      "tire": true,
-      "wheels": 4
-    },
-    "notes": "Jantlar tamponlarla aynı malzemeyi paylaşır; jant rengi desteklenmez."
-  },
-  {
-    "id": "chevrolet-camaro-2010",
-    "file": "models/chevrolet-camaro-2010.glb",
-    "bytes": 82348,
-    "triangles": 4548,
-    "sourceTriangles": 4548,
-    "size": [
-      2.368,
-      1.494,
-      4.84
-    ],
-    "source": {
-      "title": "Chevrolet Camaro",
-      "author": "PuKkBuMXDD",
-      "site": "Poly Pizza",
-      "url": "https://poly.pizza/m/kVcKsd2dEk",
-      "license": "CC-BY-3.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/"
-    },
-    "features": {
-      "paint": true,
-      "rimColor": false,
-      "rimStyle": false,
-      "rideHeight": true,
-      "spoiler": "builtin",
-      "frontLip": "addon"
-    },
-    "materials": {
-      "paint": true,
-      "glass": true,
-      "tire": true,
-      "wheels": 4
-    },
-    "notes": "Arka spoiler modelin kendi parçasıdır; düzenleyicide açılıp kapatılabilir."
-  },
-  {
     "id": "mercedes-e-class-w212",
     "file": "models/mercedes-e-class-w212.glb",
     "bytes": 4464044,
@@ -808,41 +178,6 @@
       "wheels": 14
     },
     "notes": "Ön ızgara modelde gövdeyle aynı parçada olduğu için gövde rengini alır. Jantlar farklı malzemeler kullandığından jant rengi ve modeli kapalıdır."
-  },
-  {
-    "id": "mercedes-300sl-gullwing",
-    "file": "models/mercedes-300sl-gullwing.glb",
-    "bytes": 1627344,
-    "triangles": 111413,
-    "sourceTriangles": 111413,
-    "size": [
-      1.807,
-      1.253,
-      4.52
-    ],
-    "source": {
-      "title": "Mercedes-Benz 300sl Gullwing | www.vecarz.com",
-      "author": "vecarz",
-      "site": "Sketchfab",
-      "url": "https://sketchfab.com/3d-models/65edd5814c9842bb9c769388d13fa27f",
-      "license": "CC-BY-4.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
-      "mirror": "https://raw.githubusercontent.com/pxAnmol/ThreeJs-R3F/22e3ae39ab6333da8896c70be3d15713b6acab42/3%20Advanced%20Techniques/5%20Realistic%20Render/public/mercedes_benz/scene.gltf"
-    },
-    "features": {
-      "paint": true,
-      "rimColor": false,
-      "rimStyle": false,
-      "rideHeight": true,
-      "spoiler": false,
-      "frontLip": false
-    },
-    "materials": {
-      "paint": true,
-      "glass": true,
-      "wheels": 4
-    },
-    "notes": null
   },
   {
     "id": "toyota-crown-super-deluxe",
@@ -1061,6 +396,548 @@
       "tire": true,
       "rim": true,
       "wheels": 8
+    },
+    "notes": null
+  },
+  {
+    "id": "dodge-challenger-srt-hellcat",
+    "file": "models/dodge-challenger-srt-hellcat.glb",
+    "bytes": 1190680,
+    "triangles": 114010,
+    "sourceTriangles": 114010,
+    "size": [
+      2.143,
+      1.424,
+      5.02
+    ],
+    "source": {
+      "title": "( FREE ) Dodge Challenger SRT",
+      "author": "SDC PERFORMANCE™️",
+      "site": "Sketchfab",
+      "url": "https://sketchfab.com/3d-models/38a1fd572beb433fa2d26d8c1070c8fa",
+      "license": "CC-BY-4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "mirror": "https://raw.githubusercontent.com/jagriDev/A-FRAME/0fa0fd01e17cbe76af2b7f2d79ebbf037d760912/A-frame%20house/assets/models/Dodge/scene.gltf"
+    },
+    "features": {
+      "paint": true,
+      "rimColor": true,
+      "rimStyle": true,
+      "rideHeight": true,
+      "spoiler": false,
+      "frontLip": false
+    },
+    "materials": {
+      "paint": true,
+      "glass": true,
+      "rim": true,
+      "tire": true,
+      "wheels": 4
+    },
+    "notes": null
+  },
+  {
+    "id": "jaguar-xj-x350",
+    "file": "models/jaguar-xj-x350.glb",
+    "bytes": 1322864,
+    "triangles": 129463,
+    "sourceTriangles": 129463,
+    "size": [
+      2.097,
+      1.444,
+      5.09
+    ],
+    "source": {
+      "title": "2005 Jaguar XJ6 TDVi (X350)",
+      "author": "Fishboe",
+      "site": "Sketchfab",
+      "url": "https://sketchfab.com/3d-models/030d2d750085459aa169e6a187d4c37a",
+      "license": "CC-BY-4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "mirror": "https://raw.githubusercontent.com/meprashantsah/portfolio-website/dc3738784246266bb8aec513b5b29ede9d9fa28d/public/jaguar_xj6/scene.gltf"
+    },
+    "features": {
+      "paint": true,
+      "rimColor": true,
+      "rimStyle": true,
+      "rideHeight": true,
+      "spoiler": false,
+      "frontLip": false
+    },
+    "materials": {
+      "paint": true,
+      "glass": true,
+      "rim": true,
+      "tire": true,
+      "wheels": 4
+    },
+    "notes": null
+  },
+  {
+    "id": "aston-martin-db11",
+    "file": "models/aston-martin-db11.glb",
+    "bytes": 2962660,
+    "triangles": 205160,
+    "sourceTriangles": 296071,
+    "size": [
+      2.147,
+      1.223,
+      4.74
+    ],
+    "source": {
+      "title": "2017 Aston Martin DB11 [5.2L Twin-Turbo V12]",
+      "author": "Hari Prasath R",
+      "site": "Sketchfab",
+      "url": "https://sketchfab.com/3d-models/936854ba7dde46f09a47d355d433808c",
+      "license": "CC-BY-4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "mirror": "https://raw.githubusercontent.com/cmourglia/spark-gl/62e30873256869d83bc206a9c4bcee8d3068a3da/resources/models/2017_aston_martin_db11_5.2l_twin-turbo_v12/scene.gltf"
+    },
+    "features": {
+      "paint": true,
+      "rimColor": false,
+      "rimStyle": false,
+      "rideHeight": true,
+      "spoiler": false,
+      "frontLip": false
+    },
+    "materials": {
+      "paint": true,
+      "tire": true,
+      "wheels": 4
+    },
+    "notes": "Sol ve sağ jantlar kaynakta farklı malzemeler kullandığı için jant rengi ve modeli kapalıdır."
+  },
+  {
+    "id": "lamborghini-gallardo-2010",
+    "file": "models/lamborghini-gallardo-2010.glb",
+    "bytes": 3781256,
+    "triangles": 154698,
+    "sourceTriangles": 154698,
+    "size": [
+      2.236,
+      1.148,
+      4.39
+    ],
+    "source": {
+      "title": "Lamborghini Gallardo 2010",
+      "author": "Artem P",
+      "site": "Sketchfab",
+      "url": "https://sketchfab.com/3d-models/ff0eb2242d0e42eb8b7034b4db639e56",
+      "license": "CC-BY-4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "mirror": "https://raw.githubusercontent.com/mizanxali/r3f-demo/5c990206736bb2df9c1177bf7335f083431d50d7/public/lamborghini_gallardo_2010/scene.gltf"
+    },
+    "features": {
+      "paint": true,
+      "rimColor": true,
+      "rimStyle": true,
+      "rideHeight": true,
+      "spoiler": false,
+      "frontLip": false
+    },
+    "materials": {
+      "paint": true,
+      "glass": true,
+      "tire": true,
+      "rim": true,
+      "wheels": 4
+    },
+    "notes": "Fren diski ve kaliper modeli, yazarın belirttiğine göre Velstyde’a aittir (aynı CC BY 4.0 Sketchfab modelinin parçası)."
+  },
+  {
+    "id": "chevrolet-corvette-c7",
+    "file": "models/chevrolet-corvette-c7.glb",
+    "bytes": 2731044,
+    "triangles": 273133,
+    "sourceTriangles": 1070389,
+    "size": [
+      2.153,
+      1.241,
+      4.49
+    ],
+    "source": {
+      "title": "Chevrolet Corvette (C7)",
+      "author": "Martin Trafas",
+      "site": "Sketchfab",
+      "url": "https://sketchfab.com/3d-models/2b509d1bce104224b147c81757f6f43a",
+      "license": "CC-BY-4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "mirror": "https://raw.githubusercontent.com/Tobee4Lin/tobee-website/7d571c4e3e41b80d4ad1043343edd662ba33f2ca/public/model/Chevrolet/scene.gltf"
+    },
+    "features": {
+      "paint": true,
+      "rimColor": true,
+      "rimStyle": true,
+      "rideHeight": true,
+      "spoiler": false,
+      "frontLip": false
+    },
+    "materials": {
+      "rim": true,
+      "tire": true,
+      "glass": true,
+      "paint": true,
+      "wheels": 4
+    },
+    "notes": null
+  },
+  {
+    "id": "fiat-uno-2001",
+    "file": "models/fiat-uno-2001.glb",
+    "bytes": 1613772,
+    "triangles": 110209,
+    "sourceTriangles": 110209,
+    "size": [
+      1.85,
+      1.435,
+      3.69
+    ],
+    "source": {
+      "title": "Fiat Uno 2001",
+      "author": "B.M.A",
+      "site": "Sketchfab",
+      "url": "https://sketchfab.com/3d-models/cf685e42e7b54f348f6d5c145f1175dc",
+      "license": "CC-BY-4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "mirror": "https://raw.githubusercontent.com/karlProbst/UnoAlado/655d91211a46c55fd116f2e6bb2ef97f3f61633a/assets/fiat_uno_2001/scene.gltf"
+    },
+    "features": {
+      "paint": true,
+      "rimColor": false,
+      "rimStyle": false,
+      "rideHeight": true,
+      "spoiler": false,
+      "frontLip": false
+    },
+    "materials": {
+      "paint": true,
+      "wheels": 4
+    },
+    "notes": null
+  },
+  {
+    "id": "hyundai-accent-tagaz",
+    "file": "models/hyundai-accent-tagaz.glb",
+    "bytes": 2745528,
+    "triangles": 298317,
+    "sourceTriangles": 770621,
+    "size": [
+      1.927,
+      1.439,
+      4.24
+    ],
+    "source": {
+      "title": "Hyundai Accent (TaGAZ) 2004",
+      "author": "panderlaike_design",
+      "site": "Sketchfab",
+      "url": "https://sketchfab.com/3d-models/b00b5faebc314e54aef423e46230e963",
+      "license": "CC-BY-4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "mirror": "https://raw.githubusercontent.com/mcihad/itfaiye-arac/42a0ad59accdac8cc5504b966f60e970ce54fa7d/public/3dmodels/hyundai_accent_tagaz_2004/scene.gltf"
+    },
+    "features": {
+      "paint": true,
+      "rimColor": true,
+      "rimStyle": true,
+      "rideHeight": true,
+      "spoiler": false,
+      "frontLip": false
+    },
+    "materials": {
+      "rim": true,
+      "glass": true,
+      "paint": true,
+      "wheels": 4
+    },
+    "notes": null
+  },
+  {
+    "id": "ferrari-488-pista-widebody",
+    "file": "models/ferrari-488-pista-widebody.glb",
+    "bytes": 1888308,
+    "triangles": 119329,
+    "sourceTriangles": 119329,
+    "size": [
+      2.212,
+      1.088,
+      4.7
+    ],
+    "source": {
+      "title": "Ferrari 488 Pista Widebody",
+      "author": "Dev365TH",
+      "site": "Sketchfab",
+      "url": "https://sketchfab.com/3d-models/16c28f5b3ed24991ac3d1208f4a8bc1f",
+      "license": "CC-BY-4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "mirror": "https://raw.githubusercontent.com/Uknowme-h/Operation-GearHead/6e5d02e53f5df2aef3e175dbbfe3787571d1251c/games/Assets/ferrari_488_pista_widebody/scene.gltf"
+    },
+    "features": {
+      "paint": true,
+      "rimColor": true,
+      "rimStyle": true,
+      "rideHeight": true,
+      "spoiler": false,
+      "frontLip": false
+    },
+    "materials": {
+      "paint": true,
+      "rim": true,
+      "tire": true,
+      "wheels": 4
+    },
+    "notes": null
+  },
+  {
+    "id": "hudson-hornet-1951",
+    "file": "models/hudson-hornet-1951.glb",
+    "bytes": 3157856,
+    "triangles": 93843,
+    "sourceTriangles": 93843,
+    "size": [
+      2.043,
+      1.653,
+      5.26
+    ],
+    "source": {
+      "title": "800 Follower Special Hudson Hornet Downloadable",
+      "author": "Libau Media",
+      "site": "Sketchfab",
+      "url": "https://sketchfab.com/3d-models/d47d1f7f7e4b44e3b71aece76d5dabe9",
+      "license": "CC-BY-4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "mirror": "https://raw.githubusercontent.com/dongxiaoman6/three3d/bb6685aef9f9a2452d5b7486239b14138fc89cd4/public/follower/scene.gltf"
+    },
+    "features": {
+      "paint": true,
+      "rimColor": true,
+      "rimStyle": true,
+      "rideHeight": true,
+      "spoiler": false,
+      "frontLip": false
+    },
+    "materials": {
+      "paint": true,
+      "glass": true,
+      "tire": true,
+      "rim": true,
+      "wheels": 4
+    },
+    "notes": "Gövde “Fabulous Hudson Hornet” yarış dekoruyla gelir; seçilen renk dekorun üzerine uygulanır."
+  },
+  {
+    "id": "chevrolet-malibu-1965",
+    "file": "models/chevrolet-malibu-1965.glb",
+    "bytes": 2553980,
+    "triangles": 175330,
+    "sourceTriangles": 175330,
+    "size": [
+      1.901,
+      1.361,
+      5
+    ],
+    "source": {
+      "title": "'65 Chevy Malibu",
+      "author": "Joko_P",
+      "site": "Sketchfab",
+      "url": "https://sketchfab.com/3d-models/170df9c498a84dcea040985871ee4e67",
+      "license": "CC-BY-4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "mirror": "https://raw.githubusercontent.com/joziasmartini/car-shop/6d1e862bc1d2b4e5057144e05692e3fdd3ab46d8/public/3d/65_chevy_malibu/scene.gltf"
+    },
+    "features": {
+      "paint": true,
+      "rimColor": false,
+      "rimStyle": false,
+      "rideHeight": true,
+      "spoiler": false,
+      "frontLip": false
+    },
+    "materials": {
+      "paint": true,
+      "tire": true,
+      "glass": true,
+      "wheels": 4
+    },
+    "notes": null
+  },
+  {
+    "id": "willys-mb-jeep",
+    "file": "models/willys-mb-jeep.glb",
+    "bytes": 3030320,
+    "triangles": 123213,
+    "sourceTriangles": 296958,
+    "size": [
+      1.55,
+      1.527,
+      3.36
+    ],
+    "source": {
+      "title": "Willy Jeep",
+      "author": "AnilG",
+      "site": "Sketchfab",
+      "url": "https://sketchfab.com/3d-models/b635f6d5a7a045cf9bae3cc71952cd23",
+      "license": "CC-BY-4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "mirror": "https://raw.githubusercontent.com/shahriarRaf/-3D-Military-Basecamp/44495d11062ac53cc562a0e4431cb96ef16f1dc8/jeep/scene.gltf"
+    },
+    "features": {
+      "paint": true,
+      "rimColor": false,
+      "rimStyle": false,
+      "rideHeight": true,
+      "spoiler": false,
+      "frontLip": false
+    },
+    "materials": {
+      "paint": true,
+      "tire": true,
+      "glass": true,
+      "wheels": 4
+    },
+    "notes": "Gövde askeri haki dokuyla gelir; seçilen renk dokunun üzerine uygulandığı için koyu tonlar oluşur."
+  },
+  {
+    "id": "lamborghini-centenario",
+    "file": "models/lamborghini-centenario.glb",
+    "bytes": 2239208,
+    "triangles": 154324,
+    "sourceTriangles": 245112,
+    "size": [
+      2.243,
+      1.165,
+      4.92
+    ],
+    "source": {
+      "title": "( FREE ) Lamborghini Centenario LP-770",
+      "author": "SDC PERFORMANCE™️",
+      "site": "Sketchfab",
+      "url": "https://sketchfab.com/3d-models/f70732dbd53c4c9daef0b9904d51dd5a",
+      "license": "CC-BY-4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "mirror": "https://raw.githubusercontent.com/hfolcot/threejs_lambo/2c33d04fcd6d422a9990e6f88c612f4a37e708dd/assets/models/cars/centenario/scene.gltf"
+    },
+    "features": {
+      "paint": true,
+      "rimColor": true,
+      "rimStyle": true,
+      "rideHeight": true,
+      "spoiler": false,
+      "frontLip": false
+    },
+    "materials": {
+      "rim": true,
+      "tire": true,
+      "paint": true,
+      "wheels": 4
+    },
+    "notes": "Gövde kaynakta karbon desenli dokuyla gelir; renk değiştirilebilsin diye düz boyaya çevrildi."
+  },
+  {
+    "id": "nissan-gt-r-r35",
+    "file": "models/nissan-gt-r-r35.glb",
+    "bytes": 3819744,
+    "triangles": 254087,
+    "sourceTriangles": 566475,
+    "size": [
+      2.048,
+      1.375,
+      4.71
+    ],
+    "source": {
+      "title": "Nissan GTR R35",
+      "author": "Ciasny",
+      "site": "Sketchfab",
+      "url": "https://sketchfab.com/3d-models/51c912a8310c4e00a82ad7673d84228a",
+      "license": "CC-BY-4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "mirror": "https://raw.githubusercontent.com/BenjaminContrerasFe/Proyecto-Grupo-Widi/a6692c026811fb395ec12b630a04ac90cf78ac3d/Modelos_3D/Gtr-35/scene.gltf"
+    },
+    "features": {
+      "paint": true,
+      "rimColor": false,
+      "rimStyle": false,
+      "rideHeight": true,
+      "spoiler": false,
+      "frontLip": false
+    },
+    "materials": {
+      "paint": true,
+      "wheels": 4
+    },
+    "notes": null
+  },
+  {
+    "id": "honda-civic-type-r-fl5",
+    "file": "models/honda-civic-type-r-fl5.glb",
+    "bytes": 2222588,
+    "triangles": 224158,
+    "sourceTriangles": 352560,
+    "size": [
+      2.033,
+      1.394,
+      4.59
+    ],
+    "source": {
+      "title": "Custom Honda Civic Type-R (2024)",
+      "author": "Jumping Jax",
+      "site": "Sketchfab",
+      "url": "https://sketchfab.com/3d-models/c36abddc783445fbb00f72356c576fca",
+      "license": "CC-BY-4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "mirror": "https://raw.githubusercontent.com/wagnerfgomes/projeto-faculdade-frontend-sitehondacivic/02e4d6cba213e8c65a5cfa85e0a6efe3b328d7d7/assets/modelo/scene.gltf"
+    },
+    "features": {
+      "paint": true,
+      "rimColor": true,
+      "rimStyle": true,
+      "rideHeight": true,
+      "spoiler": false,
+      "frontLip": false
+    },
+    "materials": {
+      "rim": true,
+      "tire": true,
+      "glass": true,
+      "paint": true,
+      "wheels": 4
+    },
+    "notes": null
+  },
+  {
+    "id": "opel-calibra-1990",
+    "file": "models/opel-calibra-1990.glb",
+    "bytes": 1881428,
+    "triangles": 239306,
+    "sourceTriangles": 814738,
+    "size": [
+      1.928,
+      1.612,
+      4.49
+    ],
+    "source": {
+      "title": "Opel Calibra 1990",
+      "author": "Luquita",
+      "site": "Sketchfab",
+      "url": "https://sketchfab.com/3d-models/154f19805fbb4957b6aae8e3b23f9471",
+      "license": "CC-BY-4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "mirror": "https://raw.githubusercontent.com/Pegasg-ai/craft-deneme/d1059229a94d55af418cceb3cd294be59c05810f/assets/vehicles/opel%20calibra/scene.gltf"
+    },
+    "features": {
+      "paint": true,
+      "rimColor": true,
+      "rimStyle": true,
+      "rideHeight": true,
+      "spoiler": false,
+      "frontLip": false
+    },
+    "materials": {
+      "paint": true,
+      "rim": true,
+      "tire": true,
+      "glass": true,
+      "wheels": 4
     },
     "notes": null
   }
