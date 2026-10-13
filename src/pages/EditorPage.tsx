@@ -19,6 +19,7 @@ import { useToast } from '../components/useToast';
 import { useDesignHistory } from '../lib/useDesignHistory';
 import { DesignWorkbench } from '../components/DesignWorkbench';
 import { StudioPanel } from '../components/StudioPanel';
+import { ArPanel } from '../components/ArPanel';
 import { PerformancePanel } from '../components/PerformancePanel';
 import { designSummary } from '../lib/designFile';
 import type { RenderQuality } from '../lib/quality';
@@ -337,6 +338,7 @@ function Editor({ vehicleId, title, year, note, modelId, query }: {
             </section>
             <section className="panel__section"><h2 className="panel__title">Grafik kalitesi</h2><label className="field"><span>Etkileşimli görüntü</span><select aria-label="Etkileşimli görüntü" value={renderQuality} onChange={(e) => setRenderQuality(e.target.value as RenderQuality)}><option value="auto">Cihaza göre otomatik</option><option value="low">Hafif (yansıtıcı zemin kapalı)</option><option value="high">Yüksek</option></select></label><p className="muted small">Otomatik seçim ekran, giriş yöntemi, işlemci ve varsa cihaz belleğine göre yapılır. Işık izleme kalitesi ayrı ayarlanır.</p></section>
             <StudioPanel viewer={viewer} title={title} attribution={attribution} disabled={photoreal || comparing} />
+            <ArPanel viewer={viewer} title={title} attribution={attribution} designKey={visualSignature} disabled={photoreal || comparing} />
             <PerformancePanel viewer={viewer} vehicleId={vehicleId} />
             <div className="panel-actions">
               <button className="btn btn--primary" onClick={handleSave}>Kaydet</button>

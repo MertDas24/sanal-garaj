@@ -66,6 +66,11 @@ da destekler (“3D model bekleniyor” olarak işaretlenir, düzenleyicide aç�
 - **Paylaş:** tüm ayarlar bağlantıya yazılır (`#/arac/<id>?p=…&f=…`). Gelen değerler doğrulanır, sınırlanır ve
   modelin desteklemediği seçenekler yok sayılır.
 - **Görüntü indir:** aracın adı ve CC BY atfı alt yazılı PNG.
+- **Artırılmış gerçeklik (AR):** düzenleyicideki AR bölümü mevcut tasarımı gerçek boyutunda kamera görüntüsüne
+  yerleştirir. Android Chrome’da WebXR (zemin algılama, dokunarak yerleştirme/taşıma, ±15° döndürme), iPhone/iPad
+  Safari’de AR Quick Look (tasarım cihazda USDZ’ye dönüştürülür). Desteklemeyen cihazda düğme gerekçesiyle kapalıdır.
+  Tüm cihazlarda mevcut tasarım GLB veya USDZ olarak indirilebilir; dönüşüm tarayıcıda yapılır, dosya gönderilmez.
+  Dosyalar model atfını taşır (GLB düğüm verisi); paylaşırken CC BY atfı korunmalıdır.
 - **Fotogerçekçi görüntü:** düzenleyicideki “Fotogerçekçi görüntü” düğmesi, seçili açıyı ışık izleme
   (three-gpu-pathtracer, MIT) ile hesaplar: stüdyo fonu, tepe ışığı (softbox), HDRI ortam ışığı, gerçek
   yansıma ve yumuşak gölgeler. Görüntü saniyeler içinde belirir ve 300 örneğe kadar netleşir (ekran kartına göre

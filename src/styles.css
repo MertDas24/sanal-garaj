@@ -318,3 +318,8 @@ tr:last-child td { border-bottom: 0; }
 .architecture div span { color: #a9b1bd; margin-top: .4rem; }
 .about__demo { display: block; width: 100%; max-width: 960px; border-radius: .75rem; background: #101216; }
 .compatibility { border-left: 3px solid #91b5f5; padding-left: .75rem; margin: 1rem 0; }
+.ar-link { display: inline-flex; align-items: center; gap: 6px; }
+.ar-overlay { position: fixed; inset: 0; z-index: 1000; display: flex; flex-direction: column; justify-content: space-between; padding: max(16px, env(safe-area-inset-top)) 16px max(20px, env(safe-area-inset-bottom)); pointer-events: none; }
+.ar-overlay[hidden] { display: none; }
+.ar-overlay__status { align-self: center; margin: 0; padding: 8px 14px; border-radius: 999px; background: rgba(10, 12, 16, 0.78); color: #fff; text-align: center; max-width: 100%; }
+.ar-overlay__actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; pointer-events: auto; }
