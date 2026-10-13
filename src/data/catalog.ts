@@ -30,6 +30,7 @@ export const CATALOG: Vehicle[] = [
   { id: 'mercedes-c63-amg-w204', make: 'Mercedes-Benz', model: 'C 63 AMG (W204)', year: '2011–2014', category: 'sedan', modelId: 'mercedes-c63-amg-w204' },
   { id: 'toyota-corolla-e180', make: 'Toyota', model: 'Corolla (E180)', year: '2013–2019', category: 'sedan', modelId: 'toyota-corolla-e180' },
   { id: 'toyota-crown-sedan', make: 'Toyota', model: 'Crown Sedan Super Deluxe', year: '1995–2017', category: 'sedan', modelId: 'toyota-crown-super-deluxe' },
+  { id: 'skoda-octavia-1u', make: 'Škoda', model: 'Octavia (1U)', year: '2000–2010', category: 'sedan', modelId: 'skoda-octavia-1u' },
   { id: 'volkswagen-passat-b55', make: 'Volkswagen', model: 'Passat (B5.5)', year: '2001–2005', category: 'sedan', modelId: 'volkswagen-passat-b55' },
   { id: 'jaguar-xj-x350', make: 'Jaguar', model: 'XJ (X350)', year: '2003–2009', category: 'sedan', modelId: 'jaguar-xj-x350' },
   { id: 'hyundai-accent-lc', make: 'Hyundai', model: 'Accent (LC)', year: '2004', category: 'sedan', modelId: 'hyundai-accent-tagaz',
@@ -48,6 +49,8 @@ export const CATALOG: Vehicle[] = [
   { id: 'bmw-m3-e30', make: 'BMW', model: 'M3 (E30)', year: '1986–1991', category: 'coupe', modelId: 'bmw-m3-e30' },
   { id: 'toyota-ae86', make: 'Toyota', model: 'Sprinter Trueno (AE86)', year: '1983–1987', category: 'coupe', modelId: 'toyota-ae86-trueno-zenki' },
   { id: 'opel-calibra', make: 'Opel', model: 'Calibra', year: '1990–1997', category: 'coupe', modelId: 'opel-calibra-1990' },
+  { id: 'ford-mustang-shelby-gt500', make: 'Ford', model: 'Mustang Shelby GT500 (S550)', year: '2020–2022', category: 'coupe', modelId: 'ford-mustang-shelby-gt500' },
+  { id: 'audi-rs5-b9', make: 'Audi', model: 'RS 5 Coupé (B9)', year: '2018', category: 'coupe', modelId: 'audi-rs5-2018' },
   // SUV ve arazi
   { id: 'toyota-land-cruiser-j200', make: 'Toyota', model: 'Land Cruiser (J200)', year: '2016–2021', category: 'suv', modelId: 'toyota-land-cruiser-200' },
   { id: 'willys-mb', make: 'Willys', model: 'MB Jeep', year: '1941–1945', category: 'suv', modelId: 'willys-mb-jeep' },

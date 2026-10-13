@@ -34,6 +34,9 @@ gereksiz sahne parçaları kaldırıldı ve meshopt ile sıkıştırıldı.
 | `models/nissan-gt-r-r35.glb` | [Nissan GTR R35](https://sketchfab.com/3d-models/51c912a8310c4e00a82ad7673d84228a) | Ciasny | Sketchfab | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) | 3730 KB |
 | `models/honda-civic-type-r-fl5.glb` | [Custom Honda Civic Type-R (2024)](https://sketchfab.com/3d-models/c36abddc783445fbb00f72356c576fca) | Jumping Jax | Sketchfab | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) | 2170 KB |
 | `models/opel-calibra-1990.glb` | [Opel Calibra 1990](https://sketchfab.com/3d-models/154f19805fbb4957b6aae8e3b23f9471) | Luquita | Sketchfab | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) | 1837 KB |
+| `models/audi-rs5-2018.glb` | [Audi RS5](https://sketchfab.com/3d-models/75d636ab26b1423ca61ffd0fd758fd0a) | WillisChiejina | Sketchfab | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) | 2601 KB |
+| `models/ford-mustang-shelby-gt500.glb` | [Ford Mustang Shelby GT500](https://sketchfab.com/3d-models/0eaa7a16796540f29461ddae05ecdeb3) | Jiaxing (saitoyang) | Sketchfab | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) | 2346 KB |
+| `models/skoda-octavia-1u.glb` | [Skoda Octavia](https://sketchfab.com/3d-models/af57731baf6647f2a58364c1b3dbccba) | barking_dogo | Sketchfab | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) | 750 KB |
 
 Sketchfab modelleri, Sketchfab dışa aktarımının GitHub’daki herkese açık kopyalarından indirilmiştir; her kopyanın içindeki
 gömülü kaynak adresi derleme sırasında yukarıdaki Sketchfab adresiyle karşılaştırılır ve lisans Sketchfab API’sinden doğrulanır.

@@ -12,8 +12,8 @@ bağlantı olarak paylaşın veya PNG olarak indirin.
 
 | | |
 |---|---|
-| Katalogdaki araç | **26** (8 sedan, 3 hatchback, 6 coupe, 2 SUV/arazi, 7 spor) |
-| Gerçek, lisansı doğrulanmış 3D modeli olan | **26 (tamamı)** — hepsi yüksek detaylı (19 bin – 300 bin üçgen), Sketchfab yazarlarının CC BY 4.0 modelleri |
+| Katalogdaki araç | **29** (9 sedan, 3 hatchback, 8 coupe, 2 SUV/arazi, 7 spor) |
+| Gerçek, lisansı doğrulanmış 3D modeli olan | **29 (tamamı)** — hepsi yüksek detaylı (19 bin – 300 bin üçgen), Sketchfab yazarlarının CC BY 4.0 modelleri |
 | Model boyutu | 0,4 – 4,3 MB (toplam ≈ 57 MB; yalnızca seçilen araç indirilir) |
 | Fotogerçekçi görüntü | Işık izleme (path tracing) ile stüdyo fotoğrafı kalitesinde kare; tarayıcıda, ücretsiz |
 

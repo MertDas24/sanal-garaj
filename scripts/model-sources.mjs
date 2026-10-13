@@ -26,6 +26,7 @@
 //  - autoWheelRadius: autoWheels silindir yarıçapı çarpanı (işaret malzemesi lastik değil jant kapağıysa >1)
 //  - paintKeepMap: gövde dokusu korunur, seçilen renk dokuyla çarpılır (açık tabanlı, ayrıntılı gövde dokuları)
 //  - paintColor: gövde dokusu boyaya uygun değilse düz boyaya çevrilir, başlangıç rengi bu olur
+//  - stripSkins: iskeletli (skinned) modelde iskelet kaldırılır (kemikler bağlama pozunda olmalı; görsel doğrulama şart)
 //
 // Kaynak politikası: yalnızca CC0 / CC BY; lisans Sketchfab API’sinden doğrulanır; açıklamasında yeniden yükleme,
 // oyundan aktarma veya başka yazara ait olduğu belirtilen modeller kullanılmaz (ayrıntı: AGENTS.md).
@@ -269,5 +270,42 @@ export const MODEL_SOURCES = [
     simplify: 0.25,
     materials: { paint: ['carpaint'], glass: ['windowglass'], tire: ['tire'], rim: ['material_15'] },
     autoWheels: ['tire'],
+  },
+  {
+    // Lisans 2026-10-13'te https://api.sketchfab.com/v3/models/75d636ab26b1423ca61ffd0fd758fd0a ile doğrulandı:
+    // CC Attribution, indirilebilir; yazar 2018'den beri 15 model (Blender), açıklama "Audi RS5 2018".
+    id: 'audi-rs5-2018',
+    download: `${GH}NHLStenden-HBO-ICT/project-digital-twin-groep1-digitaltwin/2b1a8cf24f6cfdc41ab5dfd0d6262f6103e60583/src/main/resources/static/models/audi_rs5/scene.gltf`,
+    source: { title: 'Audi RS5', author: 'WillisChiejina', site: 'Sketchfab', url: SF('75d636ab26b1423ca61ffd0fd758fd0a'), ...CCBY4 },
+    rotateY: 0, lengthM: 4.72,
+    simplify: 0.5,
+    materials: { paint: ['Paint'], glass: ['Glass'], tire: ['Tyre'], rim: ['Painted_Metal'], caliper: ['Brake_Calipers'] },
+    wheelNodes: ['Wheel', 'Wheel.001', 'Wheel.002', 'Wheel.004'],
+  },
+  {
+    // Lisans 2026-10-13'te https://api.sketchfab.com/v3/models/0eaa7a16796540f29461ddae05ecdeb3 ile doğrulandı:
+    // CC Attribution, indirilebilir; yazar (Jiaxing / saitoyang) 2018'den beri 41 model, açıklamada kendi Maya
+    // modelleme notları var. Aynı "carpaint" malzemesi motor/süspansiyonda da kullanıldığından boya gövde
+    // panelleriyle sınırlandı.
+    id: 'ford-mustang-shelby-gt500',
+    download: `${GH}jvsysarch/apex/bc9df90f09eaf5c1042c577e501b788d42172d7e/packages/apex-assets/public/assets/vehicles/ford-mustang-shelby-gt500/scene.gltf`,
+    source: { title: 'Ford Mustang Shelby GT500', author: 'Jiaxing (saitoyang)', site: 'Sketchfab', url: SF('0eaa7a16796540f29461ddae05ecdeb3'), ...CCBY4 },
+    rotateY: 0, lengthM: 4.79,
+    simplify: 0.35,
+    stripSkins: true,
+    materials: { paint: ['carpaint@GT500.Body_carpaint_0', 'carpaint@GT500.Door.R_carpaint_0', 'carpaint@GT500.Door.L_carpaint_0', 'carpaint@GT500.Trunk_carpaint_0', 'carpaint@GT500.Hood_carpaint_0', 'carpaint@GT500.Fender.L_carpaint_0', 'carpaint@GT500.Fender.R_carpaint_0', 'carpaint@GT500.Bumper.Ft_carpaint_0', 'carpaint@GT500.Bumper.Rr_carpaint_0'], glass: ['tinted_glass'], tire: ['tire'], rim: ['lambert1', 'glossblack'] },
+    wheelNodes: ['GT500.Wheel.Ft.R', 'GT500.Wheel.Bk.L', 'GT500.Wheel.Bk.R', 'GT500.Wheel.Ft.L'],
+    notes: 'Modelin iç mekânı yazar tarafından dokulanmamıştır (tek renk yüzeyler).',
+  },
+  {
+    // Lisans 2026-10-13'te https://api.sketchfab.com/v3/models/af57731baf6647f2a58364c1b3dbccba ile doğrulandı:
+    // CC Attribution, indirilebilir; yazar modeli kendisinin yaptığını ve bazı oranların hatalı olduğunu belirtiyor.
+    id: 'skoda-octavia-1u',
+    download: `${GH}Jkotoun/Opengl_model_viewer_PGR/75902f91573ae4812652d190c65b8c1fc224265a/pgropengl/models/skoda_octavia/scene.gltf`,
+    source: { title: 'Skoda Octavia', author: 'barking_dogo', site: 'Sketchfab', url: SF('af57731baf6647f2a58364c1b3dbccba'), ...CCBY4 },
+    rotateY: 0, lengthM: 4.51,
+    materials: { paint: ['Car_paint'], glass: ['Window'], tire: ['RubberTire'], rim: ['Wheel'] },
+    autoWheels: ['RubberTire'],
+    notes: 'Yazarın kendi modeli; yazar bazı oranların gerçek araçtan farklı olduğunu belirtiyor.',
   },
 ];

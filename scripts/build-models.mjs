@@ -156,6 +156,15 @@ async function buildOne(src) {
   };
 
   for (const name of src.removeNodes ?? []) byName(name).dispose();
+  // İskeletli (skinned) modeller: kemikler bağlama pozundaysa iskelet kaldırılır, ağlar düğüm dönüşümüyle çizilir.
+  // Sonuç görsel doğrulamayla kontrol edilmelidir (lab/shoot.mjs).
+  if (src.stripSkins) for (const node of root.listNodes()) {
+    if (!node.getSkin()) continue;
+    node.setSkin(null);
+    for (const prim of node.getMesh()?.listPrimitives() ?? []) {
+      for (const semantic of prim.listSemantics()) if (/^(JOINTS|WEIGHTS)_d+$/.test(semantic)) prim.setAttribute(semantic, null);
+    }
+  }
   if (src.paletteSplit) paletteSplit(doc, src);
   // Dört tekerleği tek düğümde tutan modellerde tekerlekleri çeyreklere ayır
   const quadrantWheels = (src.wheelQuadrants ?? []).flatMap((name) => {

@@ -1001,5 +1001,123 @@
       "wheels": 4
     },
     "notes": null
+  },
+  {
+    "id": "audi-rs5-2018",
+    "file": "models/audi-rs5-2018.glb",
+    "bytes": 2663356,
+    "triangles": 148658,
+    "sourceTriangles": 295882,
+    "size": [
+      2.043,
+      1.386,
+      4.72
+    ],
+    "source": {
+      "title": "Audi RS5",
+      "author": "WillisChiejina",
+      "site": "Sketchfab",
+      "url": "https://sketchfab.com/3d-models/75d636ab26b1423ca61ffd0fd758fd0a",
+      "license": "CC-BY-4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "mirror": "https://raw.githubusercontent.com/NHLStenden-HBO-ICT/project-digital-twin-groep1-digitaltwin/2b1a8cf24f6cfdc41ab5dfd0d6262f6103e60583/src/main/resources/static/models/audi_rs5/scene.gltf"
+    },
+    "features": {
+      "paint": true,
+      "rimColor": true,
+      "rimStyle": true,
+      "rideHeight": true,
+      "spoiler": false,
+      "frontLip": false,
+      "windowTint": true,
+      "caliperColor": true
+    },
+    "materials": {
+      "paint": true,
+      "rim": true,
+      "caliper": true,
+      "tire": true,
+      "glass": true,
+      "wheels": 4
+    },
+    "notes": null
+  },
+  {
+    "id": "ford-mustang-shelby-gt500",
+    "file": "models/ford-mustang-shelby-gt500.glb",
+    "bytes": 2401896,
+    "triangles": 199867,
+    "sourceTriangles": 348393,
+    "size": [
+      2.066,
+      1.374,
+      4.79
+    ],
+    "source": {
+      "title": "Ford Mustang Shelby GT500",
+      "author": "Jiaxing (saitoyang)",
+      "site": "Sketchfab",
+      "url": "https://sketchfab.com/3d-models/0eaa7a16796540f29461ddae05ecdeb3",
+      "license": "CC-BY-4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "mirror": "https://raw.githubusercontent.com/jvsysarch/apex/bc9df90f09eaf5c1042c577e501b788d42172d7e/packages/apex-assets/public/assets/vehicles/ford-mustang-shelby-gt500/scene.gltf"
+    },
+    "features": {
+      "paint": true,
+      "rimColor": true,
+      "rimStyle": true,
+      "rideHeight": true,
+      "spoiler": false,
+      "frontLip": false,
+      "windowTint": true,
+      "caliperColor": false
+    },
+    "materials": {
+      "glass": true,
+      "rim": true,
+      "tire": true,
+      "paint": true,
+      "wheels": 4
+    },
+    "notes": "Modelin iç mekânı yazar tarafından dokulanmamıştır (tek renk yüzeyler)."
+  },
+  {
+    "id": "skoda-octavia-1u",
+    "file": "models/skoda-octavia-1u.glb",
+    "bytes": 767676,
+    "triangles": 93089,
+    "sourceTriangles": 93089,
+    "size": [
+      2.02,
+      1.646,
+      4.51
+    ],
+    "source": {
+      "title": "Skoda Octavia",
+      "author": "barking_dogo",
+      "site": "Sketchfab",
+      "url": "https://sketchfab.com/3d-models/af57731baf6647f2a58364c1b3dbccba",
+      "license": "CC-BY-4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "mirror": "https://raw.githubusercontent.com/Jkotoun/Opengl_model_viewer_PGR/75902f91573ae4812652d190c65b8c1fc224265a/pgropengl/models/skoda_octavia/scene.gltf"
+    },
+    "features": {
+      "paint": true,
+      "rimColor": true,
+      "rimStyle": true,
+      "rideHeight": true,
+      "spoiler": false,
+      "frontLip": false,
+      "windowTint": true,
+      "caliperColor": false
+    },
+    "materials": {
+      "paint": true,
+      "glass": true,
+      "tire": true,
+      "rim": true,
+      "wheels": 4
+    },
+    "notes": "Yazarın kendi modeli; yazar bazı oranların gerçek araçtan farklı olduğunu belirtiyor."
   }
 ]
