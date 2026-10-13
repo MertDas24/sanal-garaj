@@ -14,7 +14,8 @@ limiti dolduğunda Codex aynı kurallarla devam eder. Önce `README.md` ve `PROJ
   belirsiz dosyalar kullanılmaz. Kısa sürede çok sayıda marka aracı yükleyen ve aktarma şüphesi taşıyan hesaplar
   (ör. Mona x Supercars, DisneyCars, Lexyc16, Black Snow) kullanılmaz.
 - **Gizlilik:** kullanıcı fotoğrafı ve yüklenen GLB dosyası tarayıcıdan dışarı gönderilmez.
-- Arayüz dili **Türkçe**. Erişilebilirlik: klavye ile kullanılabilir kontroller, `aria-*` etiketleri, görünür odak.
+- Arayüz dili **Türkçe** (varsayılan); İngilizce seçeneği vardır. Yeni arayüz metni eklerken `src/i18n/en.ts` sözlüğüne
+  İngilizcesini de ekleyin (araç/yazar adları ve kullanıcı içeriği `translate="no"`); `i18n.spec.ts` eksikleri yakalar. Erişilebilirlik: klavye ile kullanılabilir kontroller, `aria-*` etiketleri, görünür odak.
 
 ## Komutlar
 ```bash

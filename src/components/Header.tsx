@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import type { Route } from '../lib/router';
+import { currentLang, setLang } from '../i18n';
 
 const LINKS: { href: string; label: string; match: Route['name'][] }[] = [
   { href: '#/', label: 'Katalog', match: ['catalog', 'editor'] },
@@ -21,7 +22,7 @@ export function Header({ route }: { route: Route }) {
           <circle cx="9.5" cy="19.5" r="1.8" fill="currentColor" />
           <circle cx="22.5" cy="19.5" r="1.8" fill="currentColor" />
         </svg>
-        <span>Sanal Garaj</span>
+        <span translate="no">Sanal Garaj</span>
       </a>
       <button
         className="nav-toggle"
@@ -44,6 +45,9 @@ export function Header({ route }: { route: Route }) {
           </a>
         ))}
       </nav>
+      {currentLang() === 'tr'
+        ? <button className="lang-toggle" translate="no" lang="en" aria-label="EN: Switch to English" onClick={() => setLang('en')}>EN</button>
+        : <button className="lang-toggle" translate="no" lang="tr" aria-label="TR: Türkçeye geç" onClick={() => setLang('tr')}>TR</button>}
     </header>
   );
 }

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { CATALOG, CATEGORY_LABELS, type Category } from '../data/catalog';
+import { CATALOG, CATEGORY_LABELS, modelName, type Category } from '../data/catalog';
 import { findModel, modelUrl, thumbUrl } from '../data/models';
 import { cachedPaths, useOnline } from '../lib/pwa';
 import { editorHash } from '../lib/router';
@@ -27,7 +27,7 @@ export function CatalogPage() {
       if (category !== ALL && v.category !== category) return false;
       if (onlyAvailable && !findModel(v.modelId)) return false;
       if (!q) return true;
-      return normalize(`${v.make} ${v.model} ${v.year} ${CATEGORY_LABELS[v.category]}`).includes(q);
+      return normalize(`${v.make} ${v.model} ${v.modelEn ?? ''} ${v.year} ${CATEGORY_LABELS[v.category]}`).includes(q);
     }).sort((a, b) => Number(!!findModel(b.modelId)) - Number(!!findModel(a.modelId)));
   }, [query, category, onlyAvailable]);
 
@@ -74,7 +74,7 @@ export function CatalogPage() {
         )}
       </div>
 
-      <p className="muted results-count" aria-live="polite">{results.length} araç listeleniyor</p>
+      <p className="muted results-count" aria-live="polite">{`${results.length} araç listeleniyor`}</p>
 
       {results.length === 0 ? (
         <div className="empty-state">
@@ -86,7 +86,7 @@ export function CatalogPage() {
         <ul className="grid">
           {results.map((v) => {
             const model = findModel(v.modelId);
-            const title = `${v.make} ${v.model}`;
+            const title = `${v.make} ${modelName(v)}`;
             const offlineReady = !!model && cached.has(new URL(modelUrl(model), location.href).pathname);
             const inner = (
               <>
@@ -101,8 +101,8 @@ export function CatalogPage() {
                   <span className="badge">{CATEGORY_LABELS[v.category]}</span>
                 </div>
                 <div className="card__body">
-                  <h2 className="card__title">{title}</h2>
-                  <p className="card__meta">{v.year}</p>
+                  <h2 className="card__title" translate="no">{title}</h2>
+                  <p className="card__meta" translate="no">{v.year}</p>
                   {model ? (
                     <p className="card__status card__status--ok">3D model hazır{offlineReady ? <span className="card__offline"> · Çevrimdışı hazır</span> : !online ? <span className="card__offline card__offline--no"> · Çevrimdışı açılamaz</span> : null}</p>
                   ) : (

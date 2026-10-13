@@ -2,6 +2,8 @@
 // modelId, src/data/models.generated.json içindeki bir kayda işaret eder ya da null'dır.
 // modelId null olan araçlar katalogda "3D model bekleniyor" olarak gösterilir ve düzenleyicide açılmaz.
 
+import { currentLang } from '../i18n';
+
 export type Category = 'sedan' | 'hatchback' | 'coupe' | 'suv' | 'spor';
 
 export const CATEGORY_LABELS: Record<Category, string> = {
@@ -20,13 +22,15 @@ export interface Vehicle {
   year: string;
   category: Category;
   modelId: string | null;
+  /** Model adı Türkçe kelime içeriyorsa İngilizce arayüzdeki karşılığı */
+  modelEn?: string;
   /** Kimlik belirsizliği vb. kullanıcıya gösterilecek kısa not */
   note?: string;
 }
 
 export const CATALOG: Vehicle[] = [
   // Sedan
-  { id: 'mercedes-e-serisi-w212', make: 'Mercedes-Benz', model: 'E-Serisi (W212)', year: '2013–2016', category: 'sedan', modelId: 'mercedes-e-class-w212' },
+  { id: 'mercedes-e-serisi-w212', make: 'Mercedes-Benz', model: 'E-Serisi (W212)', modelEn: 'E-Class (W212)', year: '2013–2016', category: 'sedan', modelId: 'mercedes-e-class-w212' },
   { id: 'mercedes-c63-amg-w204', make: 'Mercedes-Benz', model: 'C 63 AMG (W204)', year: '2011–2014', category: 'sedan', modelId: 'mercedes-c63-amg-w204' },
   { id: 'toyota-corolla-e180', make: 'Toyota', model: 'Corolla (E180)', year: '2013–2019', category: 'sedan', modelId: 'toyota-corolla-e180' },
   { id: 'toyota-crown-sedan', make: 'Toyota', model: 'Crown Sedan Super Deluxe', year: '1995–2017', category: 'sedan', modelId: 'toyota-crown-super-deluxe' },
@@ -60,11 +64,16 @@ export const CATALOG: Vehicle[] = [
   { id: 'lamborghini-gallardo', make: 'Lamborghini', model: 'Gallardo', year: '2010', category: 'spor', modelId: 'lamborghini-gallardo-2010' },
   { id: 'lamborghini-centenario', make: 'Lamborghini', model: 'Centenario LP 770-4', year: '2016–2017', category: 'spor', modelId: 'lamborghini-centenario' },
   { id: 'chevrolet-corvette-c7', make: 'Chevrolet', model: 'Corvette Stingray (C7)', year: '2014–2019', category: 'spor', modelId: 'chevrolet-corvette-c7' },
-  { id: 'ferrari-488-pista', make: 'Ferrari', model: '488 Pista (geniş gövde)', year: '2018–2020', category: 'spor', modelId: 'ferrari-488-pista-widebody',
+  { id: 'ferrari-488-pista', make: 'Ferrari', model: '488 Pista (geniş gövde)', modelEn: '488 Pista (widebody)', year: '2018–2020', category: 'spor', modelId: 'ferrari-488-pista-widebody',
     note: 'Kaynak modelde geniş gövde kiti var.' },
   { id: 'nissan-gt-r-r35', make: 'Nissan', model: 'GT-R (R35)', year: '2017–', category: 'spor', modelId: 'nissan-gt-r-r35' },
 ];
 
 export function findVehicle(id: string): Vehicle | undefined {
   return CATALOG.find((v) => v.id === id);
+}
+
+/** Arayüzde gösterilecek model adı (seçili dile göre). */
+export function modelName(v: Vehicle): string {
+  return currentLang() === 'en' && v.modelEn ? v.modelEn : v.model;
 }

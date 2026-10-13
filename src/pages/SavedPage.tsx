@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { findVehicle } from '../data/catalog';
+import { findVehicle, modelName } from '../data/catalog';
 import { encodeDesignFull } from '../lib/design';
 import { editorHash } from '../lib/router';
 import { deleteSaved, loadSaved, renameSaved, type SavedDesign } from '../lib/storage';
 import { findEnv } from '../three/scenes';
+import { tr } from '../i18n';
 
 // Düzenleyici açılınca ayarlar modelin desteklediği seçeneklere göre yeniden doğrulanır.
 const openHash = (s: SavedDesign) => {
@@ -58,16 +59,16 @@ export function SavedPage() {
                       <button className="btn btn--small" type="submit">Kaydet</button>
                     </form>
                   ) : (
-                    <h2 className="card__title">{s.name}</h2>
+                    <h2 className="card__title" translate="no">{s.name}</h2>
                   )}
-                  <p className="card__meta">{v ? `${v.make} ${v.model}` : 'Katalogda olmayan araç'}</p>
+                  {v ? <p className="card__meta" translate="no">{`${v.make} ${modelName(v)}`}</p> : <p className="card__meta">Katalogda olmayan araç</p>}
                   <div className="card__actions">
                     <a className="btn btn--small btn--primary" href={openHash(s)}>Aç</a>
                     <button className="btn btn--small" onClick={() => setEditing(s.id)}>Yeniden adlandır</button>
                     <button
                       className="btn btn--small btn--danger"
                       onClick={() => {
-                        if (window.confirm(`“${s.name}” silinsin mi?`)) { deleteSaved(s.id); refresh(); }
+                        if (window.confirm(tr(`“${s.name}” silinsin mi?`))) { deleteSaved(s.id); refresh(); }
                       }}
                     >
                       Sil

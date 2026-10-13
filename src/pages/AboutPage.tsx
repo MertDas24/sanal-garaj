@@ -81,7 +81,7 @@ export function AboutPage() {
       <p>Düzenleyicideki “Performans ölçümü ve rapor” aracından kendi oturumunuzun indirme süreleri ve renderer kaynak adetlerini JSON olarak alabilirsiniz. Sonuçlar donanım ve önbelleğe bağlıdır; geometri/doku adetleri bellek boyutu olarak sunulmaz.</p>
       <p><a href={`${import.meta.env.BASE_URL}benchmarks/workshop.json`} target="_blank" rel="noopener noreferrer">Tarihli geliştirme ölçümü (JSON)</a></p>
       <video className="about__demo" controls preload="none" poster={`${import.meta.env.BASE_URL}demo/poster.jpg`} aria-label="Gerçek 3D sahneden kaydedilmiş Sanal Garaj turu" src={`${import.meta.env.BASE_URL}demo/garaj-turu.webm`} />
-      <p className="small muted">Demo ve poster: <a href="https://sketchfab.com/3d-models/a5737bf3cc9b4179a6e5ebe173ff70d9" target="_blank" rel="noopener noreferrer">Toyota AE86 Sprinter Trueno Zenki — Martin Trafas</a>, <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer license">CC BY 4.0</a>. Ölçek/yön/sıkıştırma, boya, kaplama ve üretilen eklenti kit uygulanmıştır. Video gerçek model sahnesinden uygulamanın kendi kaydedicisiyle oluşturuldu.</p>
+      <p className="small muted">Demo ve poster: <a href="https://sketchfab.com/3d-models/a5737bf3cc9b4179a6e5ebe173ff70d9" target="_blank" rel="noopener noreferrer" translate="no">Toyota AE86 Sprinter Trueno Zenki — Martin Trafas</a>, <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer license">CC BY 4.0</a>. Ölçek/yön/sıkıştırma, boya, kaplama ve üretilen eklenti kit uygulanmıştır. Video gerçek model sahnesinden uygulamanın kendi kaydedicisiyle oluşturuldu.</p>
       <h3>Motor ve aktarma planı</h3>
       <p>Motor değişimi, iç aksam, turbo/kompresör, ECU, yakıt, egzoz, soğutma ve aktarma seçenekleri tasarımın
         parça planına eklenir; kayıt, dosya ve bağlantı üzerinden taşınır. “Motor 3D atölyesi” bu planı genel,
@@ -92,7 +92,7 @@ export function AboutPage() {
         yerleştirilebilir. GLB/USDZ dönüşümü tarayıcıda yapılır; dosya sunucuya gönderilmez.</p>
       <p className="tags">
         {['React 19', 'TypeScript', 'Vite', 'Three.js', 'React Three Fiber', 'three-gpu-pathtracer', 'glTF-Transform', 'meshoptimizer', 'MediaPipe', 'Vitest', 'Playwright', 'GitHub Actions'].map((t) => (
-          <span key={t} className="chip chip--static">{t}</span>
+          <span key={t} className="chip chip--static" translate="no">{t}</span>
         ))}
       </p>
       <ProjectShare />

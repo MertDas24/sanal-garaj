@@ -1,6 +1,6 @@
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useEnvironment, useGLTF, useProgress } from '@react-three/drei';
-import { findVehicle } from '../data/catalog';
+import { findVehicle, modelName } from '../data/catalog';
 import { findModel, LICENSE_LABELS, modelUrl, type ModelFeatures } from '../data/models';
 import {
   decodeDesign, defaultDesign, encodeDesign, sanitizeDesign, type Design,
@@ -23,6 +23,7 @@ import { ArPanel } from '../components/ArPanel';
 import { PerformancePanel } from '../components/PerformancePanel';
 import { designSummary } from '../lib/designFile';
 import type { RenderQuality } from '../lib/quality';
+import { tr } from '../i18n';
 const EngineWorkshop = lazy(() => import('../components/EngineWorkshop'));
 
 
@@ -48,7 +49,7 @@ export default function EditorPage({ vehicleId, query }: { vehicleId: string; qu
   if (!model) {
     return (
       <section className="page empty-state">
-        <h1>{vehicle.make} {vehicle.model}</h1>
+        <h1 translate="no">{vehicle.make} {modelName(vehicle)}</h1>
         <p>Bu araç için lisansı doğrulanmış bir 3D model henüz yok; bu nedenle düzenleyici açılamıyor.</p>
         {vehicle.note && <p className="muted">{vehicle.note}</p>}
         <a className="btn btn--primary" href="#/">Kataloğa dön</a>
@@ -56,7 +57,7 @@ export default function EditorPage({ vehicleId, query }: { vehicleId: string; qu
     );
   }
   if (!hasWebGL()) return <NoWebGL />;
-  return <Editor vehicleId={vehicle.id} title={`${vehicle.make} ${vehicle.model}`} year={vehicle.year} note={vehicle.note} modelId={model.id} query={query} />;
+  return <Editor vehicleId={vehicle.id} title={`${vehicle.make} ${modelName(vehicle)}`} year={vehicle.year} note={vehicle.note} modelId={model.id} query={query} />;
 }
 
 function Editor({ vehicleId, title, year, note, modelId, query }: {
@@ -201,7 +202,7 @@ function Editor({ vehicleId, title, year, note, modelId, query }: {
       await navigator.clipboard.writeText(shareUrl);
       show('Paylaşım bağlantısı panoya kopyalandı.');
     } catch {
-      window.prompt('Bağlantıyı kopyalayın:', shareUrl);
+      window.prompt(tr('Bağlantıyı kopyalayın:'), shareUrl);
     }
   };
 
@@ -228,8 +229,8 @@ function Editor({ vehicleId, title, year, note, modelId, query }: {
       <div className={`editor__stage${engineOpen ? ' editor__stage--engine' : ''}`}>
         <div className="stage__head">
           <div>
-            <h1 className="stage__title">{title}</h1>
-            <p className="muted stage__sub">{year}{note ? ` · ${note}` : ''}</p>
+            <h1 className="stage__title" translate="no">{title}</h1>
+            <p className="muted stage__sub"><span translate="no">{year}</span>{note && <> · <span>{note}</span></>}</p>
           </div>
           <div className="stage-actions"><button className="btn btn--small" disabled={!ready} aria-expanded={engineOpen} aria-controls="motor-3d" onClick={() => { if (engineOpen) setEngineOpen(false); else openEngine(); }}>{engineOpen ? 'Motor atölyesini kapat' : 'Motor 3D atölyesi'}</button><a className="btn btn--ghost btn--small" href={`#/karsilastir?a=${encodeURIComponent(vehicleId)}`}>Karşılaştır</a><a className="btn btn--ghost btn--small" href="#/">← Katalog</a></div>
         </div>
@@ -254,7 +255,7 @@ function Editor({ vehicleId, title, year, note, modelId, query }: {
             <div className="viewer__overlay" role="status" aria-live="polite">
               <div className="loader">
                 <div className="loader__bar"><span style={{ width: `${Math.round(progress)}%` }} /></div>
-                <p>3D model yükleniyor… %{Math.round(progress)}</p>
+                <p>{`3D model yükleniyor… %${Math.round(progress)}`}</p>
                 <p className="muted small">{(model.bytes / 1024).toFixed(0)} KB · {model.triangles.toLocaleString('tr-TR')} üçgen</p>
               </div>
             </div>
@@ -311,7 +312,7 @@ function Editor({ vehicleId, title, year, note, modelId, query }: {
           )}
         </div>
         <p className="attribution small">
-          3D model: <a href={model.source.url} target="_blank" rel="noopener noreferrer">“{model.source.title}”</a> — {model.source.author} ({model.source.site}),{' '}
+          3D model: <a href={model.source.url} target="_blank" rel="noopener noreferrer" translate="no">“{model.source.title}”</a> — <span translate="no">{model.source.author} ({model.source.site})</span>,{' '}
           <a href={model.source.licenseUrl} target="_blank" rel="noopener noreferrer license">{LICENSE_LABELS[model.source.license]}</a>.{' '}
           {model.triangles < 30_000 ? 'Düşük poligonlu modeldir; derleme' : 'Derleme'} sırasında ölçeklendi, yönlendirildi ve sıkıştırıldı.
         </p>
@@ -331,10 +332,10 @@ function Editor({ vehicleId, title, year, note, modelId, query }: {
               photoreal={photoreal}
             />
             <section className="panel__section"><h2 className="panel__title">Kayıtlı tasarım karşılaştırması</h2>
-              <label className="field"><span>Sol görünüm (A)</span><select aria-label="Sol görünüm (A)" value={compareId} onChange={(e) => { setCompareId(e.target.value); setComparing(true); }}><option value="factory">Fabrika tasarımı</option>{savedOptions.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}</select></label>
-              <label className="field"><span>Sağ görünüm (B)</span><select aria-label="Sağ görünüm (B)" value="" onChange={(e) => { const item = savedOptions.find((s) => s.id === e.target.value); if (item) { setDesign(sanitizeDesign(item.design, base!, features)); setComparing(true); } }}><option value="">Mevcut tasarım / kayıt seç</option>{savedOptions.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}</select></label>
+              <label className="field"><span>Sol görünüm (A)</span><select aria-label="Sol görünüm (A)" value={compareId} onChange={(e) => { setCompareId(e.target.value); setComparing(true); }}><option value="factory">Fabrika tasarımı</option>{savedOptions.map((s) => <option key={s.id} value={s.id} translate="no">{s.name}</option>)}</select></label>
+              <label className="field"><span>Sağ görünüm (B)</span><select aria-label="Sağ görünüm (B)" value="" onChange={(e) => { const item = savedOptions.find((s) => s.id === e.target.value); if (item) { setDesign(sanitizeDesign(item.design, base!, features)); setComparing(true); } }}><option value="">Mevcut tasarım / kayıt seç</option>{savedOptions.map((s) => <option key={s.id} value={s.id} translate="no">{s.name}</option>)}</select></label>
               <p className="muted small">Aynı aracın iki tasarımı tek kamera ile eşzamanlı karşılaştırılır. Ortam ışığı ortaktır. Farklı araç kayıtları listelenmez.</p>
-              {comparing && <details><summary>{differences.length} tasarım farkı</summary><ul>{differences.map((row) => <li key={row.label}>{row.label}: {row.value}</li>)}</ul></details>}
+              {comparing && <details><summary>{`${differences.length} tasarım farkı`}</summary><ul>{differences.map((row) => <li key={row.label}>{row.label}: {row.value}</li>)}</ul></details>}
             </section>
             <section className="panel__section"><h2 className="panel__title">Grafik kalitesi</h2><label className="field"><span>Etkileşimli görüntü</span><select aria-label="Etkileşimli görüntü" value={renderQuality} onChange={(e) => setRenderQuality(e.target.value as RenderQuality)}><option value="auto">Cihaza göre otomatik</option><option value="low">Hafif (yansıtıcı zemin kapalı)</option><option value="high">Yüksek</option></select></label><p className="muted small">Otomatik seçim ekran, giriş yöntemi, işlemci ve varsa cihaz belleğine göre yapılır. Işık izleme kalitesi ayrı ayarlanır.</p></section>
             <StudioPanel viewer={viewer} title={title} attribution={attribution} disabled={photoreal || comparing} />

@@ -2,6 +2,7 @@ import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } fro
 import { engineParts, engineSpec } from '../lib/engineScene';
 import { POWERTRAIN_FIELDS, POWERTRAIN_GROUPS, POWERTRAIN_KEYS, isPowertrainFieldEnabled, sanitizePowertrain, type PowertrainDesign, type PowertrainKey } from '../lib/powertrain';
 import { captionImage, downloadBlob, slugify } from '../lib/image';
+import { tr } from '../i18n';
 const EngineViewer = lazy(() => import('../three/EngineViewer'));
 
 export default function EngineWorkshop({ plan, vehicleId, title, onChange }: { plan: PowertrainDesign; vehicleId: string; title: string; onChange(plan: PowertrainDesign): void }) {
@@ -28,7 +29,7 @@ export default function EngineWorkshop({ plan, vehicleId, title, onChange }: { p
   const download = async () => {
     try {
       if (!canvas.current || error) throw new Error('Görünüm hazır değil.');
-      const blob = await captionImage(canvas.current.toDataURL('image/png'), `${title} · Şematik motor`, 'Prosedürel geometri: Sanal Garaj / Codex · MIT. Gerçek araç motoru, montaj veya güç simülasyonu değildir.');
+      const blob = await captionImage(canvas.current.toDataURL('image/png'), `${title} · ${tr('Şematik motor')}`, tr('Prosedürel geometri: Sanal Garaj / Codex · MIT. Gerçek araç motoru, montaj veya güç simülasyonu değildir.'));
       downloadBlob(blob, `${slugify(title)}-motor-semasi.png`); setDownloadStatus('Motor şeması indirildi.');
     } catch { setDownloadStatus('Motor görüntüsü alınamadı.'); }
   };

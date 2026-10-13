@@ -61,6 +61,13 @@ da destekler (“3D model bekleniyor” olarak işaretlenir, düzenleyicide aç�
   alınır (güncellemeler gecikmez); ağ yoksa önbellek kullanılır. Katalog kartları “Çevrimdışı hazır / açılamaz”
   durumunu gösterir; Hakkında sayfasından kullanılan alan görülür ve model verileri silinebilir. İkonlar:
   `node scripts/make-icons.mjs`. E2E testlerinde service worker kapalıdır; yalnızca `pwa.spec.ts` açar.
+- **İngilizce dil seçeneği:** üst menüdeki EN/TR düğmesi. Türkçe varsayılandır; tercih tarayıcıda saklanır.
+  Kaynak metinler Türkçedir; İngilizce modda ekrandaki metinler ve `aria-label`/`title`/`placeholder`/`alt`
+  `src/i18n/en.ts` sözlüğünden (tam eşleşme) veya kalıplardan (sayılı metinler, tekil/çoğul, Türkçe sayı biçimi)
+  çevrilir (`src/i18n/index.ts`, MutationObserver). Araç/marka adları, model yazarları ve kullanıcı içeriği
+  `translate="no"` ile korunur. Kanvas yazıları, diyaloglar ve TXT dışa aktarımı `tr()` kullanır.
+  Kapsam ölçülür: `tests/e2e/i18n.spec.ts` tüm sayfa/durumları gezer ve çevrilmemiş metin ya da Türkçe karakter
+  kalırsa başarısız olur; `src/i18n/en.test.ts` veriden gelen metinleri (45 motor kategorisi, uyarılar, notlar) denetler.
 - **Siteyi paylaş:** katalog ve Hakkında sayfasındaki düğme kalıcı, halka açık GitHub Pages bağlantısını
   kopyalar veya cihazın paylaşım menüsünü açar. Kullanıcı hesabı ve ücretli hizmet gerekmez.
 - **Kamera:** altı kamera seçeneği etkileşimli ve fotogerçekçi modda kullanılabilir. 3D görünüme odaklanınca

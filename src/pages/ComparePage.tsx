@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { CATALOG, CATEGORY_LABELS, findVehicle } from '../data/catalog';
+import { CATALOG, CATEGORY_LABELS, findVehicle, modelName } from '../data/catalog';
 import { findModel, LICENSE_LABELS, modelUrl, type ModelAsset, type ModelFeatures } from '../data/models';
 import { defaultDesign, sanitizeDesign, type Design } from '../lib/design';
 import { editorHash, replaceHash } from '../lib/router';
@@ -37,7 +37,7 @@ export default function ComparePage({ query }: { query: URLSearchParams }) {
 
   const sides = [{ key: 'A', id: a, set: setA, other: b }, { key: 'B', id: b, set: setB, other: a }];
   const va = findVehicle(a)!, vb = findVehicle(b)!, ma = findModel(va.modelId)!, mb = findModel(vb.modelId)!;
-  const row = (label: string, fa: (x: ModelAsset, id: string) => string) => <tr key={label}><th scope="row">{label}</th><td>{fa(ma, a)}</td><td>{fa(mb, b)}</td></tr>;
+  const row = (label: string, fa: (x: ModelAsset, id: string) => string, names = false) => <tr key={label}><th scope="row">{label}</th><td translate={names ? 'no' : undefined}>{fa(ma, a)}</td><td translate={names ? 'no' : undefined}>{fa(mb, b)}</td></tr>;
 
   return <section className="page compare-page">
     <h1>Araç karşılaştır</h1>
@@ -53,9 +53,9 @@ export default function ComparePage({ query }: { query: URLSearchParams }) {
     </div>
     <table className="compare-table">
       <caption>Karşılaştırma tablosu</caption>
-      <thead><tr><th scope="col">Özellik</th><th scope="col">A · {va.make} {va.model}</th><th scope="col">B · {vb.make} {vb.model}</th></tr></thead>
+      <thead><tr><th scope="col">Özellik</th><th scope="col">A · <span translate="no">{va.make} {modelName(va)}</span></th><th scope="col">B · <span translate="no">{vb.make} {modelName(vb)}</span></th></tr></thead>
       <tbody>
-        {row('Model yılı', (_, id) => findVehicle(id)!.year)}
+        {row('Model yılı', (_, id) => findVehicle(id)!.year, true)}
         {row('Gövde tipi', (_, id) => CATEGORY_LABELS[findVehicle(id)!.category])}
         {row('Uzunluk', (x) => m(x.size[2]))}
         {row('Genişlik × yükseklik (model kutusu)', (x) => `${m(x.size[0])} × ${m(x.size[1])}`)}
@@ -65,7 +65,7 @@ export default function ComparePage({ query }: { query: URLSearchParams }) {
           const f = features[id] ?? x.features;
           return FEATURE_LABELS.filter(([k]) => f[k]).map(([, l]) => l).join(', ') || '—';
         })}
-        {row('Model kaynağı', (x) => `${x.source.author} · ${LICENSE_LABELS[x.source.license]}`)}
+        {row('Model kaynağı', (x) => `${x.source.author} · ${LICENSE_LABELS[x.source.license]}`, true)}
       </tbody>
     </table>
     <p className="muted small">Uzunluk, modelin derlemede ölçeklendiği gerçek araç uzunluğudur. Genişlik ve yükseklik 3D modelin sınır kutusudur (aynalar dahil); resmi teknik veri değildir. Desteklenen modifikasyonlar, model yüklenince geometri üzerinden doğrulanmış listedir. Güç, ağırlık veya performans karşılaştırması yapılmaz.</p>
@@ -92,19 +92,19 @@ function CompareSide({ side, vehicleId, other, onVehicle, shot, onFeatures }: {
 
   const chosen = saved.find((s) => s.id === savedId)?.design;
   const design = state ? sanitizeDesign(chosen ?? state.base, state.base, state.features) : defaultDesign('#cccccc', false);
-  const title = `${vehicle.make} ${vehicle.model}`;
+  const title = `${vehicle.make} ${modelName(vehicle)}`;
 
   return <article className="compare-side" aria-label={`${side} tarafı: ${title}`}>
     <div className="compare-side__controls">
       <label className="field"><span>Araç {side}</span>
         <select aria-label={`Araç ${side}`} value={vehicleId} onChange={(e) => onVehicle(e.target.value)}>
-          {VEHICLES.map((v) => <option key={v.id} value={v.id} disabled={v.id === other}>{v.make} {v.model} ({v.year})</option>)}
+          {VEHICLES.map((v) => <option key={v.id} value={v.id} disabled={v.id === other} translate="no">{v.make} {modelName(v)} ({v.year})</option>)}
         </select>
       </label>
       <label className="field"><span>Tasarım {side}</span>
         <select aria-label={`Tasarım ${side}`} value={savedId} onChange={(e) => setSavedId(e.target.value)} disabled={!saved.length}>
           <option value="factory">Fabrika görünümü</option>
-          {saved.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
+          {saved.map((s) => <option key={s.id} value={s.id} translate="no">{s.name}</option>)}
         </select>
       </label>
     </div>
@@ -114,6 +114,6 @@ function CompareSide({ side, vehicleId, other, onVehicle, shot, onFeatures }: {
       {!state && !error && <div className="viewer__overlay" role="status"><p>3D model yükleniyor…</p></div>}
       {error && <div className="viewer__overlay" role="alert"><div><p>{error}</p><button className="btn btn--primary" onClick={() => { setError(null); setRetry((n) => n + 1); }}>Tekrar dene</button></div></div>}
     </div>
-    <p className="small"><a href={editorHash(vehicleId)}>{title} düzenleyicide aç</a>{!saved.length && <span className="muted"> · Bu araç için kayıtlı tasarım yok</span>}</p>
+    <p className="small"><a href={editorHash(vehicleId)}><span translate="no">{title}</span> düzenleyicide aç</a>{!saved.length && <span className="muted"> · Bu araç için kayıtlı tasarım yok</span>}</p>
   </article>;
 }

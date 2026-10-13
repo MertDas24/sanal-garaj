@@ -1,4 +1,4 @@
-import { CATALOG } from '../data/catalog';
+import { CATALOG, modelName } from '../data/catalog';
 import { LICENSE_LABELS, MODELS } from '../data/models';
 
 export function CreditsPage() {
@@ -30,12 +30,12 @@ export function CreditsPage() {
               const v = CATALOG.find((c) => c.modelId === m.id);
               return (
                 <tr key={m.id}>
-                  <td>{v ? `${v.make} ${v.model}` : m.id}</td>
+                  <td translate="no">{v ? `${v.make} ${modelName(v)}` : m.id}</td>
                   <td>
-                    <a href={m.source.url} target="_blank" rel="noopener noreferrer">{m.source.title}</a> <span className="muted">({m.source.site})</span>
+                    <a href={m.source.url} target="_blank" rel="noopener noreferrer" translate="no">{m.source.title}</a> <span className="muted" translate="no">({m.source.site})</span>
                     {m.source.mirror && <> · <a href={m.source.mirror} target="_blank" rel="noopener noreferrer" className="small">indirilen kopya</a></>}
                   </td>
-                  <td>{m.source.author}</td>
+                  <td translate="no">{m.source.author}</td>
                   <td><a href={m.source.licenseUrl} target="_blank" rel="noopener noreferrer license">{LICENSE_LABELS[m.source.license]}</a></td>
                   <td className="nowrap">{(m.bytes / 1024).toFixed(0)} KB</td>
                 </tr>
@@ -70,7 +70,7 @@ export function CreditsPage() {
         Bu araçlar düzenleyicide açılmaz; başka bir aracın modeli yerlerine gösterilmez.
       </p>
       <ul>
-        {missing.map((v) => <li key={v.id}>{v.make} {v.model} ({v.year})</li>)}
+        {missing.map((v) => <li key={v.id} translate="no">{v.make} {modelName(v)} ({v.year})</li>)}
       </ul>
       </>}
 

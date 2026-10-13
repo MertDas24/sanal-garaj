@@ -3,6 +3,7 @@ import type { ViewerHandle } from '../three/CarViewer';
 import { videoSupported } from '../three/studio';
 import { captionImage, downloadBlob, slugify } from '../lib/image';
 import type { ShotId } from '../three/scenes';
+import { tr } from '../i18n';
 
 export function StudioPanel({ viewer, title, attribution, disabled }: { viewer: React.RefObject<ViewerHandle | null>; title: string; attribution: string; disabled: boolean }) {
   const [ratio, setRatio] = useState('landscape'), [width, setWidth] = useState(1920), [busy, setBusy] = useState(false), [status, setStatus] = useState('');
@@ -23,7 +24,7 @@ export function StudioPanel({ viewer, title, attribution, disabled }: { viewer: 
           for (let i = 0; i < shots.length; i++) {
             v.setShot(shots[i]); await new Promise<void>((r) => requestAnimationFrame(() => requestAnimationFrame(() => r())));
             const image = new Image(); image.src = v.studio(Math.floor(width / 2), Math.floor(height / 2))!; await image.decode();
-            ctx.drawImage(image, (i % 2) * width / 2, Math.floor(i / 2) * height / 2); ctx.fillStyle = '#fff'; ctx.font = '16px sans-serif'; ctx.fillText(['Ön ¾', 'Yan', 'Arka ¾', 'Kuş bakışı'][i], (i % 2) * width / 2 + 14, Math.floor(i / 2) * height / 2 + 24);
+            ctx.drawImage(image, (i % 2) * width / 2, Math.floor(i / 2) * height / 2); ctx.fillStyle = '#fff'; ctx.font = '16px sans-serif'; ctx.fillText(tr(['Ön ¾', 'Yan', 'Arka ¾', 'Kuş bakışı'][i]), (i % 2) * width / 2 + 14, Math.floor(i / 2) * height / 2 + 24);
           }
           data = sheet.toDataURL('image/png');
         }

@@ -185,7 +185,7 @@ export function EditorPanel({ design, base, features: f, notes, onChange, vehicl
           ['Araca özgü gerçek motor modeli / güç ölçümü', 'Motor 3D atölyesi genel prosedürel şemadır. Gerçek motor taraması, motor bölmesi uyumluluğu ve güç/sürüş fiziği simülasyonu yok.'],
           ['Fren kiti geometrisi', 'Araç bazında fren diski ve bağlantı ölçüleri yok. Kaliper rengi ayrı desteklenir.'],
           ['Diğer araçlar için gövde kiti', 'Kit yalnızca doğrulanan modellerde açılır; her araç için görsel yerleşim kontrolü gerekir.'],
-          ['Komple egzoz / far / stop / ayna / panjur', 'Motor planı egzoz hattını saklar; kit destekleyen üç modelde görsel egzoz uçları eklenir. Komple sistemler ve diğer parçalar ayrı doğrulanmış düğümlere sahip değil.'],
+          ['Komple egzoz / far / stop / ayna / panjur', 'Motor planı egzoz hattını saklar; kit destekleyen modellerde görsel egzoz uçları eklenir. Komple sistemler ve diğer parçalar ayrı doğrulanmış düğümlere sahip değil.'],
           ['Koltuk / direksiyon / takla kafesi / ses sistemi', 'İç mekân parçaları ve bağlantı noktaları ayrı hazırlanmalı.'],
           ['Lastik deseni / fren diski / hava süspansiyonu', 'Ayrı lastik/diski değiştirme ve hareketli süspansiyon geometrisi gerekiyor.'],
         ].map(([name, reason]) => <div key={name} className="unsupported-item"><button className="btn btn--small" disabled>{name}</button><p className="muted small">{reason}</p></div>)}

@@ -92,7 +92,7 @@ export function ArPanel({ viewer, title, attribution, designKey, disabled }: Pro
     {mode === null && <p className="muted small" role="status">AR desteği denetleniyor…</p>}
     {mode === 'none' && <p className="muted small" id="ar-reason">Bu cihaz veya tarayıcı AR desteklemiyor. Android'de Chrome (ARCore destekli cihaz), iPhone/iPad'de Safari gerekir. Burada 3D dosyayı indirip telefona aktarabilirsiniz.</p>}
     {disabled && <p className="muted small">AR ve dışa aktarma için fotogerçekçi modu ve karşılaştırmayı kapatın.</p>}
-    <p className="muted small">Dosyalar mevcut tasarımı (boya, jant, kit, kaplama) içerir. Model lisansı gereği paylaşırken atfı koruyun: {attribution}</p>
+    <p className="muted small">Dosyalar mevcut tasarımı (boya, jant, kit, kaplama) içerir. Model lisansı gereği paylaşırken atfı koruyun: <span translate="no">{attribution}</span></p>
     <p className="small ar-status" role="status">{status}</p>
     <div ref={overlay} className={`ar-overlay${inSession ? ' ar-overlay--on' : ''}`} hidden={!inSession}>
       <p className="ar-overlay__status" role="status">{arStatus}</p>

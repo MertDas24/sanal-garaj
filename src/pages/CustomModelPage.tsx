@@ -131,7 +131,7 @@ export default function CustomModelPage() {
           {model ? (
             <>
               <section className="panel__section">
-                <h2 className="panel__title">{model.name}</h2>
+                <h2 className="panel__title" translate="no">{model.name}</h2>
                 <p className="muted small">{model.triangles.toLocaleString('tr-TR')} üçgen · {model.materials.length} malzeme</p>
               </section>
               <section className="panel__section">
@@ -140,7 +140,7 @@ export default function CustomModelPage() {
                   <span className="sr-only">Malzeme</span>
                   <select value={paintIdx} onChange={(e) => setPaintIdx(Number(e.target.value))}>
                     <option value={-1}>Seçilmedi (orijinal renkler)</option>
-                    {model.materials.map((m, i) => <option key={m.uuid} value={i}>{m.name || `Malzeme ${i + 1}`}</option>)}
+                    {model.materials.map((m, i) => <option key={m.uuid} value={i} translate={m.name ? 'no' : undefined}>{m.name || `Malzeme ${i + 1}`}</option>)}
                   </select>
                 </label>
                 <label className="color-input">

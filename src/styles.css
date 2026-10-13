@@ -86,21 +86,23 @@ code { font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace; font-siz
 /* ---- Başlık ---- */
 .header {
   position: sticky; top: 0; z-index: 20; height: var(--header-h);
-  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  display: flex; align-items: center; justify-content: flex-start; gap: 12px;
   padding: 0 max(16px, env(safe-area-inset-left));
   background: rgba(12, 13, 16, 0.86); backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--border);
 }
 .brand { display: flex; align-items: center; gap: 10px; color: var(--text); text-decoration: none; font-weight: 700; font-size: 1.1rem; }
 .brand svg { color: var(--accent); }
-.nav { display: flex; gap: 4px; }
+.nav { display: flex; gap: 4px; margin-left: auto; }
+.lang-toggle { background: none; border: 1px solid var(--border); color: var(--text); border-radius: 8px; padding: 6px 10px; font-weight: 700; font-size: 0.85rem; cursor: pointer; }
+.lang-toggle:hover { background: var(--surface); }
 .nav a { color: var(--muted); text-decoration: none; padding: 8px 12px; border-radius: 8px; font-weight: 500; }
 .nav a:hover { color: var(--text); background: var(--surface); }
 .nav a[aria-current='page'] { color: var(--text); background: var(--surface-2); }
 .nav-toggle { display: none; background: none; border: 1px solid var(--border); color: var(--text); border-radius: 8px; padding: 8px; cursor: pointer; }
 
 @media (max-width: 820px) {
-  .nav-toggle { display: inline-flex; }
+  .nav-toggle { display: inline-flex; margin-left: auto; }
   .nav { display: none; position: absolute; top: var(--header-h); left: 0; right: 0; flex-direction: column; padding: 8px 16px 16px; background: var(--bg-2); border-bottom: 1px solid var(--border); }
   .nav--open { display: flex; }
   .nav a { padding: 12px; }

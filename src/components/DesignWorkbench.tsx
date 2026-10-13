@@ -3,6 +3,7 @@ import type { Design } from '../lib/design';
 import { encodeDesignFull } from '../lib/design';
 import { designSummary, MAX_DESIGN_FILE_BYTES, parseDesignFile, serializeDesignFile } from '../lib/designFile';
 import { downloadBlob, slugify } from '../lib/image';
+import { tr } from '../i18n';
 import { editorHash } from '../lib/router';
 import type { EnvId } from '../three/scenes';
 
@@ -14,7 +15,7 @@ export function DesignWorkbench({ design, base, vehicleId, title, environment, u
   const [message, setMessage] = useState('');
   const rows = designSummary(design, base);
   return <section className="workbench" aria-label="Tasarım çalışma alanı">
-    <div className="workbench__head"><span className="eyebrow">TASARIM ATÖLYESİ</span><span className="chip chip--static">{rows.length} değişiklik</span></div>
+    <div className="workbench__head"><span className="eyebrow">TASARIM ATÖLYESİ</span><span className="chip chip--static">{`${rows.length} değişiklik`}</span></div>
     <div className="row">
       <button className="btn btn--small" disabled={!canUndo} onClick={undo} title="Ctrl/Cmd + Z">Geri al</button>
       <button className="btn btn--small" disabled={!canRedo} onClick={redo} title="Ctrl/Cmd + Shift + Z">İleri al</button>
@@ -33,7 +34,7 @@ export function DesignWorkbench({ design, base, vehicleId, title, environment, u
       {rows.length ? <dl>{rows.map((r) => <div key={r.label}><dt>{r.label}</dt><dd>{r.value}</dd></div>)}</dl> : <p className="muted small">Fabrika görünümü. Bir renk veya parça seçerek başlayın.</p>}
       <p className="muted small">Görsel tasarım; güç, fiyat ve mekanik uygunluk hesaplanmaz.</p>
       <button className="btn btn--small" onClick={() => {
-        const lines = [title, 'Sanal Garaj · Modifikasyon listesi', '', ...rows.map((r) => `${r.label}: ${r.value}`), '', 'Görsel tasarım; mekanik uyumluluk ve performans simülasyonu değildir.'];
+        const lines = [title, tr('Sanal Garaj · Modifikasyon listesi'), '', ...rows.map((r) => `${tr(r.label)}: ${tr(r.value)}`), '', tr('Görsel tasarım; mekanik uyumluluk ve performans simülasyonu değildir.')];
         downloadBlob(new Blob([lines.join('\n')], { type: 'text/plain;charset=utf-8' }), `${slugify(title)}-modifikasyonlar.txt`);
       }}>Listeyi indir</button>
     </details>
