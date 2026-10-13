@@ -3,6 +3,7 @@ import type { Route } from '../lib/router';
 
 const LINKS: { href: string; label: string; match: Route['name'][] }[] = [
   { href: '#/', label: 'Katalog', match: ['catalog', 'editor'] },
+  { href: '#/karsilastir', label: 'Karşılaştır', match: ['compare'] },
   { href: '#/tasarimlarim', label: 'Tasarımlarım', match: ['saved'] },
   { href: '#/foto', label: 'Fotoğrafta dene', match: ['photo'] },
   { href: '#/kendi-modelin', label: 'Kendi modelin', match: ['custom'] },

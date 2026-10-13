@@ -11,6 +11,7 @@ import { AboutPage } from './pages/AboutPage';
 const EditorPage = lazy(() => import('./pages/EditorPage'));
 const CustomModelPage = lazy(() => import('./pages/CustomModelPage'));
 const PhotoPage = lazy(() => import('./pages/PhotoPage'));
+const ComparePage = lazy(() => import('./pages/ComparePage'));
 
 export default function App() {
   const route = useRoute();
@@ -25,10 +26,11 @@ export default function App() {
       <a className="skip-link" href="#icerik" onClick={(event) => { event.preventDefault(); document.getElementById('icerik')?.focus(); }}>İçeriğe geç</a>
       <Header route={route} />
       {!online && <p className="offline-banner" role="status">Çevrimdışısınız. Daha önce açılan araçlar ve sayfalar çalışmaya devam eder.</p>}
-      <main id="icerik" tabIndex={-1} className={route.name === 'editor' ? 'main main--editor' : 'main'}>
+      <main id="icerik" tabIndex={-1} className={route.name === 'editor' ? 'main main--editor' : route.name === 'compare' ? 'main main--wide' : 'main'}>
         <Suspense fallback={<div className="page-loading" role="status">Yükleniyor…</div>}>
           {route.name === 'catalog' && <CatalogPage />}
           {route.name === 'editor' && <EditorPage key={route.vehicleId} vehicleId={route.vehicleId} query={route.query} />}
+          {route.name === 'compare' && <ComparePage query={route.query} />}
           {route.name === 'saved' && <SavedPage />}
           {route.name === 'photo' && <PhotoPage />}
           {route.name === 'custom' && <CustomModelPage />}

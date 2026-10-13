@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 // Hash tabanlı basit yönlendirme: statik barındırmada (GitHub Pages) sunucu ayarı gerektirmez.
 //   #/                 katalog
 //   #/arac/<id>?...    düzenleyici (sorgu = tasarım ayarları)
+//   #/karsilastir?a=&b= iki aracı yan yana karşılaştırma
 //   #/tasarimlarim     kayıtlı tasarımlar
 //   #/foto             fotoğraf üzerinde dene
 //   #/kendi-modelin    yerel GLB görüntüleyici
@@ -12,6 +13,7 @@ import { useEffect, useState } from 'react';
 export type Route =
   | { name: 'catalog' }
   | { name: 'editor'; vehicleId: string; query: URLSearchParams }
+  | { name: 'compare'; query: URLSearchParams }
   | { name: 'saved' }
   | { name: 'photo' }
   | { name: 'custom' }
@@ -26,6 +28,7 @@ export function parseHash(hash: string): Route {
   try { parts = path.split('/').filter(Boolean).map(decodeURIComponent); } catch { return { name: 'notfound' }; }
   if (parts.length === 0) return { name: 'catalog' };
   if (parts[0] === 'arac' && parts[1]) return { name: 'editor', vehicleId: parts[1], query: new URLSearchParams(qs) };
+  if (parts[0] === 'karsilastir') return { name: 'compare', query: new URLSearchParams(qs) };
   if (parts[0] === 'tasarimlarim') return { name: 'saved' };
   if (parts[0] === 'foto') return { name: 'photo' };
   if (parts[0] === 'kendi-modelin') return { name: 'custom' };

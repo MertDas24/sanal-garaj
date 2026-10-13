@@ -231,7 +231,7 @@ function Editor({ vehicleId, title, year, note, modelId, query }: {
             <h1 className="stage__title">{title}</h1>
             <p className="muted stage__sub">{year}{note ? ` · ${note}` : ''}</p>
           </div>
-          <div className="stage-actions"><button className="btn btn--small" disabled={!ready} aria-expanded={engineOpen} aria-controls="motor-3d" onClick={() => { if (engineOpen) setEngineOpen(false); else openEngine(); }}>{engineOpen ? 'Motor atölyesini kapat' : 'Motor 3D atölyesi'}</button><a className="btn btn--ghost btn--small" href="#/">← Katalog</a></div>
+          <div className="stage-actions"><button className="btn btn--small" disabled={!ready} aria-expanded={engineOpen} aria-controls="motor-3d" onClick={() => { if (engineOpen) setEngineOpen(false); else openEngine(); }}>{engineOpen ? 'Motor atölyesini kapat' : 'Motor 3D atölyesi'}</button><a className="btn btn--ghost btn--small" href={`#/karsilastir?a=${encodeURIComponent(vehicleId)}`}>Karşılaştır</a><a className="btn btn--ghost btn--small" href="#/">← Katalog</a></div>
         </div>
         <div className="viewer">
           {!error && (

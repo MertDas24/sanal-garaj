@@ -68,6 +68,10 @@ da destekler (“3D model bekleniyor” olarak işaretlenir, düzenleyicide aç�
 - **Sürüş yüksekliği:** −40 mm … +40 mm — tekerlekleri ayrı parça olan modellerde.
 - **Aero parçalar:** arka kanat spoiler ve ön lip (uygulamanın ürettiği genel parçalar; yerleşimi her modelde
   gövdeye ışın atılarak bulunur ve görsel olarak doğrulandı). Chevrolet Camaro’nun kendi spoileri açılıp kapatılabilir.
+- **Araç karşılaştır:** `#/karsilastir?a=<araç>&b=<araç>` iki farklı aracı yan yana, ortak kamera açısıyla gösterir
+  (taraf değiştirme, her taraf için fabrika veya kayıtlı tasarım). Tablo: yıl, gövde tipi, gerçek uzunluk, model
+  sınır kutusu (aynalar dahil; resmi veri değil), doğrulanmış motor kaydı, model detayı ve doğrulanan
+  modifikasyonlar. İki WebGL bağlamı için iki taraf da hafif kalitede çizilir. Güç/performans karşılaştırılmaz.
 - **Önce / Sonra:** aynı kamera açısından, kaydırılabilir ayırıcıyla orijinal ve düzenlenmiş görünüm.
 - **Kaydet:** tasarımlar tarayıcı depolamasında (cihazda) tutulur; hesap yok.
 - **Paylaş:** tüm ayarlar bağlantıya yazılır (`#/arac/<id>?p=…&f=…`). Gelen değerler doğrulanır, sınırlanır ve
