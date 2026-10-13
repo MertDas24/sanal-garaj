@@ -1,7 +1,13 @@
 import * as THREE from 'three';
 
 /** Proje içinde üretilen özgün görsel parçalar. OEM parçası veya montaj şablonu değildir. */
-export const KIT_MODELS = ['toyota-ae86-trueno-zenki', 'bmw-m3-e30', 'mercedes-c63-amg-w204'];
+// Her model ön/arka ve parça parça açıp kapatılarak görsel olarak doğrulandı (bkz. PROJE_NOTLARI.md, 2026-10-13).
+// Listeye eklenmeyenlerde parçalar havada kalıyor, gövdeden ayrılıyor veya modelin kendi parçalarıyla çakışıyor.
+export const KIT_MODELS = [
+  'toyota-ae86-trueno-zenki', 'bmw-m3-e30', 'mercedes-c63-amg-w204',
+  'mercedes-e-class-w212', 'fiat-uno-2001', 'dodge-challenger-srt-hellcat', 'aston-martin-db11', 'lamborghini-gallardo-2010',
+  'hyundai-accent-tagaz', 'chevrolet-corvette-c7', 'chevrolet-malibu-1965', 'opel-calibra-1990',
+];
 export type KitPart = 'skirts' | 'diffuser' | 'exhaustTips' | 'fenders' | 'bumper';
 export function buildBodyKit(box: THREE.Box3, wheels: { center: THREE.Vector3; radius: number; outerX: number }[], material: THREE.Material, body: THREE.Object3D) {
   const parts = new Map<KitPart, THREE.Group>();
@@ -18,9 +24,13 @@ export function buildBodyKit(box: THREE.Box3, wheels: { center: THREE.Vector3; r
   const rear = Math.min(...wheels.map((w) => w.center.z));
   const ground = Math.max(0.13, Math.min(...wheels.map((w) => w.radius)) * 0.5);
   const ray = new THREE.Raycaster();
+  // Işın kutunun 1 m dışından başlar. Kutu yüzünden 0,35 m'den derindeki çarpışmalar yok sayılır:
+  // alçak ışınlar tamponun altından geçip aracın ortasındaki tabana çarpabiliyordu (parça görünmez yerleşiyordu).
+  const MAX_DEPTH = 0.35;
   const mount = (x: number, z: number, direction: THREE.Vector3) => {
     for (let y = ground + 0.07; y < ground + 0.5; y += 0.025) {
       ray.set(new THREE.Vector3(x, y, z), direction);
+      ray.far = 1 + MAX_DEPTH;
       const hit = ray.intersectObject(body, true).find((h) => h.object instanceof THREE.Mesh && !Array.isArray(h.object.material) && h.object.material.name !== 'CG_glass');
       if (hit) return hit.point.clone();
     }

@@ -207,9 +207,12 @@ Pages üzerinde tutulur. Git LFS veya ücretli CDN gerekmez. Ham kaynak dosyalar
 ## Bilinen sınırlamalar
 
 - Proje görsel kişiselleştirme ve parça planlama aracıdır. Motor/aktarma seçenekleri plan olarak saklanır;
-  motor içi 3D görünüm, sürüş fiziği, iç mekân kitleri ve far geometrisi değişimi
-  henüz uygulanmaz; gerekçeleri arayüzde görünür. AE86, M3 E30 ve C 63 W204 için özgün yan etek,
-  difüzör, çamurluk/ön tampon uzantıları ve egzoz uçları hazırlanmıştır. Orijinal tampon/egzoz korunur;
+  araca özgü gerçek motor modeli, sürüş fiziği, iç mekân kitleri ve far geometrisi değişimi
+  henüz uygulanmaz; gerekçeleri arayüzde görünür. Özgün yan etek, difüzör, çamurluk/ön tampon uzantıları ve
+  egzoz uçları 12 araçta açıktır (AE86, M3 E30, C 63 W204, E W212, Uno, Challenger, DB11, Gallardo, Accent,
+  Corvette C7, Malibu 1965, Calibra; liste: `src/three/bodyKit.ts` → `KIT_MODELS`). Her model parça parça
+  açıp kapatılarak ön/arka görüntüyle doğrulandı; parçaları havada kalan veya modelin kendi parçalarıyla
+  çakışan araçlarda kit gerekçesiyle kapalıdır. Orijinal tampon/egzoz korunur;
   bunlar görsel eklentidir, OEM kit veya fiziksel montaj şablonu değildir.
   Bunlar için ayrı hazırlanmış, lisansı doğrulanmış parça geometrisi ve/veya fizik/uyumluluk verisi gerekir.
 - Kamber ve dışa açılma mekanik uygunluk ya da çamurluk çakışmasını hesaplamaz. Kaput/tavan kaplaması yaklaşık

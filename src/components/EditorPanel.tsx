@@ -77,7 +77,7 @@ export function EditorPanel({ design, base, features: f, notes, onChange, vehicl
         <p className="muted small">Üst gövde yüzeylerine geometrik kaplama; camlar ve trim korunur. Kaput/tavan alanı modelin geometrisine göre yaklaşık belirlenir.</p>
       </Section>
 
-      <Section title="Gövde kiti" disabled={!f.bodyKit} reason="Bu model için kit yerleşimi doğrulanmadı. İlk kitler AE86, M3 E30 ve C 63 W204 için hazırlanıyor.">
+      <Section title="Gövde kiti" disabled={!f.bodyKit} reason="Bu model için kit yerleşimi doğrulanmadı: parçalar gövdeye oturmuyor, havada kalıyor veya modelin kendi parçalarıyla çakışıyor. Kit, görsel olarak doğrulanan 12 araçta açıktır.">
         {([['skirts', 'Yan etek'], ['diffuser', 'Arka difüzör'], ['exhaustTips', 'Çift egzoz ucu'], ['fenders', 'Çamurluk uzantıları'], ['bumper', 'Ön tampon köşe uzantıları']] as const).map(([key, label]) => <Toggle key={key} label={label} checked={design[key]} onToggle={(v) => set(key, v)} />)}
         <p className="muted small">Bu modele ölçülen özgün görsel eklentiler; orijinal tampon korunur. OEM kit, üretim ölçüsü veya fiziksel montaj garantisi değildir.</p>
       </Section>
