@@ -1,6 +1,7 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { CATALOG, CATEGORY_LABELS, type Category } from '../data/catalog';
-import { findModel, thumbUrl } from '../data/models';
+import { findModel, modelUrl, thumbUrl } from '../data/models';
+import { cachedPaths, useOnline } from '../lib/pwa';
 import { editorHash } from '../lib/router';
 import { ProjectShare } from '../components/ProjectShare';
 
@@ -14,6 +15,9 @@ export function CatalogPage() {
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState<Category | typeof ALL>(ALL);
   const [onlyAvailable, setOnlyAvailable] = useState(false);
+  const online = useOnline();
+  const [cached, setCached] = useState<Set<string>>(() => new Set());
+  useEffect(() => { let alive = true; cachedPaths().then((paths) => { if (alive) setCached(paths); }); return () => { alive = false; }; }, [online]);
 
   const available = CATALOG.filter((v) => findModel(v.modelId)).length;
 
@@ -83,6 +87,7 @@ export function CatalogPage() {
           {results.map((v) => {
             const model = findModel(v.modelId);
             const title = `${v.make} ${v.model}`;
+            const offlineReady = !!model && cached.has(new URL(modelUrl(model), location.href).pathname);
             const inner = (
               <>
                 <div className="card__media">
@@ -99,7 +104,7 @@ export function CatalogPage() {
                   <h2 className="card__title">{title}</h2>
                   <p className="card__meta">{v.year}</p>
                   {model ? (
-                    <p className="card__status card__status--ok">3D model hazır</p>
+                    <p className="card__status card__status--ok">3D model hazır{offlineReady ? <span className="card__offline"> · Çevrimdışı hazır</span> : !online ? <span className="card__offline card__offline--no"> · Çevrimdışı açılamaz</span> : null}</p>
                   ) : (
                     <p className="card__status card__status--missing">3D model bekleniyor</p>
                   )}

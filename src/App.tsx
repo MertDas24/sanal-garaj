@@ -1,5 +1,6 @@
 import { lazy, Suspense, useEffect } from 'react';
 import { useRoute } from './lib/router';
+import { useOnline } from './lib/pwa';
 import { Header } from './components/Header';
 import { CatalogPage } from './pages/CatalogPage';
 import { CreditsPage } from './pages/CreditsPage';
@@ -13,6 +14,7 @@ const PhotoPage = lazy(() => import('./pages/PhotoPage'));
 
 export default function App() {
   const route = useRoute();
+  const online = useOnline();
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -22,6 +24,7 @@ export default function App() {
     <div className="app">
       <a className="skip-link" href="#icerik" onClick={(event) => { event.preventDefault(); document.getElementById('icerik')?.focus(); }}>İçeriğe geç</a>
       <Header route={route} />
+      {!online && <p className="offline-banner" role="status">Çevrimdışısınız. Daha önce açılan araçlar ve sayfalar çalışmaya devam eder.</p>}
       <main id="icerik" tabIndex={-1} className={route.name === 'editor' ? 'main main--editor' : 'main'}>
         <Suspense fallback={<div className="page-loading" role="status">Yükleniyor…</div>}>
           {route.name === 'catalog' && <CatalogPage />}

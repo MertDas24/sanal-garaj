@@ -2,6 +2,7 @@ import { CATALOG } from '../data/catalog';
 import { MODELS } from '../data/models';
 import { ENVIRONMENTS } from '../three/scenes';
 import { ProjectShare } from '../components/ProjectShare';
+import { OfflinePanel } from '../components/OfflinePanel';
 import { BenchmarkSummary } from '../components/BenchmarkSummary';
 
 const REPO = 'https://github.com/MertDas24/sanal-garaj';
@@ -83,14 +84,19 @@ export function AboutPage() {
       <p className="small muted">Demo ve poster: <a href="https://sketchfab.com/3d-models/a5737bf3cc9b4179a6e5ebe173ff70d9" target="_blank" rel="noopener noreferrer">Toyota AE86 Sprinter Trueno Zenki — Martin Trafas</a>, <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer license">CC BY 4.0</a>. Ölçek/yön/sıkıştırma, boya, kaplama ve üretilen eklenti kit uygulanmıştır. Video gerçek model sahnesinden uygulamanın kendi kaydedicisiyle oluşturuldu.</p>
       <h3>Motor ve aktarma planı</h3>
       <p>Motor değişimi, iç aksam, turbo/kompresör, ECU, yakıt, egzoz, soğutma ve aktarma seçenekleri tasarımın
-        parça planına eklenir; kayıt, dosya ve bağlantı üzerinden taşınır. Bu bölüm güç ölçümü, fizik simülasyonu
-        veya motorun 3D görselleştirmesi sunmaz.</p>
+        parça planına eklenir; kayıt, dosya ve bağlantı üzerinden taşınır. “Motor 3D atölyesi” bu planı genel,
+        prosedürel bir 3D şemada canlı gösterir. Bu şema aracın gerçek motor modeli değildir; güç ölçümü veya fizik
+        simülasyonu yapılmaz.</p>
+      <h3>Artırılmış gerçeklik</h3>
+      <p>Tasarım, Android Chrome’da WebXR ile, iPhone/iPad’de AR Quick Look ile kamera görüntüsüne gerçek boyutunda
+        yerleştirilebilir. GLB/USDZ dönüşümü tarayıcıda yapılır; dosya sunucuya gönderilmez.</p>
       <p className="tags">
         {['React 19', 'TypeScript', 'Vite', 'Three.js', 'React Three Fiber', 'three-gpu-pathtracer', 'glTF-Transform', 'meshoptimizer', 'MediaPipe', 'Vitest', 'Playwright', 'GitHub Actions'].map((t) => (
           <span key={t} className="chip chip--static">{t}</span>
         ))}
       </p>
       <ProjectShare />
+      <OfflinePanel />
 
       <h2>Kaynaklar</h2>
       <p>

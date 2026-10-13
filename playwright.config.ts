@@ -14,6 +14,8 @@ export default defineConfig({
   reporter: process.env.CI ? 'github' : 'list',
   use: {
     baseURL: 'http://localhost:4173/',
+    // Ağ taklidi yapan testler service worker'dan etkilenmesin; çevrimdışı testi kendisi açar (pwa.spec.ts)
+    serviceWorkers: 'block',
     trace: 'retain-on-failure',
   },
   projects: [

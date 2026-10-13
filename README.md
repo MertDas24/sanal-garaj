@@ -54,6 +54,13 @@ da destekler (“3D model bekleniyor” olarak işaretlenir, düzenleyicide aç�
   Doğrulanmamış fabrika motoruna düzen uydurulmaz; kullanıcı bir düzen seçebilir. Paylaşım bağlantısındaki
   `motor3d=1` aynı motor planıyla atölyeyi açar. Kod/geometri proje MIT lisansıyla üretildi; harici motor
   dosyası veya ücretli hizmet kullanılmaz. Görüntüleyici yalnızca atölye açılınca indirilir.
+- **Uygulama olarak yükleme ve çevrimdışı kullanım (PWA):** site telefona/bilgisayara uygulama olarak yüklenebilir
+  (Hakkında → “Uygulamayı yükle”; iPhone’da Paylaş → Ana Ekrana Ekle). Derleme sırasında `scripts/sw.template.js`
+  şablonundan hash’li dosya listesiyle `dist/sw.js` üretilir (bkz. `vite.config.ts`). Uygulama kabuğu ilk ziyarette,
+  açılan araçların modeli/ortam ışığı/küçük resimleri açıldıkça cihaza saklanır. Çevrimiçiyken her istek önce ağdan
+  alınır (güncellemeler gecikmez); ağ yoksa önbellek kullanılır. Katalog kartları “Çevrimdışı hazır / açılamaz”
+  durumunu gösterir; Hakkında sayfasından kullanılan alan görülür ve model verileri silinebilir. İkonlar:
+  `node scripts/make-icons.mjs`. E2E testlerinde service worker kapalıdır; yalnızca `pwa.spec.ts` açar.
 - **Siteyi paylaş:** katalog ve Hakkında sayfasındaki düğme kalıcı, halka açık GitHub Pages bağlantısını
   kopyalar veya cihazın paylaşım menüsünü açar. Kullanıcı hesabı ve ücretli hizmet gerekmez.
 - **Kamera:** altı kamera seçeneği etkileşimli ve fotogerçekçi modda kullanılabilir. 3D görünüme odaklanınca
