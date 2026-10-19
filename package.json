@@ -17,11 +17,11 @@
     "prebuild": "node scripts/copy-ml.mjs"
   },
   "dependencies": {
-    "@mediapipe/tasks-vision": "^1.1.0",
+    "@mediapipe/tasks-vision": "^1.1.1",
     "@react-three/drei": "^10.7.9",
-    "@react-three/fiber": "^9.8.1",
-    "react": "^19.2.8",
-    "react-dom": "^19.2.8",
+    "@react-three/fiber": "^9.8.2",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
     "three": "^0.186.1",
     "three-gpu-pathtracer": "^0.0.27",
     "three-mesh-bvh": "^0.9.16",
