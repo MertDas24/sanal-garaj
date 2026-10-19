@@ -599,3 +599,18 @@ Katkı: Claude. Kullanıcı önerilen altı geliştirmenin hepsini istedi; her b
 - Motor 3D: V düzeninde pistonlar sıra açısında hareket etmiyor (önceki kayıt).
 - Kanvas'a yazılan sayılar (tarih, `toLocaleString('tr-TR')`) İngilizce modda Türkçe biçimde kalabilir; görünür metindeki sayılar kalıplarla çevrilir.
 - **Yayın (Claude):** İngilizce + notlar commit'i için https://github.com/MertDas24/sanal-garaj/actions/runs/38372202983 ilk denemede `app.spec.ts` → "ışık izleme hazırlığı beklerken iptal edilir" testinde 5 sn tıklama süresi aşıldı (yazılımsal GPU'lu CI; yerelde 58/58 geçti, önceki 5 koşuda geçmişti). Yalnız başarısız iş yeniden çalıştırıldı; tüm işler ve Pages yayını başarılı. Canlı paket İngilizce düğmesini içeriyor. Bu test CI'da ara sıra yavaş kalabilir; tekrarlarsa arayüz donması mı yoksa CI yavaşlığı mı olduğu ayrıca incelenmeli (süre bilerek kısa tutulmuş).
+
+
+---
+
+## 2026-10-19 — Portfolyo görselleri
+
+**Katkı:** Claude.
+
+- Canlı siteden (https://mertdas24.github.io/sanal-garaj/) 19 ekran görüntüsü alındı: katalog, düzenleyici,
+  önce/sonra, 3 fotogerçekçi kare (stüdyo, gün batımı, şehir gecesi; arayüzlü ve yalnızca ışık izlenmiş
+  sürümleriyle), karşılaştırma, motor atölyesi, fotoğrafta dene, Hakkında, Kaynaklar ve mobil görünümler.
+- Görseller kullanıcının masaüstündeki “Proje video depo/SanalGaraj-gorseller” klasörüne, açıklamalı
+  `ICINDEKILER.txt` ile birlikte kopyalandı (depoya eklenmedi).
+- Tekrar üretmek için: `node lab/portfolio-shots.mjs <klasör>` (canlı siteden; tembel yüklenen görselleri
+  bekleyen düzeltmeler `lab/portfolio-fix.mjs` içinde).
